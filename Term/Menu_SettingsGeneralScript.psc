@@ -1,13 +1,25 @@
+;======================================================================
+; Script: LZP:Term:Menu_SettingsGeneralScript
+; Description: This script manages the general settings menu functionality.
+; It updates settings based on user interactions and provides feedback
+; through messages. Debug logging is integrated to assist with troubleshooting.
+;======================================================================
+
 ScriptName LZP:Term:Menu_SettingsGeneralScript Extends TerminalMenu hidden
 
-;-- Variables ---------------------------------------
+;======================================================================
+; PROPERTY GROUPS
+;======================================================================
 
-;-- Properties --------------------------------------
+;-- GlobalVariable Autofill --
+; Global variables for settings such as radius and destination.
 Group GlobalVariable_Autofill
   GlobalVariable Property LPSetting_Radius Auto mandatory
   GlobalVariable Property LPSetting_SendTo Auto mandatory
 EndGroup
 
+;-- Message Autofill --
+; Messages displayed to the player when toggling settings.
 Group Message_Autofill
   Message Property LPDestLodgeSafeMsg Auto Const mandatory
   Message Property LPDestPlayerMsg Auto Const mandatory
@@ -16,67 +28,104 @@ Group Message_Autofill
   Message Property LPOnMsg Auto Const mandatory
 EndGroup
 
+;-- Miscellaneous Properties --
+; Additional properties including radius choices and the current terminal menu.
 Group Misc
   Float[] Property RadiusChoices Auto Const mandatory
   TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
+  GlobalVariable Property LPSystem_Debug Auto Const mandatory
 EndGroup
 
+;======================================================================
+; HELPER FUNCTIONS
+;======================================================================
 
-;-- Functions ---------------------------------------
-
-Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-  Debug.Trace("OnTerminalMenuEnter: Entered terminal menu", 0) ; #DEBUG_LINE_NO:26
-  Float currentRadius = Self.LPSetting_Radius.GetValue() ; #DEBUG_LINE_NO:27
-  Debug.Trace("OnTerminalMenuEnter: Current radius is " + currentRadius as String, 0) ; #DEBUG_LINE_NO:28
-  akTerminalRef.AddTextReplacementValue("currentRadius", currentRadius) ; #DEBUG_LINE_NO:29
-  Int currentDest = Self.LPSetting_SendTo.GetValue() as Int ; #DEBUG_LINE_NO:30
-  Debug.Trace("OnTerminalMenuEnter: Current destination is " + currentDest as String, 0) ; #DEBUG_LINE_NO:31
-  If currentDest == 1 ; #DEBUG_LINE_NO:32
-    akTerminalRef.AddTextReplacementData("Destination", Self.LPDestPlayerMsg as Form) ; #DEBUG_LINE_NO:33
-    Debug.Trace("OnTerminalMenuEnter: Destination set to Player", 0) ; #DEBUG_LINE_NO:34
-  ElseIf currentDest == 2 ; #DEBUG_LINE_NO:35
-    akTerminalRef.AddTextReplacementData("Destination", Self.LPDestLodgeSafeMsg as Form) ; #DEBUG_LINE_NO:36
-    Debug.Trace("OnTerminalMenuEnter: Destination set to Lodge Safe", 0) ; #DEBUG_LINE_NO:37
-  ElseIf currentDest == 3 ; #DEBUG_LINE_NO:38
-    akTerminalRef.AddTextReplacementData("Destination", Self.LPDestDummyMsg as Form) ; #DEBUG_LINE_NO:39
-    Debug.Trace("OnTerminalMenuEnter: Destination set to Dummy", 0) ; #DEBUG_LINE_NO:40
+;-- Log Function --
+; Logs a message if the global debug setting is enabled.
+Function Log(String logMsg)
+  If LPSystem_Debug.GetValue() as Bool
+    Debug.Trace(logMsg, 0)
   EndIf
+EndFunction
+
+;-- UpdateDestinationDisplay Function --
+; Updates the terminal display for the destination setting based on its value.
+Function UpdateDestinationDisplay(ObjectReference akTerminalRef, Int dest)
+  If dest == 1
+    akTerminalRef.AddTextReplacementData("Destination", LPDestPlayerMsg as Form)
+    Log("Setting Destination to LPDestPlayerMsg")
+  ElseIf dest == 2
+    akTerminalRef.AddTextReplacementData("Destination", LPDestLodgeSafeMsg as Form)
+    Log("Setting Destination to LPDestLodgeSafeMsg")
+  ElseIf dest == 3
+    akTerminalRef.AddTextReplacementData("Destination", LPDestDummyMsg as Form)
+    Log("Setting Destination to LPDestDummyMsg")
+  EndIf
+EndFunction
+
+;-- CycleRadius Function --
+; Cycles the current radius setting through the RadiusChoices array.
+Function CycleRadius(ObjectReference akTerminalRef)
+  Float currentRadius = LPSetting_Radius.GetValue()
+  ; Find the current radius index in the array.
+  Int currentRadiusIndex = RadiusChoices.find(currentRadius, 0)
+  Int newRadiusIndex = currentRadiusIndex + 1
+  ; If at the end of the array, wrap around to the first element.
+  If currentRadiusIndex == RadiusChoices.Length - 1
+    newRadiusIndex = 0
+  EndIf
+  ; Set the new radius value and update the display.
+  LPSetting_Radius.SetValue(RadiusChoices[newRadiusIndex])
+  akTerminalRef.AddTextReplacementValue("currentRadius", RadiusChoices[newRadiusIndex])
+  Log("Cycled radius to " + RadiusChoices[newRadiusIndex] as String)
+EndFunction
+
+;======================================================================
+; EVENT HANDLERS
+;======================================================================
+
+;-- OnTerminalMenuEnter Event Handler --
+; Called when the terminal menu is opened.
+Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
+  Log("OnTerminalMenuEnter triggered")
+  ; Retrieve and display the current radius.
+  Float currentRadius = LPSetting_Radius.GetValue()
+  akTerminalRef.AddTextReplacementValue("currentRadius", currentRadius)
+  Log("Current radius: " + currentRadius as String)
+  
+  ; Retrieve and display the current destination.
+  Int currentDest = LPSetting_SendTo.GetValue() as Int
+  UpdateDestinationDisplay(akTerminalRef, currentDest)
+  Log("Current destination: " + currentDest as String)
 EndEvent
 
+;-- OnTerminalMenuItemRun Event Handler --
+; Called when a menu item is selected.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-  Debug.Trace(("OnTerminalMenuItemRun: Menu item " + auiMenuItemID as String) + " selected", 0) ; #DEBUG_LINE_NO:46
-  If akTerminalBase == Self.CurrentTerminalMenu ; #DEBUG_LINE_NO:47
-    If auiMenuItemID == 0 ; #DEBUG_LINE_NO:48
-      Float currentRadius = Self.LPSetting_Radius.GetValue() ; #DEBUG_LINE_NO:49
-      Debug.Trace("OnTerminalMenuItemRun: Current radius is " + currentRadius as String, 0) ; #DEBUG_LINE_NO:50
-      Int currentRadiusIndex = Self.RadiusChoices.find(currentRadius, 0) ; #DEBUG_LINE_NO:51
-      Debug.Trace("OnTerminalMenuItemRun: Current radius index is " + currentRadiusIndex as String, 0) ; #DEBUG_LINE_NO:52
-      If currentRadiusIndex == Self.RadiusChoices.Length - 1 ; #DEBUG_LINE_NO:53
-        Self.LPSetting_Radius.SetValue(Self.RadiusChoices[0]) ; #DEBUG_LINE_NO:54
-        akTerminalRef.AddTextReplacementValue("currentRadius", Self.RadiusChoices[0]) ; #DEBUG_LINE_NO:55
-        Debug.Trace("OnTerminalMenuItemRun: Radius set to " + Self.RadiusChoices[0] as String, 0) ; #DEBUG_LINE_NO:56
-      Else
-        Int newRadiusIndex = currentRadiusIndex + 1 ; #DEBUG_LINE_NO:58
-        Self.LPSetting_Radius.SetValue(Self.RadiusChoices[newRadiusIndex]) ; #DEBUG_LINE_NO:59
-        akTerminalRef.AddTextReplacementValue("currentRadius", Self.RadiusChoices[newRadiusIndex]) ; #DEBUG_LINE_NO:60
-        Debug.Trace("OnTerminalMenuItemRun: Radius set to " + Self.RadiusChoices[newRadiusIndex] as String, 0) ; #DEBUG_LINE_NO:61
+  Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
+  If akTerminalBase == CurrentTerminalMenu
+    Log("Terminal menu matches CurrentTerminalMenu")
+    ; Menu item 0: Cycle the radius value.
+    If auiMenuItemID == 0
+      Log("Cycling radius")
+      CycleRadius(akTerminalRef)
+    ; Menu item 1: Cycle the destination setting.
+    ElseIf auiMenuItemID == 1
+      Log("Cycling destination")
+      Int currentDest = LPSetting_SendTo.GetValue() as Int
+      ; Cycle destination: 3 -> 1, 1 -> 2, 2 -> 3.
+      If currentDest == 3
+        LPSetting_SendTo.SetValue(1.0)
+        currentDest = 1
+      ElseIf currentDest == 1
+        LPSetting_SendTo.SetValue(2.0)
+        currentDest = 2
+      ElseIf currentDest == 2
+        LPSetting_SendTo.SetValue(3.0)
+        currentDest = 3
       EndIf
-    ElseIf auiMenuItemID == 1 ; #DEBUG_LINE_NO:63
-      Int currentDest = Self.LPSetting_SendTo.GetValue() as Int ; #DEBUG_LINE_NO:64
-      Debug.Trace("OnTerminalMenuItemRun: Current destination is " + currentDest as String, 0) ; #DEBUG_LINE_NO:65
-      If currentDest == 3 ; #DEBUG_LINE_NO:66
-        Self.LPSetting_SendTo.SetValue(1.0) ; #DEBUG_LINE_NO:67
-        akTerminalRef.AddTextReplacementData("Destination", Self.LPDestPlayerMsg as Form) ; #DEBUG_LINE_NO:68
-        Debug.Trace("OnTerminalMenuItemRun: Destination set to Player", 0) ; #DEBUG_LINE_NO:69
-      ElseIf currentDest == 1 ; #DEBUG_LINE_NO:70
-        Self.LPSetting_SendTo.SetValue(2.0) ; #DEBUG_LINE_NO:71
-        akTerminalRef.AddTextReplacementData("Destination", Self.LPDestLodgeSafeMsg as Form) ; #DEBUG_LINE_NO:72
-        Debug.Trace("OnTerminalMenuItemRun: Destination set to Lodge Safe", 0) ; #DEBUG_LINE_NO:73
-      ElseIf currentDest == 2 ; #DEBUG_LINE_NO:74
-        Self.LPSetting_SendTo.SetValue(3.0) ; #DEBUG_LINE_NO:75
-        akTerminalRef.AddTextReplacementData("Destination", Self.LPDestDummyMsg as Form) ; #DEBUG_LINE_NO:76
-        Debug.Trace("OnTerminalMenuItemRun: Destination set to Dummy", 0) ; #DEBUG_LINE_NO:77
-      EndIf
+      UpdateDestinationDisplay(akTerminalRef, currentDest)
+      Log("New destination: " + currentDest as String)
     EndIf
   EndIf
 EndEvent

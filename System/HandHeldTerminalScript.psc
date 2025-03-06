@@ -1,33 +1,84 @@
+;======================================================================
+; Script: LZP:System:HandHeldTerminalScript
+; Description: This script manages the handheld terminal functionality.
+; It provides the player with a toggle looting potion and handles the
+; activation of the terminal dummy when the control weapon is equipped.
+; Debug logging is integrated to assist with troubleshooting.
+;======================================================================
+
 ScriptName LZP:System:HandHeldTerminalScript Extends ReferenceAlias
 
-;-- Variables ---------------------------------------
+;======================================================================
+; PROPERTIES
+;======================================================================
 
-;-- Properties --------------------------------------
-Actor Property PlayerRef Auto Const mandatory
-ObjectReference Property LP_TerminalDummyRef Auto Const mandatory
-Weapon Property LP_TerminalControlWeapon Auto Const mandatory
-Potion Property LP_Aid_ToggleLooting Auto Const mandatory
+;-- Properties --
+; References and items required for the terminal functionality.
+Actor Property PlayerRef Auto Const Mandatory
+ObjectReference Property LP_TerminalDummyRef Auto Const Mandatory
+Weapon Property LP_TerminalControlWeapon Auto Const Mandatory
+Potion Property LP_Aid_ToggleLooting Auto Const Mandatory
+GlobalVariable Property LPSystem_Debug Auto Const Mandatory
 
-;-- Functions ---------------------------------------
+;======================================================================
+; UTILITY FUNCTIONS
+;======================================================================
 
-Event OnAliasInit()
-  Debug.Notification("OnAliasInit triggered") ; #DEBUG_LINE_NO:9
-  Self.GiveItem() ; #DEBUG_LINE_NO:10
-EndEvent
-
-Function GiveItem()
-  Debug.Notification("GiveItem called") ; #DEBUG_LINE_NO:14
-  If Self.PlayerRef.GetItemCount(Self.LP_Aid_ToggleLooting as Form) == 0 ; #DEBUG_LINE_NO:15
-    Debug.Notification("Adding Aid Toggle Looting to player") ; #DEBUG_LINE_NO:16
-    Self.PlayerRef.AddItem(Self.LP_Aid_ToggleLooting as Form, 1, False) ; #DEBUG_LINE_NO:17
-  Else
-    Debug.Notification("Player already has Aid Toggle Looting") ; #DEBUG_LINE_NO:19
-  EndIf
+;-- Log Function --
+; Logs a message if the global debug setting is enabled.
+Function Log(String logMsg)
+    If LPSystem_Debug.GetValue() as Bool
+        Debug.Trace(logMsg, 0)
+    EndIf
 EndFunction
 
+;-- ValidateProperties Function --
+; Validates that all required properties are set.
+Function ValidateProperties()
+    If PlayerRef == None
+        Log("Error: PlayerRef is None")
+    EndIf
+    If LP_TerminalDummyRef == None
+        Log("Error: LP_TerminalDummyRef is None")
+    EndIf
+    If LP_TerminalControlWeapon == None
+        Log("Error: LP_TerminalControlWeapon is None")
+    EndIf
+    If LP_Aid_ToggleLooting == None
+        Log("Error: LP_Aid_ToggleLooting is None")
+    EndIf
+EndFunction
+
+;======================================================================
+; EVENT HANDLERS
+;======================================================================
+
+;-- OnAliasInit Event Handler --
+; Called when the alias is initialized. Validates properties and gives the toggle looting item to the player.
+Event OnAliasInit()
+    Log("OnAliasInit triggered")
+    ValidateProperties()
+    GiveItem()
+EndEvent
+
+;-- GiveItem Function --
+; Gives the toggle looting item to the player if they don't already have it.
+Function GiveItem()
+    Log("GiveItem called")
+    If PlayerRef.GetItemCount(LP_Aid_ToggleLooting) == 0
+        Log("Adding Aid Toggle Looting to player")
+        PlayerRef.AddItem(LP_Aid_ToggleLooting, 1, False)
+    Else
+        Log("Player already has Aid Toggle Looting")
+    EndIf
+EndFunction
+
+;-- OnItemEquipped Event Handler --
+; Called when an item is equipped. Activates the terminal dummy if the control weapon is equipped.
 Event OnItemEquipped(Form akBaseObject, ObjectReference akReference)
-  If (akBaseObject == Self.LP_TerminalControlWeapon as Form) && (Game.IsMenuControlsEnabled() || Game.IsFavoritesControlsEnabled()) ; #DEBUG_LINE_NO:24
-    Self.LP_TerminalDummyRef.Activate(Self.PlayerRef as ObjectReference, False) ; #DEBUG_LINE_NO:25
-    Self.PlayerRef.UnequipItem(Self.LP_TerminalControlWeapon as Form, False, True) ; #DEBUG_LINE_NO:26
-  EndIf
+    If (akBaseObject == LP_TerminalControlWeapon) && (Game.IsMenuControlsEnabled() || Game.IsFavoritesControlsEnabled())
+        Log("Terminal control weapon equipped; activating terminal dummy")
+        LP_TerminalDummyRef.Activate(PlayerRef, False)
+        PlayerRef.UnequipItem(LP_TerminalControlWeapon, False, True)
+    EndIf
 EndEvent

@@ -1,77 +1,131 @@
-ScriptName LZP:Term:Menu_SettingsStealScript Extends TerminalMenu hidden
+;======================================================================
+; Script: LZP:Term:Menu_SettingsGeneralScript
+; Description: This script manages the general settings menu functionality.
+; It updates settings based on user interactions and provides feedback
+; through messages. Debug logging is integrated to assist with troubleshooting.
+;======================================================================
 
-;-- Variables ---------------------------------------
+ScriptName LZP:Term:Menu_SettingsGeneralScript Extends TerminalMenu hidden
 
-;-- Properties --------------------------------------
+;======================================================================
+; PROPERTY GROUPS
+;======================================================================
+
+;-- GlobalVariable Autofill --
+; Global variables for settings such as radius and destination.
 Group GlobalVariable_Autofill
-  GlobalVariable Property LPSetting_AllowStealing Auto mandatory
-  GlobalVariable Property LPSetting_StealingIsHostile Auto mandatory
+  GlobalVariable Property LPSetting_Radius Auto mandatory
+  GlobalVariable Property LPSetting_SendTo Auto mandatory
 EndGroup
 
+;-- Message Autofill --
+; Messages displayed to the player when toggling settings.
 Group Message_Autofill
+  Message Property LPDestLodgeSafeMsg Auto Const mandatory
+  Message Property LPDestPlayerMsg Auto Const mandatory
+  Message Property LPDestDummyMsg Auto Const mandatory
   Message Property LPOffMsg Auto Const mandatory
   Message Property LPOnMsg Auto Const mandatory
 EndGroup
 
+;-- Miscellaneous Properties --
+; Additional properties including radius choices and the current terminal menu.
 Group Misc
+  Float[] Property RadiusChoices Auto Const mandatory
   TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
+  GlobalVariable Property LPSystem_Debug Auto Const mandatory
 EndGroup
 
+;======================================================================
+; HELPER FUNCTIONS
+;======================================================================
 
-;-- Functions ---------------------------------------
+;-- Log Function --
+; Logs a message if the global debug setting is enabled.
+Function Log(String logMsg)
+  If LPSystem_Debug.GetValue() as Bool
+    Debug.Trace(logMsg, 0)
+  EndIf
+EndFunction
 
+;-- UpdateDestinationDisplay Function --
+; Updates the terminal display for the destination setting based on its value.
+Function UpdateDestinationDisplay(ObjectReference akTerminalRef, Int dest)
+  If dest == 1
+    akTerminalRef.AddTextReplacementData("Destination", LPDestPlayerMsg as Form)
+    Log("Setting Destination to LPDestPlayerMsg")
+  ElseIf dest == 2
+    akTerminalRef.AddTextReplacementData("Destination", LPDestLodgeSafeMsg as Form)
+    Log("Setting Destination to LPDestLodgeSafeMsg")
+  ElseIf dest == 3
+    akTerminalRef.AddTextReplacementData("Destination", LPDestDummyMsg as Form)
+    Log("Setting Destination to LPDestDummyMsg")
+  EndIf
+EndFunction
+
+;-- CycleRadius Function --
+; Cycles the current radius setting through the RadiusChoices array.
+Function CycleRadius(ObjectReference akTerminalRef)
+  Float currentRadius = LPSetting_Radius.GetValue()
+  ; Find the current radius index in the array.
+  Int currentRadiusIndex = RadiusChoices.find(currentRadius, 0)
+  Int newRadiusIndex = currentRadiusIndex + 1
+  ; If at the end of the array, wrap around to the first element.
+  If currentRadiusIndex == RadiusChoices.Length - 1
+    newRadiusIndex = 0
+  EndIf
+  ; Set the new radius value and update the display.
+  LPSetting_Radius.SetValue(RadiusChoices[newRadiusIndex])
+  akTerminalRef.AddTextReplacementValue("currentRadius", RadiusChoices[newRadiusIndex])
+  Log("Cycled radius to " + RadiusChoices[newRadiusIndex] as String)
+EndFunction
+
+;======================================================================
+; EVENT HANDLERS
+;======================================================================
+
+;-- OnTerminalMenuEnter Event Handler --
+; Called when the terminal menu is opened.
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-  Debug.Trace("OnTerminalMenuEnter triggered", 0) ; #DEBUG_LINE_NO:22
-  Bool currentStealSetting = Self.LPSetting_AllowStealing.GetValue() as Bool ; #DEBUG_LINE_NO:23
-  Bool currentHostileSetting = Self.LPSetting_StealingIsHostile.GetValue() as Bool ; #DEBUG_LINE_NO:24
-  Debug.Trace(("Current settings - AllowStealing: " + currentStealSetting as String) + ", StealingIsHostile: " + currentHostileSetting as String, 0) ; #DEBUG_LINE_NO:25
-  If !currentStealSetting ; #DEBUG_LINE_NO:26
-    akTerminalRef.AddTextReplacementData("Stealing", Self.LPOffMsg as Form) ; #DEBUG_LINE_NO:27
-    Debug.Trace("Setting Stealing to LPOffMsg", 0) ; #DEBUG_LINE_NO:28
-  ElseIf currentStealSetting
-    akTerminalRef.AddTextReplacementData("Stealing", Self.LPOnMsg as Form) ; #DEBUG_LINE_NO:30
-    Debug.Trace("Setting Stealing to LPOnMsg", 0) ; #DEBUG_LINE_NO:31
-  EndIf
-  If !currentHostileSetting ; #DEBUG_LINE_NO:33
-    akTerminalRef.AddTextReplacementData("Hostile", Self.LPOffMsg as Form) ; #DEBUG_LINE_NO:34
-    Debug.Trace("Setting Hostile to LPOffMsg", 0) ; #DEBUG_LINE_NO:35
-  ElseIf currentHostileSetting
-    akTerminalRef.AddTextReplacementData("Hostile", Self.LPOnMsg as Form) ; #DEBUG_LINE_NO:37
-    Debug.Trace("Setting Hostile to LPOnMsg", 0) ; #DEBUG_LINE_NO:38
-  EndIf
+  Log("OnTerminalMenuEnter triggered")
+  ; Retrieve and display the current radius.
+  Float currentRadius = LPSetting_Radius.GetValue()
+  akTerminalRef.AddTextReplacementValue("currentRadius", currentRadius)
+  Log("Current radius: " + currentRadius as String)
+  
+  ; Retrieve and display the current destination.
+  Int currentDest = LPSetting_SendTo.GetValue() as Int
+  UpdateDestinationDisplay(akTerminalRef, currentDest)
+  Log("Current destination: " + currentDest as String)
 EndEvent
 
+;-- OnTerminalMenuItemRun Event Handler --
+; Called when a menu item is selected.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-  Debug.Trace("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String, 0) ; #DEBUG_LINE_NO:44
-  If akTerminalBase == Self.CurrentTerminalMenu ; #DEBUG_LINE_NO:45
-    Debug.Trace("Terminal menu matches CurrentTerminalMenu", 0) ; #DEBUG_LINE_NO:46
-    If auiMenuItemID == 0 ; #DEBUG_LINE_NO:47
-      Bool currentStealSetting = Self.LPSetting_AllowStealing.GetValue() as Bool ; #DEBUG_LINE_NO:48
-      Debug.Trace("Current AllowStealing setting: " + currentStealSetting as String, 0) ; #DEBUG_LINE_NO:49
-      If !currentStealSetting ; #DEBUG_LINE_NO:50
-        Self.LPSetting_AllowStealing.SetValue(1.0) ; #DEBUG_LINE_NO:51
-        akTerminalRef.AddTextReplacementData("Stealing", Self.LPOnMsg as Form) ; #DEBUG_LINE_NO:52
-        Debug.Trace("Setting Stealing to LPOnMsg", 0) ; #DEBUG_LINE_NO:53
-      ElseIf currentStealSetting
-        Self.LPSetting_AllowStealing.SetValue(0.0) ; #DEBUG_LINE_NO:55
-        akTerminalRef.AddTextReplacementData("Stealing", Self.LPOffMsg as Form) ; #DEBUG_LINE_NO:56
-        Debug.Trace("Setting Stealing to LPOffMsg", 0) ; #DEBUG_LINE_NO:57
-        Self.LPSetting_StealingIsHostile.SetValue(0.0) ; #DEBUG_LINE_NO:58
-        akTerminalRef.AddTextReplacementData("Hostile", Self.LPOffMsg as Form) ; #DEBUG_LINE_NO:59
-        Debug.Trace("Setting Hostile to LPOffMsg", 0) ; #DEBUG_LINE_NO:60
+  Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
+  If akTerminalBase == CurrentTerminalMenu
+    Log("Terminal menu matches CurrentTerminalMenu")
+    ; Menu item 0: Cycle the radius value.
+    If auiMenuItemID == 0
+      Log("Cycling radius")
+      CycleRadius(akTerminalRef)
+    ; Menu item 1: Cycle the destination setting.
+    ElseIf auiMenuItemID == 1
+      Log("Cycling destination")
+      Int currentDest = LPSetting_SendTo.GetValue() as Int
+      ; Cycle destination: 3 -> 1, 1 -> 2, 2 -> 3.
+      If currentDest == 3
+        LPSetting_SendTo.SetValue(1.0)
+        currentDest = 1
+      ElseIf currentDest == 1
+        LPSetting_SendTo.SetValue(2.0)
+        currentDest = 2
+      ElseIf currentDest == 2
+        LPSetting_SendTo.SetValue(3.0)
+        currentDest = 3
       EndIf
-    ElseIf auiMenuItemID == 1 ; #DEBUG_LINE_NO:62
-      Bool currentHostileSetting = Self.LPSetting_StealingIsHostile.GetValue() as Bool ; #DEBUG_LINE_NO:63
-      Debug.Trace("Current StealingIsHostile setting: " + currentHostileSetting as String, 0) ; #DEBUG_LINE_NO:64
-      If !currentHostileSetting ; #DEBUG_LINE_NO:65
-        Self.LPSetting_StealingIsHostile.SetValue(1.0) ; #DEBUG_LINE_NO:66
-        akTerminalRef.AddTextReplacementData("Hostile", Self.LPOnMsg as Form) ; #DEBUG_LINE_NO:67
-        Debug.Trace("Setting Hostile to LPOnMsg", 0) ; #DEBUG_LINE_NO:68
-      ElseIf currentHostileSetting
-        Self.LPSetting_StealingIsHostile.SetValue(0.0) ; #DEBUG_LINE_NO:70
-        akTerminalRef.AddTextReplacementData("Hostile", Self.LPOffMsg as Form) ; #DEBUG_LINE_NO:71
-        Debug.Trace("Setting Hostile to LPOffMsg", 0) ; #DEBUG_LINE_NO:72
-      EndIf
+      UpdateDestinationDisplay(akTerminalRef, currentDest)
+      Log("New destination: " + currentDest as String)
     EndIf
   EndIf
 EndEvent

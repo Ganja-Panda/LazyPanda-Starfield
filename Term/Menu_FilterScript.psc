@@ -1,81 +1,154 @@
+;======================================================================
+; Script: LZP:Term:Menu_FilterScript
+; Description: This script manages the main menu filter functionality.
+; It updates settings based on user interactions and provides feedback
+; through messages. Debug logging is integrated to assist with troubleshooting.
+;======================================================================
+
 ScriptName LZP:Term:Menu_FilterScript Extends TerminalMenu hidden
 
-;-- Variables ---------------------------------------
+;======================================================================
+; PROPERTIES
+;======================================================================
 
-;-- Properties --------------------------------------
+;-- Autofill Properties --
+; Messages displayed to the player when toggling settings.
 Group Autofill
-  Message Property LPOffMsg Auto Const mandatory
-  Message Property LPOnMsg Auto Const mandatory
+    Message Property LPOffMsg Auto Const mandatory
+    Message Property LPOnMsg Auto Const mandatory
 EndGroup
 
+;-- Menu-Specific Properties --
+; Form lists and other properties specific to the menu.
 Group MenuSpecific
-  FormList Property SettingsGlobals Auto Const mandatory
+    FormList Property SettingsGlobals Auto Const mandatory
 EndGroup
 
+;-- Terminal Properties --
+; References to the current terminal menu.
 Group Terminal
-  TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
+    TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
 EndGroup
 
+; Global variable for debugging
+GlobalVariable Property LPSystem_Debug Auto Const Mandatory
 
-;-- Functions ---------------------------------------
+;======================================================================
+; HELPER FUNCTIONS
+;======================================================================
 
-Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-  Debug.Trace("OnTerminalMenuEnter triggered", 0) ; #DEBUG_LINE_NO:20
-  Int index = 0 ; #DEBUG_LINE_NO:22
-  While index < Self.SettingsGlobals.GetSize() ; #DEBUG_LINE_NO:24
-    GlobalVariable currentSetting = Self.SettingsGlobals.GetAt(index) as GlobalVariable ; #DEBUG_LINE_NO:26
-    Debug.Trace(("Checking setting at index: " + index as String) + " with value: " + currentSetting.GetValue() as String, 0) ; #DEBUG_LINE_NO:27
-    If currentSetting.GetValue() == 1.0 ; #DEBUG_LINE_NO:29
-      akTerminalRef.AddTextReplacementData("State" + index as String, Self.LPOnMsg as Form) ; #DEBUG_LINE_NO:30
-      Debug.Trace(("Setting State" + index as String) + " to LPOnMsg", 0) ; #DEBUG_LINE_NO:31
-    ElseIf currentSetting.GetValue() == 0.0 ; #DEBUG_LINE_NO:32
-      akTerminalRef.AddTextReplacementData("State" + index as String, Self.LPOffMsg as Form) ; #DEBUG_LINE_NO:33
-      Debug.Trace(("Setting State" + index as String) + " to LPOffMsg", 0) ; #DEBUG_LINE_NO:34
+;-- Log Function --
+; Logs a message if the global debug setting is enabled.
+Function Log(String logMsg)
+    If LPSystem_Debug.GetValue() as Bool
+        Debug.Trace(logMsg, 0)
     EndIf
-    index += 1 ; #DEBUG_LINE_NO:37
-  EndWhile
+EndFunction
+
+;-- UpdateSetting Function --
+; Updates a setting and logs the change.
+Function UpdateSetting(Int index, Float newValue, Message newMsg, ObjectReference akTerminalRef)
+    GlobalVariable setting = SettingsGlobals.GetAt(index) as GlobalVariable
+    If setting
+        setting.SetValue(newValue)
+        akTerminalRef.AddTextReplacementData("State" + index as String, newMsg as Form)
+        
+        String stateStr = ""
+        If newValue == 1.0
+            stateStr = "LPOnMsg"
+        Else
+            stateStr = "LPOffMsg"
+        EndIf
+        Log("Setting State" + index as String + " updated to " + stateStr)
+    Else
+        Log("No setting found at index: " + index as String)
+    EndIf
+EndFunction
+
+;======================================================================
+; EVENT HANDLERS
+;======================================================================
+
+;-- OnTerminalMenuEnter Event Handler --
+; Called when the terminal menu is entered.
+Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
+    Log("OnTerminalMenuEnter triggered")
+    Int count = SettingsGlobals.GetSize()
+    Int index = 0
+    While index < count
+        GlobalVariable setting = SettingsGlobals.GetAt(index) as GlobalVariable
+        If setting
+            Float value = setting.GetValue()
+            Message replacementMsg
+            String stateStr = ""
+            If value == 1.0
+                replacementMsg = LPOnMsg
+                stateStr = "LPOnMsg"
+            Else
+                replacementMsg = LPOffMsg
+                stateStr = "LPOffMsg"
+            EndIf
+            akTerminalRef.AddTextReplacementData("State" + index as String, replacementMsg as Form)
+            Log("Setting State" + index as String + " to " + stateStr)
+        Else
+            Log("No setting found at index: " + index as String)
+        EndIf
+        index += 1
+    EndWhile
 EndEvent
 
+;-- OnTerminalMenuItemRun Event Handler --
+; Called when a terminal menu item is run.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-  Debug.Trace("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String, 0) ; #DEBUG_LINE_NO:42
-  If akTerminalBase == Self.CurrentTerminalMenu ; #DEBUG_LINE_NO:44
-    Debug.Trace("Terminal menu matches CurrentTerminalMenu", 0) ; #DEBUG_LINE_NO:45
-    If auiMenuItemID == 0 ; #DEBUG_LINE_NO:47
-      Debug.Trace("Menu item 0 selected: Toggle all settings", 0) ; #DEBUG_LINE_NO:48
-      GlobalVariable AllToggle = Self.SettingsGlobals.GetAt(0) as GlobalVariable ; #DEBUG_LINE_NO:50
-      Debug.Trace("AllToggle current value: " + AllToggle.GetValue() as String, 0) ; #DEBUG_LINE_NO:51
-      Int index = 0 ; #DEBUG_LINE_NO:53
-      If AllToggle.GetValue() == 1.0 ; #DEBUG_LINE_NO:55
-        Debug.Trace("Turning off all settings", 0) ; #DEBUG_LINE_NO:56
-        While index < Self.SettingsGlobals.GetSize() ; #DEBUG_LINE_NO:57
-          GlobalVariable currentSetting = Self.SettingsGlobals.GetAt(index) as GlobalVariable ; #DEBUG_LINE_NO:58
-          currentSetting.SetValue(0.0) ; #DEBUG_LINE_NO:59
-          akTerminalRef.AddTextReplacementData("State" + index as String, Self.LPOffMsg as Form) ; #DEBUG_LINE_NO:60
-          Debug.Trace(("Setting State" + index as String) + " to LPOffMsg", 0) ; #DEBUG_LINE_NO:61
-          index += 1 ; #DEBUG_LINE_NO:62
-        EndWhile
-      ElseIf AllToggle.GetValue() == 0.0 ; #DEBUG_LINE_NO:65
-        Debug.Trace("Turning on all settings", 0) ; #DEBUG_LINE_NO:66
-        While index < Self.SettingsGlobals.GetSize() ; #DEBUG_LINE_NO:67
-          GlobalVariable currentsetting = Self.SettingsGlobals.GetAt(index) as GlobalVariable ; #DEBUG_LINE_NO:68
-          currentsetting.SetValue(1.0) ; #DEBUG_LINE_NO:69
-          akTerminalRef.AddTextReplacementData("State" + index as String, Self.LPOnMsg as Form) ; #DEBUG_LINE_NO:70
-          Debug.Trace(("Setting State" + index as String) + " to LPOnMsg", 0) ; #DEBUG_LINE_NO:71
-          index += 1 ; #DEBUG_LINE_NO:72
-        EndWhile
-      EndIf
-    ElseIf auiMenuItemID != 0 ; #DEBUG_LINE_NO:76
-      Debug.Trace(("Menu item " + auiMenuItemID as String) + " selected: Toggle specific setting", 0) ; #DEBUG_LINE_NO:77
-      GlobalVariable currentsetting = Self.SettingsGlobals.GetAt(auiMenuItemID) as GlobalVariable ; #DEBUG_LINE_NO:78
-      If currentsetting.GetValue() == 0.0 ; #DEBUG_LINE_NO:79
-        currentsetting.SetValue(1.0) ; #DEBUG_LINE_NO:80
-        akTerminalRef.AddTextReplacementData("State" + auiMenuItemID as String, Self.LPOnMsg as Form) ; #DEBUG_LINE_NO:81
-        Debug.Trace(("Setting State" + auiMenuItemID as String) + " to LPOnMsg", 0) ; #DEBUG_LINE_NO:82
-      ElseIf currentsetting.GetValue() == 1.0 ; #DEBUG_LINE_NO:83
-        currentsetting.SetValue(0.0) ; #DEBUG_LINE_NO:84
-        akTerminalRef.AddTextReplacementData("State" + auiMenuItemID as String, Self.LPOffMsg as Form) ; #DEBUG_LINE_NO:85
-        Debug.Trace(("Setting State" + auiMenuItemID as String) + " to LPOffMsg", 0) ; #DEBUG_LINE_NO:86
-      EndIf
+    Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
+    If akTerminalBase != CurrentTerminalMenu
+        Return
     EndIf
-  EndIf
+
+    If auiMenuItemID == 0
+        Log("Menu item 0 selected: Toggle all settings")
+        GlobalVariable allToggle = SettingsGlobals.GetAt(0) as GlobalVariable
+        Float newValue = 0.0
+        If allToggle.GetValue() == 1.0
+            newValue = 0.0
+        Else
+            newValue = 1.0
+        EndIf
+
+        Message newMsg
+        If newValue == 1.0
+            newMsg = LPOnMsg
+        Else
+            newMsg = LPOffMsg
+        EndIf
+
+        Int count = SettingsGlobals.GetSize()
+        Int index = 0
+        While index < count
+            UpdateSetting(index, newValue, newMsg, akTerminalRef)
+            index += 1
+        EndWhile
+    Else
+        Log("Menu item " + auiMenuItemID as String + " selected: Toggle specific setting")
+        GlobalVariable setting = SettingsGlobals.GetAt(auiMenuItemID) as GlobalVariable
+        If setting
+            Float newValue = 0.0
+            If setting.GetValue() == 1.0
+                newValue = 0.0
+            Else
+                newValue = 1.0
+            EndIf
+
+            Message newMsg
+            If newValue == 1.0
+                newMsg = LPOnMsg
+            Else
+                newMsg = LPOffMsg
+            EndIf
+
+            UpdateSetting(auiMenuItemID, newValue, newMsg, akTerminalRef)
+        Else
+            Log("No setting found for menu item " + auiMenuItemID as String)
+        EndIf
+    EndIf
 EndEvent
