@@ -11,6 +11,7 @@
 - Clothing & Apparel
 - Food & Drinks
 - All Resources: manufactured, asteroids, ore, gas geyser and nonlethal harvest.
+
 ✅ Fully Customizable Loot Settings – Choose what gets auto looted via the Lazy Panda - Loot Terminal, automatically added to your inventory.
 
 ✅ Light Master - Mean you can install more than 4000 of them. They don't take up the space of a .esm Full Master Mod.
