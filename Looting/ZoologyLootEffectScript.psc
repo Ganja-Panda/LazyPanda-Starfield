@@ -31,7 +31,7 @@ EndGroup
 ;-- No Fill Settings --
 ; Timer and local flags for looting behavior.
 Int Property lootTimerID = 1 Auto mandatory                    ; Timer identifier for looting
-Float Property lootTimerDelay = 1.0 Auto mandatory             ; Delay between loot cycles
+Float Property lootTimerDelay = 0.5 Auto mandatory             ; Delay between loot cycles
 
 ;======================================================================
 ; DEBUG LOGGING HELPER FUNCTION

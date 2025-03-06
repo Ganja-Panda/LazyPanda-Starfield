@@ -15,6 +15,9 @@ ScriptName LZP:System:UpdateHandlerPlayerAliasScript Extends ReferenceAlias hidd
 ; "0" means no updates have been applied.
 String sUpdatesAppliedVersion = "0"
 
+; Timer for periodically checking the debug global.
+Float fDebugCheckInterval = 10.0 ; Check every 10 seconds.
+
 ;======================================================================
 ; PROPERTIES
 ;======================================================================
@@ -40,6 +43,18 @@ Function Log(String logMsg)
     EndIf
 EndFunction
 
+;-- CheckDebugGlobal Function --
+; Periodically checks if the debug global is set to 1 and triggers OnInit if it is.
+Function CheckDebugGlobal()
+    If LPSystem_Debug.GetValue() as Bool
+        Log("Debugging enabled, initializing SystemScript")
+        SystemScript.OnInit()
+    EndIf
+    ; Schedule the next check.
+    Utility.Wait(fDebugCheckInterval)
+    CheckDebugGlobal()
+EndFunction
+
 ;======================================================================
 ; EVENT HANDLERS
 ;======================================================================
@@ -49,6 +64,8 @@ EndFunction
 Event OnAliasInit()
     Log("OnAliasInit triggered")
     CheckForUpdates()
+    ; Start the timer to check the debug global.
+    CheckDebugGlobal()
 EndEvent
 
 ;-- OnPlayerLoadGame Event Handler --
@@ -56,6 +73,8 @@ EndEvent
 Event OnPlayerLoadGame()
     Log("OnPlayerLoadGame triggered")
     CheckForUpdates()
+    ; Start the timer to check the debug global.
+    CheckDebugGlobal()
 EndEvent
 
 ;======================================================================
@@ -97,12 +116,6 @@ Function CheckForUpdates()
         Log("Updates applied. New applied version: " + sUpdatesAppliedVersion)
     Else
         Log("No updates needed")
-    EndIf
-
-    ; Initialize SystemScript if debugging is enabled
-    If LPSystem_Debug.GetValue() as Bool
-        Log("Debugging enabled, initializing SystemScript")
-        SystemScript.OnInit()
     EndIf
 EndFunction
 

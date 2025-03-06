@@ -23,7 +23,7 @@ EndGroup
 ; Timer and local flags for looting behavior.
 Group NoFill
     Int Property lootTimerID = 1 Auto                           ; Timer identifier for looting
-    Float Property lootTimerDelay = 1.0 Auto                    ; Delay between loot cycles
+    Float Property lootTimerDelay = 0.5 Auto                    ; Delay between loot cycles
 EndGroup
 
 ;======================================================================
