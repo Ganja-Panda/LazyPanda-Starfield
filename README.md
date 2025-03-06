@@ -1,4 +1,4 @@
-# Lazy-Panda---A-Scav-s-Auto-Loot-for-Starfield
+# Lazy Panda-Starfield
 Lazy Panda - A Scav’s Auto Loot for Starfield: Loot everything, manage nothing—explore without limits!
 
 ✅ Auto Loot Everything – Automatically picks up:
