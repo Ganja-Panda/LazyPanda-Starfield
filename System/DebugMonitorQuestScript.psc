@@ -40,7 +40,7 @@ EndEvent
 
 ;-- OnTimer Event Handler --
 ; Called when the timer expires. Checks the debug status and restarts the timer.
-Event OnTimer()
+Event OnTimer(Int aiTimerID)
     CheckDebugStatus()
     StartTimer(checkInterval)
 EndEvent

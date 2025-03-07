@@ -71,16 +71,11 @@ EndFunction
 
 ;-- ForceTerminalRefresh Function --
 ; Forces the terminal to refresh its display.
-Function ForceTerminalRefresh(ObjectReference akTerminalRef)
-    TerminalMenu terminalMenu = akTerminalRef as TerminalMenu
-    If terminalMenu
-        terminalMenu.ClearDynamicMenuItems(akTerminalRef)
-        terminalMenu.ClearDynamicBodyTextItems(akTerminalRef)
-        terminalMenu.AddDynamicMenuItem(akTerminalRef, 0, 0, None)
-        Log("Terminal forced refresh triggered")
-    Else
-        Log("Terminal refresh failed: TerminalMenu not found")
-    EndIf
+Function ForceTerminalRefresh(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
+    akTerminalBase.ClearDynamicMenuItems(akTerminalRef)
+    akTerminalBase.ClearDynamicBodyTextItems(akTerminalRef)
+    akTerminalBase.AddDynamicMenuItem(akTerminalRef, 0, 0, None)
+    Log("Terminal forced refresh triggered")
 EndFunction
 
 ;======================================================================
@@ -117,7 +112,7 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             
             SetAllSettings(newValue)
             UpdateAllToggleDisplay(akTerminalRef, newValue)
-            ForceTerminalRefresh(akTerminalRef)
+            ForceTerminalRefresh(akTerminalBase, akTerminalRef)
         EndIf
     EndIf
 EndEvent

@@ -1,3 +1,10 @@
+;======================================================================
+; Script: LZP:Term:Menu_UtilInventoryScript
+; Description: This script manages the utility inventory menu functionality.
+; It updates settings based on user interactions and provides feedback
+; through messages. Debug logging is integrated to assist with troubleshooting.
+;======================================================================
+
 ScriptName LZP:Term:Menu_UtilInventoryScript Extends TerminalMenu hidden
 
 ;======================================================================
