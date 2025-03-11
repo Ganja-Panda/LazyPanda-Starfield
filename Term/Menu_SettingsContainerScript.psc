@@ -24,7 +24,7 @@ EndGroup
 ; Additional properties including the current terminal menu.
 Group Misc
     TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
-    GlobalVariable Property LPSystem_Debug Auto Const mandatory
+    GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory
 EndGroup
 
 ;======================================================================
@@ -34,7 +34,7 @@ EndGroup
 ;-- Log Function --
 ; Logs a message if the global debug setting is enabled.
 Function Log(String logMsg)
-    If LPSystem_Debug.GetValue() as Bool
+    If LPSystemUtil_Debug.GetValue() as Bool
         Debug.Trace(logMsg, 0)
     EndIf
 EndFunction

@@ -10,7 +10,7 @@ Group EffectSpecific_Mandatory
     Perk Property ActivePerk Auto Const mandatory              ; Perk required for activating the loot effect
     GlobalVariable Property LPEnableCont_Space Auto Const mandatory ; Enable continuous space looting
     GlobalVariable Property LPSystemUtil_ToggleLooting Auto Const mandatory ; Toggle looting system
-    GlobalVariable Property LPSystem_Debug Auto Const mandatory ; Global debug flag for logging
+    GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory ; Global debug flag for logging
 EndGroup
 
 ;-- Destination Locations --
@@ -32,7 +32,7 @@ EndGroup
 
 ; Logs a message if the global debug setting is enabled.
 Function Log(String logMsg)
-    If LPSystem_Debug.GetValue() as Bool
+    If LPSystemUtil_Debug.GetValue() as Bool
         Debug.Trace(logMsg, 0)
     EndIf
 EndFunction

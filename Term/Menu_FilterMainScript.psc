@@ -30,7 +30,7 @@ Group Terminal
     TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
 EndGroup
 
-GlobalVariable Property LPSystem_Debug Auto Const Mandatory
+GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
 
 ;======================================================================
 ; HELPER FUNCTIONS
@@ -39,7 +39,7 @@ GlobalVariable Property LPSystem_Debug Auto Const Mandatory
 ;-- Log Function --
 ; Logs a message if the global debug setting is enabled.
 Function Log(String logMsg)
-    If LPSystem_Debug.GetValue() as Bool
+    If LPSystemUtil_Debug.GetValue() as Bool
         Debug.Trace(logMsg, 0)
     EndIf
 EndFunction

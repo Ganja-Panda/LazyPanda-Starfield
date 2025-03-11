@@ -14,7 +14,7 @@ ScriptName LZP:Potion:AidLootToggleScript Extends ActiveMagicEffect hidden
 ;-- Global Variables --
 ; Global variables that control the looting system and debug logging.
 GlobalVariable Property LPSystemUtil_ToggleLooting Auto
-GlobalVariable Property LPSystem_Debug Auto
+GlobalVariable Property LPSystemUtil_Debug Auto
 
 ;-- Messages --
 ; Messages displayed to the player when toggling the looting system.
@@ -31,7 +31,7 @@ Potion Property LP_Aid_ToggleLooting Auto
 
 ; Logs a message if the global debug setting is enabled.
 Function Log(String logMsg)
-    If LPSystem_Debug.GetValue() as Bool
+    If LPSystemUtil_Debug.GetValue() as Bool
         Debug.Trace(logMsg, 0)
     EndIf
 EndFunction

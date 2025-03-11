@@ -18,7 +18,7 @@ Actor Property PlayerRef Auto Const Mandatory
 ObjectReference Property LP_TerminalDummyRef Auto Const Mandatory
 Weapon Property LP_TerminalControlWeapon Auto Const Mandatory
 Potion Property LP_Aid_ToggleLooting Auto Const Mandatory
-GlobalVariable Property LPSystem_Debug Auto Const Mandatory
+GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
 
 ;======================================================================
 ; UTILITY FUNCTIONS
@@ -27,7 +27,7 @@ GlobalVariable Property LPSystem_Debug Auto Const Mandatory
 ;-- Log Function --
 ; Logs a message if the global debug setting is enabled.
 Function Log(String logMsg)
-    If LPSystem_Debug.GetValue() as Bool
+    If LPSystemUtil_Debug.GetValue() as Bool
         Debug.Trace(logMsg, 0)
     EndIf
 EndFunction

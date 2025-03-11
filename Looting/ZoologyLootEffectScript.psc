@@ -25,7 +25,7 @@ EndGroup
 ; Global variables that control looting settings such as search radius and debug logging.
 Group Settings_Autofill
     GlobalVariable Property LPSetting_Radius Auto Const        ; Global setting for loot search radius
-    GlobalVariable Property LPSystem_Debug Auto Const          ; Global debug flag for logging
+    GlobalVariable Property LPSystemUtil_Debug Auto Const          ; Global debug flag for logging
 EndGroup
 
 ;-- No Fill Settings --
@@ -39,7 +39,7 @@ Float Property lootTimerDelay = 0.5 Auto mandatory             ; Delay between l
 
 ; Logs a message if the global debug setting is enabled.
 Function Log(String logMsg)
-    If LPSystem_Debug.GetValue()
+    If LPSystemUtil_Debug.GetValue()
         Debug.Trace(logMsg, 0)
     EndIf
 EndFunction

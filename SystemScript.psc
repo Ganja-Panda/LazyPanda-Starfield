@@ -14,8 +14,8 @@ ScriptName LZP:SystemScript Extends ScriptObject
 ;-- DebugLog Function --
 ; Logs a message if the global debug setting is enabled.
 Function DebugLog(String logMsg) Global
-    GlobalVariable LPSystem_Debug = Game.GetFormFromFile(0x0ABC, "LazyPanda.esm") as GlobalVariable
-    If LPSystem_Debug.GetValue() as Bool
+    GlobalVariable LPSystemUtil_Debug = Game.GetFormFromFile(0x0ABC, "LazyPanda.esm") as GlobalVariable
+    If LPSystemUtil_Debug.GetValue() as Bool
         Debug.Trace(logMsg, 0)
     EndIf
 EndFunction
@@ -96,7 +96,7 @@ EndFunction
 ;-- ReportStatus Function --
 ; Reports the status of various perks, magic effects, and global variables.
 Function ReportStatus() Global
-    GlobalVariable LPSystem_Debug = Game.GetFormFromFile(0x0ABC, "LazyPanda.esm") as GlobalVariable
+    GlobalVariable LPSystemUtil_Debug = Game.GetFormFromFile(0x0ABC, "LazyPanda.esm") as GlobalVariable
     DebugLog("[Lazy Panda] ReportStatus called")
     FormList LPSystem_Script_Perks = Game.GetFormFromFile(0x08C8, "LazyPanda.esm") as FormList
     Int perkCount = LPSystem_Script_Perks.GetSize()
@@ -114,12 +114,12 @@ Function ReportStatus() Global
         EndIf
         I += 1
     EndWhile
-    FormList LPSystem_Debug_MagicEffects = Game.GetFormFromFile(0x08E1, "LazyPanda.esm") as FormList
-    Int magicEffectCount = LPSystem_Debug_MagicEffects.GetSize()
+    FormList LPSystemUtil_Debug_MagicEffects = Game.GetFormFromFile(0x08E1, "LazyPanda.esm") as FormList
+    Int magicEffectCount = LPSystemUtil_Debug_MagicEffects.GetSize()
     DebugLog("[Lazy Panda] Reporting Magic Effects:")
     Int j = 0
     While j < magicEffectCount
-        MagicEffect currentMagicEffect = LPSystem_Debug_MagicEffects.GetAt(j) as MagicEffect
+        MagicEffect currentMagicEffect = LPSystemUtil_Debug_MagicEffects.GetAt(j) as MagicEffect
         If currentMagicEffect
             Bool hasMagicEffect = Game.GetPlayer().hasMagicEffect(currentMagicEffect)
             If hasMagicEffect

@@ -26,7 +26,7 @@ Group Menu_UtilTransferProperties
   Message Property LPResourcesToShipMsg Auto Const Mandatory
   Message Property LPValuablesToPlayerMsg Auto Const Mandatory
   Message Property LPNoItemsMsg Auto Const Mandatory
-  GlobalVariable Property LPSystem_Debug Auto Const Mandatory
+  GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
 EndGroup
 
 ;======================================================================
@@ -36,7 +36,7 @@ EndGroup
 ;-- Log Function --
 ; Logs a message if the global debug setting is enabled.
 Function Log(String logMsg)
-  If LPSystem_Debug.GetValue() as Bool
+  If LPSystemUtil_Debug.GetValue() as Bool
     Debug.Trace("[LZP:UtilTransfer] " + logMsg, 0)
   EndIf
 EndFunction

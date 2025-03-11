@@ -13,7 +13,7 @@ ScriptName LZP:System:DebugMonitorQuestScript Extends Quest
 
 ;-- Global Variables --
 ; Global variables that control the debug system.
-GlobalVariable Property LPSystem_Debug Auto Const Mandatory
+GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
 ReferenceAlias Property PlayerAlias Auto Const Mandatory
 
 ;-- Timer Properties --
@@ -59,7 +59,7 @@ EndFunction
 ; Checks the current debug status and triggers updates if the status changes.
 Function CheckDebugStatus()
     ; Convert the global variable's value to boolean (non-zero means true)
-    Bool currentDebugStatus = (LPSystem_Debug.GetValue() != 0.0)
+    Bool currentDebugStatus = (LPSystemUtil_Debug.GetValue() != 0.0)
     If currentDebugStatus != bDebugEnabled
         bDebugEnabled = currentDebugStatus
         If bDebugEnabled

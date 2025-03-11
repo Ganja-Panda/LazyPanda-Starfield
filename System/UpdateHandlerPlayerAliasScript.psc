@@ -28,8 +28,7 @@ Actor Property PlayerRef Auto Const Mandatory
 FormList Property LPSystem_Script_Perks Auto Const Mandatory
 GlobalVariable Property LPVersion_Major Auto Const Mandatory
 GlobalVariable Property LPVersion_Minor Auto Const Mandatory
-GlobalVariable Property LPSystem_Debug Auto Const Mandatory
-ScriptObject Property SystemScript Auto ; Reference to the SystemScript
+GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
 
 ;======================================================================
 ; UTILITY FUNCTIONS
@@ -38,17 +37,16 @@ ScriptObject Property SystemScript Auto ; Reference to the SystemScript
 ;-- Log Function --
 ; Logs a message if the global debug setting is enabled.
 Function Log(String logMsg)
-    If LPSystem_Debug.GetValue() as Bool
+    If LPSystemUtil_Debug.GetValue() as Bool
         Debug.Trace(logMsg, 0)
     EndIf
 EndFunction
 
 ;-- CheckDebugGlobal Function --
-; Periodically checks if the debug global is set to 1 and triggers OnInit if it is.
+; Periodically checks if the debug global is set to 1 and logs a message if it is.
 Function CheckDebugGlobal()
-    If LPSystem_Debug.GetValue() as Bool
-        Log("Debugging enabled, initializing SystemScript")
-        SystemScript.OnInit()
+    If LPSystemUtil_Debug.GetValue() as Bool
+        Log("Debugging enabled")
     EndIf
     ; Schedule the next check.
     Utility.Wait(fDebugCheckInterval)

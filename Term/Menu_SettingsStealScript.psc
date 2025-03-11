@@ -12,11 +12,11 @@ EndGroup
 
 Group Misc
   TerminalMenu Property CurrentTerminalMenu Auto Const Mandatory
-  GlobalVariable Property LPSystem_Debug Auto Const Mandatory
+  GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
 EndGroup
 
 Function Log(String logMsg)
-  If LPSystem_Debug.GetValue() as Bool
+  If LPSystemUtil_Debug.GetValue() as Bool
     Debug.Trace("[LZP:Settings] " + logMsg, 0)
   EndIf
 EndFunction

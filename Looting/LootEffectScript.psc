@@ -87,9 +87,7 @@ Group Misc
     Keyword Property SpaceshipInventoryContainer Auto Const         ; Keyword for spaceship inventory containers
     Armor Property LP_Skin_Naked_NOTPLAYABLE Auto Const mandatory       ; Armor for unequipping corpses (non-playable)
     Race Property HumanRace Auto Const mandatory                       ; Standard human race
-    Race Property SFBGS001_HumanRace Auto Const                         ; Alternate human race variant
-    Race Property SFBGS003_HumanRace Auto Const                         ; Another human race variant
-    GlobalVariable Property LPSystem_Debug Auto Const mandatory         ; Global debug flag for logging
+    GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory         ; Global debug flag for logging
 EndGroup
 
 ;-- Destination Locations --
@@ -104,7 +102,7 @@ EndGroup
 ;-- No Loot Locations --
 ; Locations where loot should not be taken from.
 Group NoLootLocations
-    FormList Property LPSystem_NoLootLocations Auto Const               ; List of locations where looting is disabled
+    FormList Property LPFilter_NoLootLocations Auto Const               ; List of locations where looting is disabled
     LocationAlias Property playerShipInterior Auto Const mandatory        ; Alias for the player's ship interior location
 EndGroup
 
@@ -125,14 +123,35 @@ EndGroup
 
 ; Logs a message if the global debug setting is enabled.
 Function Log(String logMsg)
-    If LPSystem_Debug.GetValue() as Bool
+    If LPSystemUtil_Debug.GetValue() as Bool
         Debug.Trace(logMsg, 0)
     EndIf
 EndFunction
 
 ;======================================================================
+; SCRIPT VARIABLES
+;======================================================================
+
+Race SFBGS001_HumanRace
+Race SFBGS003_HumanRace
+Bool bIsShatteredSpaceLoaded
+Bool bIsTrackerAllianceLoaded
+;======================================================================
 ; EVENT HANDLERS
 ;======================================================================
+
+;-- OnInit Event Handler --
+; Called when the script is initialized. Initializes the Shattered Space and Tracker Alliance human races if the plugin is loaded.
+Event OnInit()
+    Log("[Lazy Panda] OnInit triggered")
+    bIsShatteredSpaceLoaded = (Game.IsPluginInstalled("ShatteredSpace.esm") != (-1)) as Bool
+    bIsTrackerAllianceLoaded = (Game.IsPluginInstalled("TrackerAlliance.esm") != (-1)) as Bool
+    If bIsShatteredSpaceLoaded
+        SFBGS001_HumanRace = Game.GetFormFromFile(0x01006529, "ShatteredSpace.esm") as Race
+    ElseIf bIsTrackerAllianceLoaded
+        SFBGS003_HumanRace = Game.GetFormFromFile(0x0000009D, "SFBGS003.esm") as Race  ; Replace 0x00067890 with the actual form ID
+    EndIf
+EndEvent
 
 ;-- OnEffectStart Event Handler --
 ; Called when the magic effect starts. Begins the loot timer.
@@ -213,7 +232,8 @@ Function ProcessLoot(ObjectReference[] theLootArray)
             Log("[Lazy Panda] Processing loot: " + currentLoot as String)
             ; Determine how to process the loot based on its type:
             If IsCorpse(currentLoot)
-                If bLootDeadActor && CanTakeLoot(currentLoot)
+               Actor corpseActor = currentLoot as Actor
+                If bLootDeadActor && corpseActor.IsDead() && CanTakeLoot(currentLoot)
                     Log("[Lazy Panda] Looting Dead Actor")
                     ProcessCorpse(currentLoot, theLooterRef)
                 EndIf
@@ -257,9 +277,11 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference theLooter)
     Actor corpseActor = theCorpse as Actor
     If corpseActor != None
         Race corpseRace = corpseActor.GetRace()
-        ; Check if the Shattered Space plugin is installed to determine corpse processing.
-        Bool bIsShatteredSpaceLoaded = (Game.IsPluginInstalled("ShatteredSpace.esm") != (-1)) as Bool
-        If bIsShatteredSpaceLoaded && (corpseRace == HumanRace || corpseRace == SFBGS001_HumanRace || corpseRace == SFBGS003_HumanRace)
+        ; Check if the Shattered Space or Tracker Alliance plugin is installed to determine corpse processing.
+        If bIsShatteredSpaceLoaded && (corpseRace == HumanRace || corpseRace == SFBGS001_HumanRace)
+            corpseActor.UnequipAll()
+            corpseActor.EquipItem(LP_Skin_Naked_NOTPLAYABLE as Form, False, False)
+        ElseIf bIsTrackerAllianceLoaded && corpseRace == SFBGS003_HumanRace
             corpseActor.UnequipAll()
             corpseActor.EquipItem(LP_Skin_Naked_NOTPLAYABLE as Form, False, False)
         ElseIf corpseRace == HumanRace
@@ -356,7 +378,7 @@ Bool Function CanTakeLoot(ObjectReference theLoot)
     ElseIf IsPlayerStealing(theLoot) && !allowStealing
         Log("[Lazy Panda] Is Stealing")
         bCanTake = False
-    ElseIf IsInRestrictedLocation(PlayerRef)
+    ElseIf IsInRestrictedLocation()
         Log("[Lazy Panda] In Restricted Location")
         bCanTake = False
     EndIf
@@ -366,18 +388,18 @@ Bool Function CanTakeLoot(ObjectReference theLoot)
 EndFunction
 
 ;-- IsInRestrictedLocation Function --
-; Checks if a reference is located within any restricted looting locations.
-Bool Function IsInRestrictedLocation(ObjectReference theRef)
-    FormList restrictedLocations = LPSystem_NoLootLocations
+; Checks if the player is located within any restricted looting locations.
+Bool Function IsInRestrictedLocation()
+    FormList restrictedLocations = LPFilter_NoLootLocations
     Int index = 0
     While index < restrictedLocations.GetSize()
-        If theRef.IsInLocation(restrictedLocations.GetAt(index) as Location)
+        If PlayerRef.IsInLocation(restrictedLocations.GetAt(index) as Location)
             Return True
         EndIf
         index += 1
     EndWhile
-    ; Additionally, check if the reference is inside the player's ship interior and ship looting is disallowed.
-    If theRef.IsInLocation(playerShipInterior.GetLocation()) && !CanLootShip()
+    ; Additionally, check if the player is inside the player's ship interior and ship looting is disallowed.
+    If PlayerRef.IsInLocation(playerShipInterior.GetLocation()) && !CanLootShip()
         Return True
     EndIf
     Return False
