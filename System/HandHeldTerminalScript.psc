@@ -58,20 +58,7 @@ EndFunction
 Event OnAliasInit()
     Log("OnAliasInit triggered")
     ValidateProperties()
-    GiveItem()
 EndEvent
-
-;-- GiveItem Function --
-; Gives the toggle looting item to the player if they don't already have it.
-Function GiveItem()
-    Log("GiveItem called")
-    If PlayerRef.GetItemCount(LP_Aid_ToggleLooting) == 0
-        Log("Adding Aid Toggle Looting to player")
-        PlayerRef.AddItem(LP_Aid_ToggleLooting, 1, False)
-    Else
-        Log("Player already has Aid Toggle Looting")
-    EndIf
-EndFunction
 
 ;-- OnItemEquipped Event Handler --
 ; Called when an item is equipped. Activates the terminal dummy if the control weapon is equipped.
