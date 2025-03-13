@@ -26,7 +26,7 @@ EndFunction
 ; EVENT HANDLERS
 ;======================================================================
 Event OnDeath(ObjectReference akSenderRef, ObjectReference akKiller)
-    Log("[Lazy Panda] OnDeath event fired for alias in collection: " + akSenderRef)
+    Debug.Notification("[Lazy Panda] OnDeath event fired for alias in collection: " + akSenderRef)
     
     ; Wait briefly to ensure the game finalizes the death state.
     Utility.Wait(0.5)
@@ -37,7 +37,7 @@ Event OnDeath(ObjectReference akSenderRef, ObjectReference akKiller)
         ; Call the processor script using the player as the looter.
         CorpseProcessorScript.ProcessCorpse(corpseRef, Game.GetPlayer())
     Else
-        Log("[Lazy Panda] Alias did not return a valid ObjectReference.")
+        Debug.Notification("[Lazy Panda] Alias did not return a valid ObjectReference.")
     EndIf
 EndEvent
 

@@ -89,7 +89,7 @@ EndFunction
 ;-- ProcessCorpse Function --
 ; Handles processing of a corpse object including unequipping, looting, and removal.
 Function ProcessCorpse(ObjectReference theCorpse, ObjectReference theLooter)
-    Log("[Lazy Panda] ProcessCorpse called with corpse: " + theCorpse as String)
+    Debug.Notification("[Lazy Panda] ProcessCorpse called with corpse: " + theCorpse as String)
     Bool takeAll = LPSetting_ContTakeAll.GetValue() as Bool
     bTakeAll = takeAll
      
@@ -103,7 +103,7 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference theLooter)
             corpseActor.EquipItem(LP_Skin_Naked_NOTPLAYABLE as Form, False, False)
         EndIf
     Else
-        Log("[Lazy Panda] Corpse is not an Actor; skipping actor-specific processing.")
+        Debug.Notification("[Lazy Panda] Corpse is not an Actor; skipping actor-specific processing.")
     EndIf
 
     Utility.Wait(0.1)
@@ -119,7 +119,7 @@ EndFunction
 ;-- RemoveCorpse Function --
 ; Removes the corpse from the world if the setting is enabled.
 Function RemoveCorpse(ObjectReference theCorpse)
-    Log("[Lazy Panda] RemoveCorpse called with corpse: " + theCorpse as String)
+    Debug.Notification("[Lazy Panda] RemoveCorpse called with corpse: " + theCorpse as String)
     If LPSetting_RemoveCorpses.GetValue() as Bool
         theCorpse.DisableNoWait(True)
     EndIf
@@ -128,7 +128,7 @@ EndFunction
 ;-- ProcessFilteredContainerItems Function --
 ; Processes container items using filtering lists to remove specific items.
 Function ProcessFilteredContainerItems(ObjectReference theContainer, ObjectReference theLooter)
-    Log("[Lazy Panda] ProcessFilteredContainerItems called with container: " + theContainer as String)
+    Debug.Notification("[Lazy Panda] ProcessFilteredContainerItems called with container: " + theContainer as String)
     Int listSize = LPSystem_Looting_Lists.GetSize()
     Int index = 0
     While index < listSize
@@ -146,19 +146,19 @@ EndFunction
 ;-- GetDestRef Function --
 ; Determines the destination reference for looted items based on the global "Send To" setting.
 ObjectReference Function GetDestRef()
-    Log("[Lazy Panda] GetDestRef called")
+    Debug.Notification("[Lazy Panda] GetDestRef called")
     Int destination = LPSetting_SendTo.GetValue() as Int
     If destination == 1
-        Log("[Lazy Panda] Destination: Player")
+        Debug.Notification("[Lazy Panda] Destination: Player")
         Return PlayerRef
     ElseIf destination == 2
-        Log("[Lazy Panda] Destination: Lodge Safe")
+        Debug.Notification("[Lazy Panda] Destination: Lodge Safe")
         Return LodgeSafeRef
     ElseIf destination == 3
-        Log("[Lazy Panda] Destination: Dummy Holding")
+        Debug.Notification("[Lazy Panda] Destination: Dummy Holding")
         Return LPDummyHoldingRef
     Else
-        Log("[Lazy Panda] Destination: Unknown")
+        Debug.Notification("[Lazy Panda] Destination: Unknown")
         Return None
     EndIf
 EndFunction
