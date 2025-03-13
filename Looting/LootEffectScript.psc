@@ -112,7 +112,7 @@ EndGroup
 ; Timer and local flags for looting behavior.
 Group NoFill
     Int Property lootTimerID = 1 Auto                                  ; Timer identifier for looting
-    Float Property lootTimerDelay = 1.0 Auto                             ; Delay between loot cycles
+    Float Property lootTimerDelay = 0.1 Auto                             ; Delay between loot cycles
     Bool Property bAllowStealing = False Auto                            ; Local flag to allow stealing
     Bool Property bStealingIsHostile = False Auto                         ; Local flag indicating hostile stealing
     Bool Property bTakeAll = False Auto                                   ; Local flag to loot all items from a container
