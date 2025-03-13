@@ -11,9 +11,9 @@ ScriptName LZP:SystemScript Extends ScriptObject
 ; HELPER FUNCTIONS
 ;======================================================================
 
-;-- DebugLog Function --
+;-- Log Function --
 ; Logs a message if the global debug setting is enabled.
-Function DebugLog(String logMsg) Global
+Function Log(String logMsg) Global
     GlobalVariable LPSystemUtil_Debug = Game.GetFormFromFile(0x0ABC, "LazyPanda.esm") as GlobalVariable
     If LPSystemUtil_Debug.GetValue() as Bool
         Debug.Trace(logMsg, 0)
@@ -27,7 +27,7 @@ EndFunction
 ;-- OpenHoldingInventory Function --
 ; Opens the inventory of the dummy holding container.
 Function OpenHoldingInventory() Global
-    DebugLog("[Lazy Panda] OpenHoldingInventory called")
+    Log("[Lazy Panda] OpenHoldingInventory called")
     ObjectReference LPDummyHoldingRef = Game.GetFormFromFile(0x09C1, "LazyPanda.esm") as ObjectReference
     (LPDummyHoldingRef as Actor).OpenInventory(True, None, False)
 EndFunction
@@ -35,7 +35,7 @@ EndFunction
 ;-- OpenLodgeSafe Function --
 ; Opens the lodge safe container.
 Function OpenLodgeSafe() Global
-    DebugLog("[Lazy Panda] OpenLodgeSafe called")
+    Log("[Lazy Panda] OpenLodgeSafe called")
     ObjectReference LodgeSafeRef = Game.GetForm(0x269A1) as ObjectReference
     LodgeSafeRef.Activate(Game.GetPlayer() as ObjectReference, False)
 EndFunction
@@ -43,7 +43,7 @@ EndFunction
 ;-- OpenShipCargo Function --
 ; Opens the inventory of the player's ship.
 Function OpenShipCargo() Global
-    DebugLog("[Lazy Panda] OpenShipCargo called")
+    Log("[Lazy Panda] OpenShipCargo called")
     Quest SQ_PlayerShip = Game.GetForm(0x17452) as Quest
     ReferenceAlias PlayerHomeShip = SQ_PlayerShip.GetAlias(16) as ReferenceAlias
     spaceshipreference PlayerShip = PlayerHomeShip.GetRef() as spaceshipreference
@@ -53,7 +53,7 @@ EndFunction
 ;-- MoveAllToShip Function --
 ; Moves all items from the dummy holding container to the player's ship.
 Function MoveAllToShip() Global
-    DebugLog("[Lazy Panda] MoveAllToShip called")
+    Log("[Lazy Panda] MoveAllToShip called")
     Message LPAllItemsToShipMsg = Game.GetFormFromFile(0x091D, "LazyPanda.esm") as Message
     ObjectReference LPDummyHoldingRef = Game.GetFormFromFile(0x09C1, "LazyPanda.esm") as ObjectReference
     Quest SQ_PlayerShip = Game.GetForm(0x17452) as Quest
@@ -66,7 +66,7 @@ EndFunction
 ;-- MoveResourcesToShip Function --
 ; Moves resources from both the dummy holding container and the player to the ship.
 Function MoveResourcesToShip() Global
-    DebugLog("[Lazy Panda] MoveResourcesToShip called")
+    Log("[Lazy Panda] MoveResourcesToShip called")
     Message LPResourcesToShipMsg = Game.GetFormFromFile(0x091E, "LazyPanda.esm") as Message
     FormList LPSystem_Script_Resources = Game.GetFormFromFile(0x08C9, "LazyPanda.esm") as FormList
     Quest SQ_PlayerShip = Game.GetForm(0x17452) as Quest
@@ -81,7 +81,7 @@ EndFunction
 ;-- MoveValuablesToPlayer Function --
 ; Moves valuables from the player's ship and the dummy holding container to the player.
 Function MoveValuablesToPlayer() Global
-    DebugLog("[Lazy Panda] MoveValuablesToPlayer called")
+    Log("[Lazy Panda] MoveValuablesToPlayer called")
     Message LPValuablesToPlayerMsg = Game.GetFormFromFile(0x091F, "LazyPanda.esm") as Message
     FormList LPSystem_Script_Valuables = Game.GetFormFromFile(0x08CA, "LazyPanda.esm") as FormList
     Quest SQ_PlayerShip = Game.GetForm(0x17452) as Quest
@@ -93,51 +93,61 @@ Function MoveValuablesToPlayer() Global
     LPValuablesToPlayerMsg.Show(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 EndFunction
 
+Function OpenTerminal()
+    Log("[Lazy Panda] OpenTerminal called")
+    ObjectReference TerminalRef = Game.GetFormFromFile(0x08CD, "LazyPanda.esm") as ObjectReference
+    If TerminalRef
+        TerminalRef.Activate(Game.GetPlayer() as ObjectReference, False)
+    Else
+        Log("[Lazy Panda] TerminalRef is invalid")
+    EndIf
+EndFunction
+
 ;-- ReportStatus Function --
 ; Reports the status of various perks, magic effects, and global variables.
 Function ReportStatus() Global
     GlobalVariable LPSystemUtil_Debug = Game.GetFormFromFile(0x0ABC, "LazyPanda.esm") as GlobalVariable
-    DebugLog("[Lazy Panda] ReportStatus called")
+    Log("[Lazy Panda] ReportStatus called")
     FormList LPSystem_Script_Perks = Game.GetFormFromFile(0x08C8, "LazyPanda.esm") as FormList
     Int perkCount = LPSystem_Script_Perks.GetSize()
-    DebugLog("[Lazy Panda] Reporting Perks:")
+    Log("[Lazy Panda] Reporting Perks:")
     Int I = 0
     While I < perkCount
         Perk currentPerk = LPSystem_Script_Perks.GetAt(I) as Perk
         If currentPerk
             Bool hasPerk = Game.GetPlayer().hasPerk(currentPerk)
             If hasPerk
-                DebugLog(("[Lazy Panda] Perk: " + currentPerk as String) + " - Enabled: " + hasPerk as String)
+                Log(("[Lazy Panda] Perk: " + currentPerk as String) + " - Enabled: " + hasPerk as String)
             Else
-                DebugLog(("[Lazy Panda] Perk: " + currentPerk as String) + " - Disabled")
+                Log(("[Lazy Panda] Perk: " + currentPerk as String) + " - Disabled")
             EndIf
         EndIf
         I += 1
     EndWhile
     FormList LPSystemUtil_Debug_MagicEffects = Game.GetFormFromFile(0x08E1, "LazyPanda.esm") as FormList
     Int magicEffectCount = LPSystemUtil_Debug_MagicEffects.GetSize()
-    DebugLog("[Lazy Panda] Reporting Magic Effects:")
+    Log("[Lazy Panda] Reporting Magic Effects:")
     Int j = 0
     While j < magicEffectCount
         MagicEffect currentMagicEffect = LPSystemUtil_Debug_MagicEffects.GetAt(j) as MagicEffect
         If currentMagicEffect
             Bool hasMagicEffect = Game.GetPlayer().hasMagicEffect(currentMagicEffect)
             If hasMagicEffect
-                DebugLog(("[Lazy Panda] Magic Effect: " + currentMagicEffect as String) + " - Enabled: " + hasMagicEffect as String)
+                Log(("[Lazy Panda] Magic Effect: " + currentMagicEffect as String) + " - Enabled: " + hasMagicEffect as String)
             Else
-                DebugLog(("[Lazy Panda] Magic Effect: " + currentMagicEffect as String) + " - Disabled")
+                Log(("[Lazy Panda] Magic Effect: " + currentMagicEffect as String) + " - Disabled")
             EndIf
         EndIf
         j += 1
     EndWhile
     FormList LPSystem_Loot_Globals = Game.GetFormFromFile(0x08B9, "LazyPanda.esm") as FormList
     Int globalCount = LPSystem_Loot_Globals.GetSize()
-    DebugLog("[Lazy Panda] Reporting Globals:")
+    Log("[Lazy Panda] Reporting Globals:")
     Int k = 0
     While k < globalCount
         GlobalVariable currentGlobal = LPSystem_Loot_Globals.GetAt(k) as GlobalVariable
         If currentGlobal
-            DebugLog(("[Lazy Panda] Global: " + currentGlobal as String) + " - Value: " + currentGlobal.GetValue() as String)
+            Log(("[Lazy Panda] Global: " + currentGlobal as String) + " - Value: " + currentGlobal.GetValue() as String)
         EndIf
         k += 1
     EndWhile
