@@ -120,6 +120,11 @@ Group NoFill
 EndGroup
 
 ;======================================================================
+; SCRIPT VARIABLES
+;======================================================================
+Bool bIsLooting = False ; Flag indicating if the looting process is active
+
+;======================================================================
 ; DEBUG LOGGING HELPER FUNCTION
 ;======================================================================
 
@@ -151,8 +156,15 @@ EndEvent
 ; Called when the loot timer expires. Checks if the player has the required perk before executing looting.
 Event OnTimer(Int aiTimerID)
     Log("[Lazy Panda] OnTimer triggered with TimerID: " + aiTimerID as String)
+    
     If aiTimerID == lootTimerID && Game.GetPlayer().HasPerk(ActivePerk)
-        ExecuteLooting()
+        If !bIsLooting  ; Prevent stacking loot calls
+            bIsLooting = True
+            ExecuteLooting()
+            bIsLooting = False
+        Else
+            Log("[Lazy Panda] Looting skipped, already running.")
+        EndIf
     EndIf
 EndEvent
 
@@ -270,7 +282,7 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference theLooter)
             corpseActor.EquipItem(LP_Skin_Naked_NOTPLAYABLE as Form, False, False)
         EndIf
     EndIf
-    Utility.Wait(0.5)
+    Utility.Wait(0.1)
     ; Loot the corpse based on the take-all setting.
     If takeAll
         theCorpse.RemoveAllItems(GetDestRef(), False, False)
