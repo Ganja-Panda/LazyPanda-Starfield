@@ -1,74 +1,52 @@
-;======================================================================
-; Script: LZP:Term:Menu_SettingsAlwaysLootScript
-; Description: This script manages the settings for the Always Loot feature.
-; It updates settings based on user interactions and provides feedback
-; through messages. Debug logging is integrated to assist with troubleshooting.
-;======================================================================
-
 ScriptName LZP:Term:Menu_SettingsAlwaysLootScript Extends TerminalMenu hidden
 
-;======================================================================
-; PROPERTIES
-;======================================================================
+;-- Variables ---------------------------------------
 
-;-- Terminal Menu Properties --
-; Properties required for the terminal menu functionality.
+;-- Properties --------------------------------------
 TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
 Form[] Property SettingsGlobals Auto Const mandatory
 Message Property LPOffMsg Auto Const mandatory
 Message Property LPOnMsg Auto Const mandatory
 
-;======================================================================
-; HELPER FUNCTIONS
-;======================================================================
+;-- Functions ---------------------------------------
 
-;-- UpdateSettingDisplay Function --
-; Updates the display message for a setting based on its current value.
 Function UpdateSettingDisplay(Int index, ObjectReference akTerminalRef)
-    GlobalVariable setting = SettingsGlobals[index] as GlobalVariable
-    If setting
-        Float value = setting.GetValue()
-        Message replacementMsg
-        If value == 1.0
-            replacementMsg = LPOnMsg
-        Else
-            replacementMsg = LPOffMsg
-        EndIf
-        akTerminalRef.AddTextReplacementData("State" + index as String, replacementMsg as Form)
+  GlobalVariable setting = SettingsGlobals[index] as GlobalVariable ; #DEBUG_LINE_NO:28
+  If setting ; #DEBUG_LINE_NO:29
+    Float value = setting.GetValue() ; #DEBUG_LINE_NO:30
+    Message replacementMsg = None ; #DEBUG_LINE_NO:31
+    If value == 1.0 ; #DEBUG_LINE_NO:32
+      replacementMsg = LPOnMsg ; #DEBUG_LINE_NO:33
     Else
-        Debug.Trace("UpdateSettingDisplay: Setting at index " + index as String + " not found", 0)
+      replacementMsg = LPOffMsg ; #DEBUG_LINE_NO:35
     EndIf
+    akTerminalRef.AddTextReplacementData("State" + index as String, replacementMsg as Form) ; #DEBUG_LINE_NO:37
+  Else
+    Debug.Trace(("UpdateSettingDisplay: Setting at index " + index as String) + " not found", 0) ; #DEBUG_LINE_NO:39
+  EndIf
 EndFunction
 
-;======================================================================
-; EVENTS
-;======================================================================
-
-;-- OnTerminalMenuEnter Event Handler --
-; Called when the terminal menu is entered. Updates the display for all settings.
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    Int index = 0
-    While index < SettingsGlobals.Length
-        UpdateSettingDisplay(index, akTerminalRef)
-        index += 1
-    EndWhile
+  Int index = 0 ; #DEBUG_LINE_NO:50
+  While index < SettingsGlobals.Length ; #DEBUG_LINE_NO:51
+    Self.UpdateSettingDisplay(index, akTerminalRef) ; #DEBUG_LINE_NO:52
+    index += 1 ; #DEBUG_LINE_NO:53
+  EndWhile
 EndEvent
 
-;-- OnTerminalMenuItemRun Event Handler --
-; Called when a menu item is selected. Toggles the setting value and updates the display.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    If akTerminalBase == CurrentTerminalMenu
-        GlobalVariable setting = SettingsGlobals[auiMenuItemID] as GlobalVariable
-        If setting
-            Float value = setting.GetValue()
-            If value == 1.0
-                setting.SetValue(0.0)
-            Else
-                setting.SetValue(1.0)
-            EndIf
-            UpdateSettingDisplay(auiMenuItemID, akTerminalRef)
-        Else
-            Debug.Trace("OnTerminalMenuItemRun: Setting at index " + auiMenuItemID as String + " not found", 0)
-        EndIf
+  If akTerminalBase == CurrentTerminalMenu ; #DEBUG_LINE_NO:60
+    GlobalVariable setting = SettingsGlobals[auiMenuItemID] as GlobalVariable ; #DEBUG_LINE_NO:61
+    If setting ; #DEBUG_LINE_NO:62
+      Float value = setting.GetValue() ; #DEBUG_LINE_NO:63
+      If value == 1.0 ; #DEBUG_LINE_NO:64
+        setting.SetValue(0.0) ; #DEBUG_LINE_NO:65
+      Else
+        setting.SetValue(1.0) ; #DEBUG_LINE_NO:67
+      EndIf
+      Self.UpdateSettingDisplay(auiMenuItemID, akTerminalRef) ; #DEBUG_LINE_NO:69
+    Else
+      Debug.Trace(("OnTerminalMenuItemRun: Setting at index " + auiMenuItemID as String) + " not found", 0) ; #DEBUG_LINE_NO:71
     EndIf
+  EndIf
 EndEvent

@@ -1,73 +1,38 @@
-;======================================================================
-; Script: LZP:System:DebugMonitorQuestScript
-; Description: This Quest script monitors the debug flag and triggers
-; updates based on its status. It periodically checks the debug flag
-; and logs messages to assist with troubleshooting.
-;======================================================================
-
 ScriptName LZP:System:DebugMonitorQuestScript Extends Quest
 
-;======================================================================
-; PROPERTIES
-;======================================================================
-
-;-- Global Variables --
-; Global variables that control the debug system.
-GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
-ReferenceAlias Property PlayerAlias Auto Const Mandatory
-
-;-- Timer Properties --
-; Interval in seconds to check the debug flag.
-Float Property checkInterval = 5.0 Auto
-
-;======================================================================
-; VARIABLES
-;======================================================================
-
-; Local flag to track the debug status.
+;-- Variables ---------------------------------------
 Bool bDebugEnabled = False
 
-;======================================================================
-; EVENT HANDLERS
-;======================================================================
+;-- Properties --------------------------------------
+GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory
+ReferenceAlias Property PlayerAlias Auto Const mandatory
+Float Property checkInterval = 5.0 Auto
 
-;-- OnInit Event Handler --
-; Called when the quest is initialized. Begins the debug check timer.
+;-- Functions ---------------------------------------
+
 Event OnInit()
-    Log("[Lazy Panda] DebugMonitorQuestScript OnInit triggered")
-    StartTimer(checkInterval)
+  Self.Log("[Lazy Panda] DebugMonitorQuestScript OnInit triggered") ; #DEBUG_LINE_NO:37
+  Self.StartTimer(checkInterval, 0) ; #DEBUG_LINE_NO:38
 EndEvent
 
-;-- OnTimer Event Handler --
-; Called when the timer expires. Checks the debug status and restarts the timer.
 Event OnTimer(Int aiTimerID)
-    CheckDebugStatus()
-    StartTimer(checkInterval)
+  Self.CheckDebugStatus() ; #DEBUG_LINE_NO:44
+  Self.StartTimer(checkInterval, 0) ; #DEBUG_LINE_NO:45
 EndEvent
 
-;======================================================================
-; UTILITY FUNCTIONS
-;======================================================================
-
-;-- Log Function --
-; Logs a message if the global debug setting is enabled.
 Function Log(String logMsg)
-    Debug.Trace(logMsg, 0)
+  Debug.Trace(logMsg, 0) ; #DEBUG_LINE_NO:55
 EndFunction
 
-;-- CheckDebugStatus Function --
-; Checks the current debug status and triggers updates if the status changes.
 Function CheckDebugStatus()
-    ; Convert the global variable's value to boolean (non-zero means true)
-    Bool currentDebugStatus = (LPSystemUtil_Debug.GetValue() != 0.0)
-    If currentDebugStatus != bDebugEnabled
-        bDebugEnabled = currentDebugStatus
-        If bDebugEnabled
-            Log("[Lazy Panda] Debugging enabled, triggering update")
-            ; Trigger the player's update (EvaluatePackage is assumed to be valid here)
-            PlayerAlias.GetReference().GetActorRefOwner().EvaluatePackage()
-        Else
-            Log("[Lazy Panda] Debugging disabled")
-        EndIf
+  Bool currentDebugStatus = LPSystemUtil_Debug.GetValue() != 0.0 ; #DEBUG_LINE_NO:62
+  If currentDebugStatus != bDebugEnabled ; #DEBUG_LINE_NO:63
+    bDebugEnabled = currentDebugStatus ; #DEBUG_LINE_NO:64
+    If bDebugEnabled ; #DEBUG_LINE_NO:65
+      Self.Log("[Lazy Panda] Debugging enabled, triggering update") ; #DEBUG_LINE_NO:66
+      PlayerAlias.GetReference().GetActorRefOwner().EvaluatePackage(False) ; #DEBUG_LINE_NO:68
+    Else
+      Self.Log("[Lazy Panda] Debugging disabled") ; #DEBUG_LINE_NO:70
     EndIf
+  EndIf
 EndFunction

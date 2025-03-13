@@ -1,154 +1,119 @@
-;======================================================================
-; Script: LZP:Term:Menu_FilterScript
-; Description: This script manages the main menu filter functionality.
-; It updates settings based on user interactions and provides feedback
-; through messages. Debug logging is integrated to assist with troubleshooting.
-;======================================================================
-
 ScriptName LZP:Term:Menu_FilterScript Extends TerminalMenu hidden
 
-;======================================================================
-; PROPERTIES
-;======================================================================
+;-- Variables ---------------------------------------
 
-;-- Autofill Properties --
-; Messages displayed to the player when toggling settings.
+;-- Properties --------------------------------------
 Group Autofill
-    Message Property LPOffMsg Auto Const mandatory
-    Message Property LPOnMsg Auto Const mandatory
+  Message Property LPOffMsg Auto Const mandatory
+  Message Property LPOnMsg Auto Const mandatory
 EndGroup
 
-;-- Menu-Specific Properties --
-; Form lists and other properties specific to the menu.
 Group MenuSpecific
-    FormList Property SettingsGlobals Auto Const mandatory
+  FormList Property SettingsGlobals Auto Const mandatory
 EndGroup
 
-;-- Terminal Properties --
-; References to the current terminal menu.
 Group Terminal
-    TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
+  TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
 EndGroup
 
-; Global variable for debugging
-GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
+GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory
 
-;======================================================================
-; HELPER FUNCTIONS
-;======================================================================
+;-- Functions ---------------------------------------
 
-;-- Log Function --
-; Logs a message if the global debug setting is enabled.
 Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Debug.Trace(logMsg, 0)
-    EndIf
+  If LPSystemUtil_Debug.GetValue() as Bool ; #DEBUG_LINE_NO:43
+    Debug.Trace(logMsg, 0) ; #DEBUG_LINE_NO:44
+  EndIf
 EndFunction
 
-;-- UpdateSetting Function --
-; Updates a setting and logs the change.
 Function UpdateSetting(Int index, Float newValue, Message newMsg, ObjectReference akTerminalRef)
-    GlobalVariable setting = SettingsGlobals.GetAt(index) as GlobalVariable
-    If setting
-        setting.SetValue(newValue)
-        akTerminalRef.AddTextReplacementData("State" + index as String, newMsg as Form)
-        
-        String stateStr = ""
-        If newValue == 1.0
-            stateStr = "LPOnMsg"
-        Else
-            stateStr = "LPOffMsg"
-        EndIf
-        Log("Setting State" + index as String + " updated to " + stateStr)
+  GlobalVariable setting = SettingsGlobals.GetAt(index) as GlobalVariable ; #DEBUG_LINE_NO:51
+  If setting ; #DEBUG_LINE_NO:52
+    setting.SetValue(newValue) ; #DEBUG_LINE_NO:53
+    akTerminalRef.AddTextReplacementData("State" + index as String, newMsg as Form) ; #DEBUG_LINE_NO:54
+    String stateStr = "" ; #DEBUG_LINE_NO:56
+    If newValue == 1.0 ; #DEBUG_LINE_NO:57
+      stateStr = "LPOnMsg" ; #DEBUG_LINE_NO:58
     Else
-        Log("No setting found at index: " + index as String)
+      stateStr = "LPOffMsg" ; #DEBUG_LINE_NO:60
     EndIf
+    Self.Log(("Setting State" + index as String) + " updated to " + stateStr) ; #DEBUG_LINE_NO:62
+  Else
+    Self.Log("No setting found at index: " + index as String) ; #DEBUG_LINE_NO:64
+  EndIf
 EndFunction
 
-;======================================================================
-; EVENT HANDLERS
-;======================================================================
-
-;-- OnTerminalMenuEnter Event Handler --
-; Called when the terminal menu is entered.
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    Log("OnTerminalMenuEnter triggered")
-    Int count = SettingsGlobals.GetSize()
-    Int index = 0
-    While index < count
-        GlobalVariable setting = SettingsGlobals.GetAt(index) as GlobalVariable
-        If setting
-            Float value = setting.GetValue()
-            Message replacementMsg
-            String stateStr = ""
-            If value == 1.0
-                replacementMsg = LPOnMsg
-                stateStr = "LPOnMsg"
-            Else
-                replacementMsg = LPOffMsg
-                stateStr = "LPOffMsg"
-            EndIf
-            akTerminalRef.AddTextReplacementData("State" + index as String, replacementMsg as Form)
-            Log("Setting State" + index as String + " to " + stateStr)
-        Else
-            Log("No setting found at index: " + index as String)
-        EndIf
-        index += 1
-    EndWhile
+  Self.Log("OnTerminalMenuEnter triggered") ; #DEBUG_LINE_NO:75
+  Int count = SettingsGlobals.GetSize() ; #DEBUG_LINE_NO:76
+  Int index = 0 ; #DEBUG_LINE_NO:77
+  While index < count ; #DEBUG_LINE_NO:78
+    GlobalVariable setting = SettingsGlobals.GetAt(index) as GlobalVariable ; #DEBUG_LINE_NO:79
+    If setting ; #DEBUG_LINE_NO:80
+      Float value = setting.GetValue() ; #DEBUG_LINE_NO:81
+      Message replacementMsg = None ; #DEBUG_LINE_NO:82
+      String stateStr = "" ; #DEBUG_LINE_NO:83
+      If value == 1.0 ; #DEBUG_LINE_NO:84
+        replacementMsg = LPOnMsg ; #DEBUG_LINE_NO:85
+        stateStr = "LPOnMsg" ; #DEBUG_LINE_NO:86
+      Else
+        replacementMsg = LPOffMsg ; #DEBUG_LINE_NO:88
+        stateStr = "LPOffMsg" ; #DEBUG_LINE_NO:89
+      EndIf
+      akTerminalRef.AddTextReplacementData("State" + index as String, replacementMsg as Form) ; #DEBUG_LINE_NO:91
+      Self.Log(("Setting State" + index as String) + " to " + stateStr) ; #DEBUG_LINE_NO:92
+    Else
+      Self.Log("No setting found at index: " + index as String) ; #DEBUG_LINE_NO:94
+    EndIf
+    index += 1 ; #DEBUG_LINE_NO:96
+  EndWhile
 EndEvent
 
-;-- OnTerminalMenuItemRun Event Handler --
-; Called when a terminal menu item is run.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
-    If akTerminalBase != CurrentTerminalMenu
-        Return
-    EndIf
-
-    If auiMenuItemID == 0
-        Log("Menu item 0 selected: Toggle all settings")
-        GlobalVariable allToggle = SettingsGlobals.GetAt(0) as GlobalVariable
-        Float newValue = 0.0
-        If allToggle.GetValue() == 1.0
-            newValue = 0.0
-        Else
-            newValue = 1.0
-        EndIf
-
-        Message newMsg
-        If newValue == 1.0
-            newMsg = LPOnMsg
-        Else
-            newMsg = LPOffMsg
-        EndIf
-
-        Int count = SettingsGlobals.GetSize()
-        Int index = 0
-        While index < count
-            UpdateSetting(index, newValue, newMsg, akTerminalRef)
-            index += 1
-        EndWhile
+  Self.Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String) ; #DEBUG_LINE_NO:103
+  If akTerminalBase != CurrentTerminalMenu ; #DEBUG_LINE_NO:104
+    Return  ; #DEBUG_LINE_NO:105
+  EndIf
+  If auiMenuItemID == 0 ; #DEBUG_LINE_NO:108
+    Self.Log("Menu item 0 selected: Toggle all settings") ; #DEBUG_LINE_NO:109
+    GlobalVariable allToggle = SettingsGlobals.GetAt(0) as GlobalVariable ; #DEBUG_LINE_NO:110
+    Float newValue = 0.0 ; #DEBUG_LINE_NO:111
+    If allToggle.GetValue() == 1.0 ; #DEBUG_LINE_NO:112
+      newValue = 0.0 ; #DEBUG_LINE_NO:113
     Else
-        Log("Menu item " + auiMenuItemID as String + " selected: Toggle specific setting")
-        GlobalVariable setting = SettingsGlobals.GetAt(auiMenuItemID) as GlobalVariable
-        If setting
-            Float newValue = 0.0
-            If setting.GetValue() == 1.0
-                newValue = 0.0
-            Else
-                newValue = 1.0
-            EndIf
-
-            Message newMsg
-            If newValue == 1.0
-                newMsg = LPOnMsg
-            Else
-                newMsg = LPOffMsg
-            EndIf
-
-            UpdateSetting(auiMenuItemID, newValue, newMsg, akTerminalRef)
-        Else
-            Log("No setting found for menu item " + auiMenuItemID as String)
-        EndIf
+      newValue = 1.0 ; #DEBUG_LINE_NO:115
     EndIf
+    Message newMsg = None ; #DEBUG_LINE_NO:118
+    If newValue == 1.0 ; #DEBUG_LINE_NO:119
+      newMsg = LPOnMsg ; #DEBUG_LINE_NO:120
+    Else
+      newMsg = LPOffMsg ; #DEBUG_LINE_NO:122
+    EndIf
+    Int count = SettingsGlobals.GetSize() ; #DEBUG_LINE_NO:125
+    Int index = 0 ; #DEBUG_LINE_NO:126
+    While index < count ; #DEBUG_LINE_NO:127
+      Self.UpdateSetting(index, newValue, newMsg, akTerminalRef) ; #DEBUG_LINE_NO:128
+      index += 1 ; #DEBUG_LINE_NO:129
+    EndWhile
+  Else
+    Self.Log(("Menu item " + auiMenuItemID as String) + " selected: Toggle specific setting") ; #DEBUG_LINE_NO:132
+    GlobalVariable setting = SettingsGlobals.GetAt(auiMenuItemID) as GlobalVariable ; #DEBUG_LINE_NO:133
+    If setting ; #DEBUG_LINE_NO:134
+      Float newvalue = 0.0 ; #DEBUG_LINE_NO:135
+      If setting.GetValue() == 1.0 ; #DEBUG_LINE_NO:136
+        newvalue = 0.0 ; #DEBUG_LINE_NO:137
+      Else
+        newvalue = 1.0 ; #DEBUG_LINE_NO:139
+      EndIf
+      Message newmsg = None ; #DEBUG_LINE_NO:142
+      If newvalue == 1.0 ; #DEBUG_LINE_NO:143
+        newmsg = LPOnMsg ; #DEBUG_LINE_NO:144
+      Else
+        newmsg = LPOffMsg ; #DEBUG_LINE_NO:146
+      EndIf
+      Self.UpdateSetting(auiMenuItemID, newvalue, newmsg, akTerminalRef) ; #DEBUG_LINE_NO:149
+    Else
+      Self.Log("No setting found for menu item " + auiMenuItemID as String) ; #DEBUG_LINE_NO:151
+    EndIf
+  EndIf
 EndEvent

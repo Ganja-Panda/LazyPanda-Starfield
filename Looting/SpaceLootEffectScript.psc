@@ -1,93 +1,63 @@
 ScriptName LZP:Looting:SpaceLootEffectScript Extends ObjectReference
 
-;======================================================================
-; PROPERTY GROUPS
-;======================================================================
+;-- Variables ---------------------------------------
 
-;-- Effect-Specific Mandatory Properties --
-; Contains the essential properties needed for the loot effect.
+;-- Properties --------------------------------------
 Group EffectSpecific_Mandatory
-    Perk Property ActivePerk Auto Const mandatory              ; Perk required for activating the loot effect
-    GlobalVariable Property LPEnableCont_Space Auto Const mandatory ; Enable continuous space looting
-    GlobalVariable Property LPSystemUtil_ToggleLooting Auto Const mandatory ; Toggle looting system
-    GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory ; Global debug flag for logging
+  Perk Property ActivePerk Auto Const mandatory
+  GlobalVariable Property LPEnableCont_Space Auto Const mandatory
+  GlobalVariable Property LPSystemUtil_ToggleLooting Auto Const mandatory
+  GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory
 EndGroup
 
-;-- Destination Locations --
-; References for where looted items should be sent.
 Group DestinationLocations
-    ReferenceAlias Property PlayerHomeShip Auto Const           ; Alias for the player's home ship
+  ReferenceAlias Property PlayerHomeShip Auto Const
 EndGroup
 
-;-- No Fill Settings --
-; Timer and local flags for looting behavior.
 Group NoFill
-    Int Property lootTimerID = 1 Auto                           ; Timer identifier for looting
-    Float Property lootTimerDelay = 0.5 Auto                    ; Delay between loot cycles
+  Int Property lootTimerID = 1 Auto
+  Float Property lootTimerDelay = 0.5 Auto
 EndGroup
 
-;======================================================================
-; DEBUG LOGGING HELPER FUNCTION
-;======================================================================
 
-; Logs a message if the global debug setting is enabled.
+;-- Functions ---------------------------------------
+
 Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Debug.Trace(logMsg, 0)
-    EndIf
+  If LPSystemUtil_Debug.GetValue() as Bool ; #DEBUG_LINE_NO:35
+    Debug.Trace(logMsg, 0) ; #DEBUG_LINE_NO:36
+  EndIf
 EndFunction
 
-;======================================================================
-; EVENT HANDLERS
-;======================================================================
-
-;-- OnLoad Event Handler --
-; Called when the object is loaded. Begins the loot timer.
 Event OnLoad()
-    Log("[Lazy Panda] OnLoad triggered")
-    StartTimer(lootTimerDelay, lootTimerID)
+  Self.Log("[Lazy Panda] OnLoad triggered") ; #DEBUG_LINE_NO:47
+  Self.StartTimer(lootTimerDelay, lootTimerID) ; #DEBUG_LINE_NO:48
 EndEvent
 
-;-- OnTimer Event Handler --
-; Called when the loot timer expires. Checks if the timer ID matches before executing looting.
 Event OnTimer(Int aiTimerID)
-    Log("[Lazy Panda] OnTimer triggered with TimerID: " + aiTimerID as String)
-    If aiTimerID == lootTimerID
-        ExecuteLooting()
-    EndIf
+  Self.Log("[Lazy Panda] OnTimer triggered with TimerID: " + aiTimerID as String) ; #DEBUG_LINE_NO:54
+  If aiTimerID == lootTimerID ; #DEBUG_LINE_NO:55
+    Self.ExecuteLooting() ; #DEBUG_LINE_NO:56
+  EndIf
 EndEvent
 
-;======================================================================
-; MAIN FUNCTIONS
-;======================================================================
-
-;-- ExecuteLooting Function --
-; Main function that initiates the looting process and restarts the loot timer.
 Function ExecuteLooting()
-    Log("[Lazy Panda] ExecuteLooting called")
-    StartTimer(lootTimerDelay, lootTimerID)
-    
-    ; Retrieve game settings and properties
-    Float fSearchRadius = Game.GetGameSettingFloat("fMaxShipTransferDistance")
-    Bool bToggleLooting = LPSystemUtil_ToggleLooting.GetValue() == 1.0
-    Bool bEnableContSpace = LPEnableCont_Space.GetValue() == 1.0
-    Bool bHasPerk = Game.GetPlayer().HasPerk(ActivePerk)
-    
-    Log("[Lazy Panda] fSearchRadius: " + fSearchRadius as String)
-    
-    ; Check if looting conditions are met
-    If fSearchRadius > 0.0 && bToggleLooting && bEnableContSpace && bHasPerk
-        Log("[Lazy Panda] Looting enabled and within search radius")
-        ObjectReference homeShipRef = PlayerHomeShip.GetRef()
-        If homeShipRef != None
-            RemoveAllItems(homeShipRef, False, False)
-            Log("[Lazy Panda] Items removed and transferred to PlayerHomeShip")
-        Else
-            Log("[Lazy Panda] PlayerHomeShip reference is None")
-            ; Additional error handling or fallback behavior can be added here
-        EndIf
+  Self.Log("[Lazy Panda] ExecuteLooting called") ; #DEBUG_LINE_NO:67
+  Self.StartTimer(lootTimerDelay, lootTimerID) ; #DEBUG_LINE_NO:68
+  Float fSearchRadius = Game.GetGameSettingFloat("fMaxShipTransferDistance") ; #DEBUG_LINE_NO:71
+  Bool bToggleLooting = LPSystemUtil_ToggleLooting.GetValue() == 1.0 ; #DEBUG_LINE_NO:72
+  Bool bEnableContSpace = LPEnableCont_Space.GetValue() == 1.0 ; #DEBUG_LINE_NO:73
+  Bool bHasPerk = Game.GetPlayer().HasPerk(ActivePerk) ; #DEBUG_LINE_NO:74
+  Self.Log("[Lazy Panda] fSearchRadius: " + fSearchRadius as String) ; #DEBUG_LINE_NO:76
+  If fSearchRadius > 0.0 && bToggleLooting && bEnableContSpace && bHasPerk ; #DEBUG_LINE_NO:79
+    Self.Log("[Lazy Panda] Looting enabled and within search radius") ; #DEBUG_LINE_NO:80
+    ObjectReference homeShipRef = PlayerHomeShip.GetRef() ; #DEBUG_LINE_NO:81
+    If homeShipRef != None ; #DEBUG_LINE_NO:82
+      Self.RemoveAllItems(homeShipRef, False, False) ; #DEBUG_LINE_NO:83
+      Self.Log("[Lazy Panda] Items removed and transferred to PlayerHomeShip") ; #DEBUG_LINE_NO:84
     Else
-        Log("[Lazy Panda] Looting not enabled, you don't have the proper perk or out of search radius")
-        ; Additional error handling or fallback behavior can be added here
+      Self.Log("[Lazy Panda] PlayerHomeShip reference is None") ; #DEBUG_LINE_NO:86
     EndIf
+  Else
+    Self.Log("[Lazy Panda] Looting not enabled, you don't have the proper perk or out of search radius") ; #DEBUG_LINE_NO:90
+  EndIf
 EndFunction

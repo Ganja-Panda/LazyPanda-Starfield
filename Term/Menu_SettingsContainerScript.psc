@@ -1,109 +1,82 @@
 ScriptName LZP:Term:Menu_SettingsContainerScript Extends TerminalMenu hidden
 
-;======================================================================
-; PROPERTY GROUPS
-;======================================================================
+;-- Variables ---------------------------------------
 
-;-- Global Variables --
-; Global variables for settings such as radius and destination.
+;-- Properties --------------------------------------
 Group GlobalVariable_Autofill
-    GlobalVariable Property LPSetting_RemoveCorpses Auto mandatory
-    GlobalVariable Property LPSetting_ContTakeAll Auto mandatory
-    GlobalVariable Property LPSetting_AutoUnlock Auto mandatory
-    GlobalVariable Property LPSetting_AutoUnlockSkillCheck Auto mandatory
+  GlobalVariable Property LPSetting_RemoveCorpses Auto mandatory
+  GlobalVariable Property LPSetting_ContTakeAll Auto mandatory
+  GlobalVariable Property LPSetting_AutoUnlock Auto mandatory
+  GlobalVariable Property LPSetting_AutoUnlockSkillCheck Auto mandatory
 EndGroup
 
-;-- Messages --
-; Messages displayed to the player when toggling settings.
 Group Message_Autofill
-    Message Property LPOffMsg Auto Const mandatory
-    Message Property LPOnMsg Auto Const mandatory
+  Message Property LPOffMsg Auto Const mandatory
+  Message Property LPOnMsg Auto Const mandatory
 EndGroup
 
-;-- Miscellaneous --
-; Additional properties including the current terminal menu.
 Group Misc
-    TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
-    GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory
+  TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
+  GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory
 EndGroup
 
-;======================================================================
-; HELPER FUNCTIONS
-;======================================================================
 
-;-- Log Function --
-; Logs a message if the global debug setting is enabled.
+;-- Functions ---------------------------------------
+
 Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Debug.Trace(logMsg, 0)
-    EndIf
+  If LPSystemUtil_Debug.GetValue() as Bool ; #DEBUG_LINE_NO:37
+    Debug.Trace(logMsg, 0) ; #DEBUG_LINE_NO:38
+  EndIf
 EndFunction
 
-;-- UpdateSettingDisplay Function --
-; Updates the display of the setting on the terminal.
 Function UpdateSettingDisplay(GlobalVariable setting, String label, ObjectReference akTerminalRef)
-    If setting.GetValue() == 1.0
-        akTerminalRef.AddTextReplacementData(label, LPOnMsg as Form)
-        Log("Setting " + label + " to LPOnMsg")
-    Else
-        akTerminalRef.AddTextReplacementData(label, LPOffMsg as Form)
-        Log("Setting " + label + " to LPOffMsg")
-    EndIf
+  If setting.GetValue() == 1.0 ; #DEBUG_LINE_NO:45
+    akTerminalRef.AddTextReplacementData(label, LPOnMsg as Form) ; #DEBUG_LINE_NO:46
+    Self.Log("Setting " + label + " to LPOnMsg") ; #DEBUG_LINE_NO:47
+  Else
+    akTerminalRef.AddTextReplacementData(label, LPOffMsg as Form) ; #DEBUG_LINE_NO:49
+    Self.Log("Setting " + label + " to LPOffMsg") ; #DEBUG_LINE_NO:50
+  EndIf
 EndFunction
 
-;-- ToggleSetting Function --
-; Toggles the setting value and updates the display.
 Function ToggleSetting(GlobalVariable setting, String label, ObjectReference akTerminalRef)
-    If setting.GetValue() == 1.0
-        setting.SetValue(0.0)
-    Else
-        setting.SetValue(1.0)
-    EndIf
-    UpdateSettingDisplay(setting, label, akTerminalRef)
+  If setting.GetValue() == 1.0 ; #DEBUG_LINE_NO:57
+    setting.SetValue(0.0) ; #DEBUG_LINE_NO:58
+  Else
+    setting.SetValue(1.0) ; #DEBUG_LINE_NO:60
+  EndIf
+  Self.UpdateSettingDisplay(setting, label, akTerminalRef) ; #DEBUG_LINE_NO:62
 EndFunction
 
-;======================================================================
-; EVENTS
-;======================================================================
-
-;-- OnTerminalMenuEnter Event Handler --
-; Called when the terminal menu is entered.
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    Log("OnTerminalMenuEnter triggered")
-
-    ; Log current settings for debugging purposes.
-    Bool currentRemoveCorpsesSetting = LPSetting_RemoveCorpses.GetValue() == 1.0
-    Bool currentTakeAllSetting = LPSetting_ContTakeAll.GetValue() == 1.0
-    Bool currentAutoUnlockSetting = LPSetting_AutoUnlock.GetValue() == 1.0
-    Bool currentAutoUnlockSkillCheckSetting = LPSetting_AutoUnlockSkillCheck.GetValue() == 1.0
-    Log("Current settings - RemoveCorpses: " + currentRemoveCorpsesSetting + ", TakeAll: " + currentTakeAllSetting + ", AutoUnlock: " + currentAutoUnlockSetting + ", AutoUnlockSkillCheck: " + currentAutoUnlockSkillCheckSetting)
-
-    ; Update display for each setting.
-    UpdateSettingDisplay(LPSetting_AutoUnlock, "AutoUnlock", akTerminalRef)
-    UpdateSettingDisplay(LPSetting_AutoUnlockSkillCheck, "AutoUnlockSkillCheck", akTerminalRef)
-    UpdateSettingDisplay(LPSetting_RemoveCorpses, "Corpses", akTerminalRef)
-    UpdateSettingDisplay(LPSetting_ContTakeAll, "TakeAll", akTerminalRef)
+  Self.Log("OnTerminalMenuEnter triggered") ; #DEBUG_LINE_NO:72
+  Bool currentRemoveCorpsesSetting = LPSetting_RemoveCorpses.GetValue() == 1.0 ; #DEBUG_LINE_NO:75
+  Bool currentTakeAllSetting = LPSetting_ContTakeAll.GetValue() == 1.0 ; #DEBUG_LINE_NO:76
+  Bool currentAutoUnlockSetting = LPSetting_AutoUnlock.GetValue() == 1.0 ; #DEBUG_LINE_NO:77
+  Bool currentAutoUnlockSkillCheckSetting = LPSetting_AutoUnlockSkillCheck.GetValue() == 1.0 ; #DEBUG_LINE_NO:78
+  Self.Log(((("Current settings - RemoveCorpses: " + currentRemoveCorpsesSetting as String) + ", TakeAll: " + currentTakeAllSetting as String) + ", AutoUnlock: " + currentAutoUnlockSetting as String) + ", AutoUnlockSkillCheck: " + currentAutoUnlockSkillCheckSetting as String) ; #DEBUG_LINE_NO:79
+  Self.UpdateSettingDisplay(LPSetting_AutoUnlock, "AutoUnlock", akTerminalRef) ; #DEBUG_LINE_NO:82
+  Self.UpdateSettingDisplay(LPSetting_AutoUnlockSkillCheck, "AutoUnlockSkillCheck", akTerminalRef) ; #DEBUG_LINE_NO:83
+  Self.UpdateSettingDisplay(LPSetting_RemoveCorpses, "Corpses", akTerminalRef) ; #DEBUG_LINE_NO:84
+  Self.UpdateSettingDisplay(LPSetting_ContTakeAll, "TakeAll", akTerminalRef) ; #DEBUG_LINE_NO:85
 EndEvent
 
-;-- OnTerminalMenuItemRun Event Handler --
-; Called when a terminal menu item is selected.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID)
-    If akTerminalBase == CurrentTerminalMenu
-        Log("Terminal menu matches CurrentTerminalMenu")
-        ; Toggle the appropriate setting based on the menu item ID.
-        If auiMenuItemID == 0
-            Log("Toggling AutoUnlock")
-            ToggleSetting(LPSetting_AutoUnlock, "AutoUnlock", akTerminalRef)
-        ElseIf auiMenuItemID == 1
-            Log("Toggling AutoUnlockSkillCheck")
-            ToggleSetting(LPSetting_AutoUnlockSkillCheck, "AutoUnlockSkillCheck", akTerminalRef)
-        ElseIf auiMenuItemID == 2
-            Log("Toggling Corpses")
-            ToggleSetting(LPSetting_RemoveCorpses, "Corpses", akTerminalRef)
-        ElseIf auiMenuItemID == 3
-            Log("Toggling TakeAll")
-            ToggleSetting(LPSetting_ContTakeAll, "TakeAll", akTerminalRef)
-        EndIf
+  Self.Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String) ; #DEBUG_LINE_NO:91
+  If akTerminalBase == CurrentTerminalMenu ; #DEBUG_LINE_NO:92
+    Self.Log("Terminal menu matches CurrentTerminalMenu") ; #DEBUG_LINE_NO:93
+    If auiMenuItemID == 0 ; #DEBUG_LINE_NO:95
+      Self.Log("Toggling AutoUnlock") ; #DEBUG_LINE_NO:96
+      Self.ToggleSetting(LPSetting_AutoUnlock, "AutoUnlock", akTerminalRef) ; #DEBUG_LINE_NO:97
+    ElseIf auiMenuItemID == 1 ; #DEBUG_LINE_NO:98
+      Self.Log("Toggling AutoUnlockSkillCheck") ; #DEBUG_LINE_NO:99
+      Self.ToggleSetting(LPSetting_AutoUnlockSkillCheck, "AutoUnlockSkillCheck", akTerminalRef) ; #DEBUG_LINE_NO:100
+    ElseIf auiMenuItemID == 2 ; #DEBUG_LINE_NO:101
+      Self.Log("Toggling Corpses") ; #DEBUG_LINE_NO:102
+      Self.ToggleSetting(LPSetting_RemoveCorpses, "Corpses", akTerminalRef) ; #DEBUG_LINE_NO:103
+    ElseIf auiMenuItemID == 3 ; #DEBUG_LINE_NO:104
+      Self.Log("Toggling TakeAll") ; #DEBUG_LINE_NO:105
+      Self.ToggleSetting(LPSetting_ContTakeAll, "TakeAll", akTerminalRef) ; #DEBUG_LINE_NO:106
     EndIf
+  EndIf
 EndEvent
