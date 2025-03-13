@@ -104,7 +104,7 @@ EndFunction
 ;-- OpenTerminal Function --
 ; Opens the terminal object.
 ; cgf "LZP:SystemScript.OpenTerminal"
-Function OpenTerminal()
+Function OpenTerminal() Global
     Log("[Lazy Panda] OpenTerminal called")
     ObjectReference TerminalRef = Game.GetFormFromFile(0x08CD, "LazyPanda.esm") as ObjectReference
     

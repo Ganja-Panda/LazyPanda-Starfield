@@ -112,7 +112,7 @@ EndGroup
 ; Timer and local flags for looting behavior.
 Group NoFill
     Int Property lootTimerID = 1 Auto                                  ; Timer identifier for looting
-    Float Property lootTimerDelay = 0.5 Auto                             ; Delay between loot cycles
+    Float Property lootTimerDelay = 1.0 Auto                             ; Delay between loot cycles
     Bool Property bAllowStealing = False Auto                            ; Local flag to allow stealing
     Bool Property bStealingIsHostile = False Auto                         ; Local flag indicating hostile stealing
     Bool Property bTakeAll = False Auto                                   ; Local flag to loot all items from a container
@@ -131,14 +131,6 @@ Function Log(String logMsg)
 EndFunction
 
 ;======================================================================
-; SCRIPT VARIABLES
-;======================================================================
-
-Race SFBGS001_HumanRace
-Race SFBGS003_HumanRace
-Bool bIsShatteredSpaceLoaded
-Bool bIsTrackerAllianceLoaded
-;======================================================================
 ; EVENT HANDLERS
 ;======================================================================
 
@@ -146,13 +138,6 @@ Bool bIsTrackerAllianceLoaded
 ; Called when the script is initialized. Initializes the Shattered Space and Tracker Alliance human races if the plugin is loaded.
 Event OnInit()
     Log("[Lazy Panda] OnInit triggered")
-    bIsShatteredSpaceLoaded = (Game.IsPluginInstalled("ShatteredSpace.esm") != (-1)) as Bool
-    bIsTrackerAllianceLoaded = (Game.IsPluginInstalled("TrackerAlliance.esm") != (-1)) as Bool
-    If bIsShatteredSpaceLoaded
-        SFBGS001_HumanRace = Game.GetFormFromFile(0x01006529, "ShatteredSpace.esm") as Race
-    ElseIf bIsTrackerAllianceLoaded
-        SFBGS003_HumanRace = Game.GetFormFromFile(0x0000009D, "SFBGS003.esm") as Race  ; Replace 0x00067890 with the actual form ID
-    EndIf
 EndEvent
 
 ;-- OnEffectStart Event Handler --
@@ -280,13 +265,7 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference theLooter)
     If corpseActor != None
         Race corpseRace = corpseActor.GetRace()
         ; Check if the Shattered Space or Tracker Alliance plugin is installed to determine corpse processing.
-        If bIsShatteredSpaceLoaded && (corpseRace == HumanRace || corpseRace == SFBGS001_HumanRace)
-            corpseActor.UnequipAll()
-            corpseActor.EquipItem(LP_Skin_Naked_NOTPLAYABLE as Form, False, False)
-        ElseIf bIsTrackerAllianceLoaded && corpseRace == SFBGS003_HumanRace
-            corpseActor.UnequipAll()
-            corpseActor.EquipItem(LP_Skin_Naked_NOTPLAYABLE as Form, False, False)
-        ElseIf corpseRace == HumanRace
+        If corpseRace == HumanRace
             corpseActor.UnequipAll()
             corpseActor.EquipItem(LP_Skin_Naked_NOTPLAYABLE as Form, False, False)
         EndIf
