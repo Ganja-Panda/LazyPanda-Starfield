@@ -85,6 +85,8 @@ EndGroup
 ; Additional properties including keywords, races, and debug settings.
 Group Misc
     Keyword Property SpaceshipInventoryContainer Auto Const         ; Keyword for spaceship inventory containers
+    Keyword Property SQ_ShipDebrisKeyword Auto Const            ; Keyword for spaceship debris objects
+    Keyword Property LPKeyword_Asteroid  Auto Const           ; Keyword for asteroid objects
     Armor Property LP_Skin_Naked_NOTPLAYABLE Auto Const mandatory       ; Armor for unequipping corpses (non-playable)
     Race Property HumanRace Auto Const mandatory                       ; Standard human race
     GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory         ; Global debug flag for logging
@@ -243,7 +245,7 @@ Function ProcessLoot(ObjectReference[] theLootArray)
             ElseIf bIsContainerSpace && CanTakeLoot(currentLoot)
                 Log("[Lazy Panda] Looting Spaceship Container")
                 ; For spaceship containers, get the associated ship reference.
-                If currentLoot.HasKeyword(SpaceshipInventoryContainer)
+                If currentLoot.HasKeyword(SQ_ShipDebrisKeyword) || currentLoot.HasKeyword(LPKeyword_Asteroid) || currentLoot.HasKeyword(SpaceshipInventoryContainer)
                     currentLoot = currentLoot.GetCurrentShipRef() as ObjectReference
                 EndIf
                 theLooterRef = PlayerHomeShip.GetRef()
