@@ -45,12 +45,12 @@ EndFunction
 ;-- CheckDebugGlobal Function --
 ; Periodically checks if the debug global is set to 1 and logs a message if it is.
 Function CheckDebugGlobal()
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Log("Debugging enabled")
-    EndIf
-    ; Schedule the next check.
-    Utility.Wait(fDebugCheckInterval)
-    CheckDebugGlobal()
+    While True  ; Infinite loop, but controlled by Wait() to avoid recursion
+        If LPSystemUtil_Debug.GetValue() as Bool
+            Log("Debugging enabled")
+        EndIf
+        Utility.Wait(fDebugCheckInterval)  ; Wait before running again
+    EndWhile
 EndFunction
 
 ;======================================================================

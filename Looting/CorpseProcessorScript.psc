@@ -88,16 +88,16 @@ EndFunction
 
 ;-- ProcessCorpse Function --
 ; Handles processing of a corpse object including unequipping, looting, and removal.
-Function ProcessCorpse(ObjectReference theCorpse, ObjectReference theLooter)
-    Debug.Notification("[Lazy Panda] ProcessCorpse called with corpse: " + theCorpse as String)
+Function ProcessCorpse(ObjectReference akVictim, ObjectReference akKiller)
+    Debug.Notification("[Lazy Panda] ProcessCorpse called with corpse: " + akVictim)
+
     Bool takeAll = LPSetting_ContTakeAll.GetValue() as Bool
     bTakeAll = takeAll
-     
-    ; Attempt to cast the corpse to an Actor for actor-specific processing.
-    Actor corpseActor = theCorpse as Actor
+    
+    ; Check if the corpse is an actor and unequip items if it is.
+    Actor corpseActor = akVictim as Actor
     If corpseActor != None
         Race corpseRace = corpseActor.GetRace()
-        ; Check if the corpse is human and process accordingly.
         If corpseRace == HumanRace
             corpseActor.UnequipAll()
             corpseActor.EquipItem(LP_Skin_Naked_NOTPLAYABLE as Form, False, False)
@@ -107,13 +107,22 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference theLooter)
     EndIf
 
     Utility.Wait(0.1)
-    ; Loot the corpse based on the take-all setting.
-    If takeAll
-        theCorpse.RemoveAllItems(GetDestRef(), False, False)
+
+    ; Log the killer if one is detected.
+    If akKiller != None
+        Debug.Notification("[Lazy Panda] Killer: " + akKiller)
     Else
-        ProcessFilteredContainerItems(theCorpse, theLooter)
+        Debug.Notification("[Lazy Panda] No killer detected.")
     EndIf
-    RemoveCorpse(theCorpse)
+
+    ; Loot the corpse if the setting is enabled.
+    If takeAll
+        akVictim.RemoveAllItems(GetDestRef(), False, False)
+    Else
+        ProcessFilteredContainerItems(akVictim, akKiller)
+    EndIf
+
+    RemoveCorpse(akVictim)
 EndFunction
 
 ;-- RemoveCorpse Function --
@@ -127,18 +136,34 @@ EndFunction
 
 ;-- ProcessFilteredContainerItems Function --
 ; Processes container items using filtering lists to remove specific items.
-Function ProcessFilteredContainerItems(ObjectReference theContainer, ObjectReference theLooter)
-    Debug.Notification("[Lazy Panda] ProcessFilteredContainerItems called with container: " + theContainer as String)
+Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectReference akLooter)
+    If akContainer == None
+        Debug.Notification("[Lazy Panda] ProcessFilteredContainerItems: No valid container found!")
+        Return
+    EndIf
+
+    Debug.Notification("[Lazy Panda] Processing filtered items in: " + akContainer)
+
     Int listSize = LPSystem_Looting_Lists.GetSize()
     Int index = 0
+
     While index < listSize
         FormList currentList = LPSystem_Looting_Lists.GetAt(index) as FormList
         GlobalVariable currentGlobal = LPSystem_Looting_Globals.GetAt(index) as GlobalVariable
-        Float globalValue = currentGlobal.GetValue()
-        ; Remove items matching the current list if the corresponding global value is enabled.
-        If globalValue == 1.0
-            theContainer.RemoveItem(currentList as Form, -1, True, GetDestRef())
+
+        If currentList != None && currentGlobal != None
+            Float globalValue = currentGlobal.GetValue()
+
+            If globalValue == 1.0
+                Debug.Notification("[Lazy Panda] Removing items from category: " + currentList)
+                akContainer.RemoveItem(currentList as Form, -1, True, GetDestRef())
+            Else
+                Debug.Notification("[Lazy Panda] Skipping list: " + currentList)
+            EndIf
+        Else
+            Debug.Notification("[Lazy Panda] Skipping index " + index + " due to missing data.")
         EndIf
+
         index += 1
     EndWhile
 EndFunction

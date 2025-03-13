@@ -1,0 +1,3 @@
+Scriptname LZP:System:DeathMonitorQuestScript extends Quest
+
+LZP:Looting:CorpseProcessorScript Property CorpseProcessor Auto
