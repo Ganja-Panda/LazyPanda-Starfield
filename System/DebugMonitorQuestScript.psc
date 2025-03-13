@@ -11,28 +11,28 @@ Float Property checkInterval = 5.0 Auto
 ;-- Functions ---------------------------------------
 
 Event OnInit()
-  Self.Log("[Lazy Panda] DebugMonitorQuestScript OnInit triggered") ; #DEBUG_LINE_NO:37
-  Self.StartTimer(checkInterval, 0) ; #DEBUG_LINE_NO:38
+  Log("[Lazy Panda] DebugMonitorQuestScript OnInit triggered")
+  StartTimer(checkInterval, 0)
 EndEvent
 
 Event OnTimer(Int aiTimerID)
-  Self.CheckDebugStatus() ; #DEBUG_LINE_NO:44
-  Self.StartTimer(checkInterval, 0) ; #DEBUG_LINE_NO:45
+  CheckDebugStatus()
+  StartTimer(checkInterval, 0)
 EndEvent
 
 Function Log(String logMsg)
-  Debug.Trace(logMsg, 0) ; #DEBUG_LINE_NO:55
+  Debug.Trace(logMsg, 0)
 EndFunction
 
 Function CheckDebugStatus()
-  Bool currentDebugStatus = LPSystemUtil_Debug.GetValue() != 0.0 ; #DEBUG_LINE_NO:62
-  If currentDebugStatus != bDebugEnabled ; #DEBUG_LINE_NO:63
-    bDebugEnabled = currentDebugStatus ; #DEBUG_LINE_NO:64
-    If bDebugEnabled ; #DEBUG_LINE_NO:65
-      Self.Log("[Lazy Panda] Debugging enabled, triggering update") ; #DEBUG_LINE_NO:66
-      PlayerAlias.GetReference().GetActorRefOwner().EvaluatePackage(False) ; #DEBUG_LINE_NO:68
+  Bool currentDebugStatus = LPSystemUtil_Debug.GetValue() != 0.0
+  If currentDebugStatus != bDebugEnabled
+    bDebugEnabled = currentDebugStatus
+    If bDebugEnabled
+      Log("[Lazy Panda] Debugging enabled, triggering update")
+      PlayerAlias.GetReference().GetActorRefOwner().EvaluatePackage(False)
     Else
-      Self.Log("[Lazy Panda] Debugging disabled") ; #DEBUG_LINE_NO:70
+      Log("[Lazy Panda] Debugging disabled")
     EndIf
   EndIf
 EndFunction

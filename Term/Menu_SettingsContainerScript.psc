@@ -24,59 +24,59 @@ EndGroup
 ;-- Functions ---------------------------------------
 
 Function Log(String logMsg)
-  If LPSystemUtil_Debug.GetValue() as Bool ; #DEBUG_LINE_NO:37
-    Debug.Trace(logMsg, 0) ; #DEBUG_LINE_NO:38
+  If LPSystemUtil_Debug.GetValue() as Bool
+    Debug.Trace(logMsg, 0)
   EndIf
 EndFunction
 
 Function UpdateSettingDisplay(GlobalVariable setting, String label, ObjectReference akTerminalRef)
-  If setting.GetValue() == 1.0 ; #DEBUG_LINE_NO:45
-    akTerminalRef.AddTextReplacementData(label, LPOnMsg as Form) ; #DEBUG_LINE_NO:46
-    Self.Log("Setting " + label + " to LPOnMsg") ; #DEBUG_LINE_NO:47
+  If setting.GetValue() == 1.0
+    akTerminalRef.AddTextReplacementData(label, LPOnMsg as Form)
+    Log("Setting " + label + " to LPOnMsg")
   Else
-    akTerminalRef.AddTextReplacementData(label, LPOffMsg as Form) ; #DEBUG_LINE_NO:49
-    Self.Log("Setting " + label + " to LPOffMsg") ; #DEBUG_LINE_NO:50
+    akTerminalRef.AddTextReplacementData(label, LPOffMsg as Form)
+    Log("Setting " + label + " to LPOffMsg")
   EndIf
 EndFunction
 
 Function ToggleSetting(GlobalVariable setting, String label, ObjectReference akTerminalRef)
-  If setting.GetValue() == 1.0 ; #DEBUG_LINE_NO:57
-    setting.SetValue(0.0) ; #DEBUG_LINE_NO:58
+  If setting.GetValue() == 1.0
+    setting.SetValue(0.0)
   Else
-    setting.SetValue(1.0) ; #DEBUG_LINE_NO:60
+    setting.SetValue(1.0)
   EndIf
-  Self.UpdateSettingDisplay(setting, label, akTerminalRef) ; #DEBUG_LINE_NO:62
+  UpdateSettingDisplay(setting, label, akTerminalRef)
 EndFunction
 
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-  Self.Log("OnTerminalMenuEnter triggered") ; #DEBUG_LINE_NO:72
-  Bool currentRemoveCorpsesSetting = LPSetting_RemoveCorpses.GetValue() == 1.0 ; #DEBUG_LINE_NO:75
-  Bool currentTakeAllSetting = LPSetting_ContTakeAll.GetValue() == 1.0 ; #DEBUG_LINE_NO:76
-  Bool currentAutoUnlockSetting = LPSetting_AutoUnlock.GetValue() == 1.0 ; #DEBUG_LINE_NO:77
-  Bool currentAutoUnlockSkillCheckSetting = LPSetting_AutoUnlockSkillCheck.GetValue() == 1.0 ; #DEBUG_LINE_NO:78
-  Self.Log(((("Current settings - RemoveCorpses: " + currentRemoveCorpsesSetting as String) + ", TakeAll: " + currentTakeAllSetting as String) + ", AutoUnlock: " + currentAutoUnlockSetting as String) + ", AutoUnlockSkillCheck: " + currentAutoUnlockSkillCheckSetting as String) ; #DEBUG_LINE_NO:79
-  Self.UpdateSettingDisplay(LPSetting_AutoUnlock, "AutoUnlock", akTerminalRef) ; #DEBUG_LINE_NO:82
-  Self.UpdateSettingDisplay(LPSetting_AutoUnlockSkillCheck, "AutoUnlockSkillCheck", akTerminalRef) ; #DEBUG_LINE_NO:83
-  Self.UpdateSettingDisplay(LPSetting_RemoveCorpses, "Corpses", akTerminalRef) ; #DEBUG_LINE_NO:84
-  Self.UpdateSettingDisplay(LPSetting_ContTakeAll, "TakeAll", akTerminalRef) ; #DEBUG_LINE_NO:85
+  Log("OnTerminalMenuEnter triggered")
+  Bool currentRemoveCorpsesSetting = LPSetting_RemoveCorpses.GetValue() == 1.0
+  Bool currentTakeAllSetting = LPSetting_ContTakeAll.GetValue() == 1.0
+  Bool currentAutoUnlockSetting = LPSetting_AutoUnlock.GetValue() == 1.0
+  Bool currentAutoUnlockSkillCheckSetting = LPSetting_AutoUnlockSkillCheck.GetValue() == 1.0
+  Log(((("Current settings - RemoveCorpses: " + currentRemoveCorpsesSetting as String) + ", TakeAll: " + currentTakeAllSetting as String) + ", AutoUnlock: " + currentAutoUnlockSetting as String) + ", AutoUnlockSkillCheck: " + currentAutoUnlockSkillCheckSetting as String)
+  UpdateSettingDisplay(LPSetting_AutoUnlock, "AutoUnlock", akTerminalRef)
+  UpdateSettingDisplay(LPSetting_AutoUnlockSkillCheck, "AutoUnlockSkillCheck", akTerminalRef)
+  UpdateSettingDisplay(LPSetting_RemoveCorpses, "Corpses", akTerminalRef)
+  UpdateSettingDisplay(LPSetting_ContTakeAll, "TakeAll", akTerminalRef)
 EndEvent
 
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-  Self.Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String) ; #DEBUG_LINE_NO:91
-  If akTerminalBase == CurrentTerminalMenu ; #DEBUG_LINE_NO:92
-    Self.Log("Terminal menu matches CurrentTerminalMenu") ; #DEBUG_LINE_NO:93
-    If auiMenuItemID == 0 ; #DEBUG_LINE_NO:95
-      Self.Log("Toggling AutoUnlock") ; #DEBUG_LINE_NO:96
-      Self.ToggleSetting(LPSetting_AutoUnlock, "AutoUnlock", akTerminalRef) ; #DEBUG_LINE_NO:97
-    ElseIf auiMenuItemID == 1 ; #DEBUG_LINE_NO:98
-      Self.Log("Toggling AutoUnlockSkillCheck") ; #DEBUG_LINE_NO:99
-      Self.ToggleSetting(LPSetting_AutoUnlockSkillCheck, "AutoUnlockSkillCheck", akTerminalRef) ; #DEBUG_LINE_NO:100
-    ElseIf auiMenuItemID == 2 ; #DEBUG_LINE_NO:101
-      Self.Log("Toggling Corpses") ; #DEBUG_LINE_NO:102
-      Self.ToggleSetting(LPSetting_RemoveCorpses, "Corpses", akTerminalRef) ; #DEBUG_LINE_NO:103
-    ElseIf auiMenuItemID == 3 ; #DEBUG_LINE_NO:104
-      Self.Log("Toggling TakeAll") ; #DEBUG_LINE_NO:105
-      Self.ToggleSetting(LPSetting_ContTakeAll, "TakeAll", akTerminalRef) ; #DEBUG_LINE_NO:106
+  Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
+  If akTerminalBase == CurrentTerminalMenu
+    Log("Terminal menu matches CurrentTerminalMenu")
+    If auiMenuItemID == 0
+      Log("Toggling AutoUnlock")
+      ToggleSetting(LPSetting_AutoUnlock, "AutoUnlock", akTerminalRef)
+    ElseIf auiMenuItemID == 1
+      Log("Toggling AutoUnlockSkillCheck")
+      ToggleSetting(LPSetting_AutoUnlockSkillCheck, "AutoUnlockSkillCheck", akTerminalRef)
+    ElseIf auiMenuItemID == 2
+      Log("Toggling Corpses")
+      ToggleSetting(LPSetting_RemoveCorpses, "Corpses", akTerminalRef)
+    ElseIf auiMenuItemID == 3
+      Log("Toggling TakeAll")
+      ToggleSetting(LPSetting_ContTakeAll, "TakeAll", akTerminalRef)
     EndIf
   EndIf
 EndEvent

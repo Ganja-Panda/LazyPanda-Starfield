@@ -14,67 +14,67 @@ GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory
 ;-- Functions ---------------------------------------
 
 Function Log(String logMsg)
-  If LPSystemUtil_Debug.GetValue() as Bool ; #DEBUG_LINE_NO:40
-    Debug.Trace(logMsg, 0) ; #DEBUG_LINE_NO:41
+  If LPSystemUtil_Debug.GetValue() as Bool
+    Debug.Trace(logMsg, 0)
   EndIf
 EndFunction
 
 Function CheckDebugGlobal()
-  If LPSystemUtil_Debug.GetValue() as Bool ; #DEBUG_LINE_NO:48
-    Self.Log("Debugging enabled") ; #DEBUG_LINE_NO:49
+  If LPSystemUtil_Debug.GetValue() as Bool
+    Log("Debugging enabled")
   EndIf
-  Utility.Wait(fDebugCheckInterval) ; #DEBUG_LINE_NO:52
-  Self.CheckDebugGlobal() ; #DEBUG_LINE_NO:53
+  Utility.Wait(fDebugCheckInterval)
+  CheckDebugGlobal()
 EndFunction
 
 Event OnAliasInit()
-  Self.Log("OnAliasInit triggered") ; #DEBUG_LINE_NO:63
-  Self.CheckForUpdates() ; #DEBUG_LINE_NO:64
-  Self.CheckDebugGlobal() ; #DEBUG_LINE_NO:66
+  Log("OnAliasInit triggered")
+  CheckForUpdates()
+  CheckDebugGlobal()
 EndEvent
 
 Event OnPlayerLoadGame()
-  Self.Log("OnPlayerLoadGame triggered") ; #DEBUG_LINE_NO:72
-  Self.CheckForUpdates() ; #DEBUG_LINE_NO:73
-  Self.CheckDebugGlobal() ; #DEBUG_LINE_NO:75
+  Log("OnPlayerLoadGame triggered")
+  CheckForUpdates()
+  CheckDebugGlobal()
 EndEvent
 
 Function CheckForUpdates()
-  Self.Log("CheckForUpdates called") ; #DEBUG_LINE_NO:85
-  Int iCurrentVersion = LPVersion_Major.GetValueInt() * 1000 + LPVersion_Minor.GetValueInt() ; #DEBUG_LINE_NO:88
-  Self.Log("Current version number: " + iCurrentVersion as String) ; #DEBUG_LINE_NO:89
-  Int iAppliedVersion = sUpdatesAppliedVersion as Int ; #DEBUG_LINE_NO:92
-  Self.Log("Previously applied version: " + iAppliedVersion as String) ; #DEBUG_LINE_NO:93
-  If iAppliedVersion < iCurrentVersion ; #DEBUG_LINE_NO:96
-    Self.Log(("Updates needed. Applying updates from version " + iAppliedVersion as String) + " to " + iCurrentVersion as String) ; #DEBUG_LINE_NO:97
-    If iAppliedVersion < 1001 ; #DEBUG_LINE_NO:101
-      Self.UpdateStep_1001() ; #DEBUG_LINE_NO:102
-      iAppliedVersion = 1001 ; #DEBUG_LINE_NO:103
+  Log("CheckForUpdates called")
+  Int iCurrentVersion = LPVersion_Major.GetValueInt() * 1000 + LPVersion_Minor.GetValueInt()
+  Log("Current version number: " + iCurrentVersion as String)
+  Int iAppliedVersion = sUpdatesAppliedVersion as Int
+  Log("Previously applied version: " + iAppliedVersion as String)
+  If iAppliedVersion < iCurrentVersion
+    Log(("Updates needed. Applying updates from version " + iAppliedVersion as String) + " to " + iCurrentVersion as String)
+    If iAppliedVersion < 1001
+      UpdateStep_1001()
+      iAppliedVersion = 1001
     EndIf
-    sUpdatesAppliedVersion = iCurrentVersion as String ; #DEBUG_LINE_NO:113
-    Self.Log("Updates applied. New applied version: " + sUpdatesAppliedVersion) ; #DEBUG_LINE_NO:114
+    sUpdatesAppliedVersion = iCurrentVersion as String
+    Log("Updates applied. New applied version: " + sUpdatesAppliedVersion)
   Else
-    Self.Log("No updates needed") ; #DEBUG_LINE_NO:116
+    Log("No updates needed")
   EndIf
 EndFunction
 
 Function UpdateStep_1001()
-  Self.Log("Executing UpdateStep_1001: Adding missing perks") ; #DEBUG_LINE_NO:123
-  Self.AddPerks() ; #DEBUG_LINE_NO:124
+  Log("Executing UpdateStep_1001: Adding missing perks")
+  AddPerks()
 EndFunction
 
 Function AddPerks()
-  Self.Log("AddPerks called") ; #DEBUG_LINE_NO:130
-  Int index = 0 ; #DEBUG_LINE_NO:131
-  While index < LPSystem_Script_Perks.GetSize() ; #DEBUG_LINE_NO:132
-    Perk currentPerk = LPSystem_Script_Perks.GetAt(index) as Perk ; #DEBUG_LINE_NO:133
-    Self.Log("Checking perk: " + currentPerk as String) ; #DEBUG_LINE_NO:134
-    If !Game.GetPlayer().HasPerk(currentPerk) ; #DEBUG_LINE_NO:135
-      Self.Log("Adding perk: " + currentPerk as String) ; #DEBUG_LINE_NO:136
-      Game.GetPlayer().AddPerk(currentPerk, False) ; #DEBUG_LINE_NO:137
+  Log("AddPerks called")
+  Int index = 0
+  While index < LPSystem_Script_Perks.GetSize()
+    Perk currentPerk = LPSystem_Script_Perks.GetAt(index) as Perk
+    Log("Checking perk: " + currentPerk as String)
+    If !Game.GetPlayer().HasPerk(currentPerk)
+      Log("Adding perk: " + currentPerk as String)
+      Game.GetPlayer().AddPerk(currentPerk, False)
     Else
-      Self.Log("Player already has perk: " + currentPerk as String) ; #DEBUG_LINE_NO:139
+      Log("Player already has perk: " + currentPerk as String)
     EndIf
-    index += 1 ; #DEBUG_LINE_NO:141
+    index += 1
   EndWhile
 EndFunction

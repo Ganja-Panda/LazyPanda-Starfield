@@ -23,41 +23,41 @@ EndGroup
 ;-- Functions ---------------------------------------
 
 Function Log(String logMsg)
-  If LPSystemUtil_Debug.GetValue() as Bool ; #DEBUG_LINE_NO:35
-    Debug.Trace(logMsg, 0) ; #DEBUG_LINE_NO:36
+  If LPSystemUtil_Debug.GetValue() as Bool
+    Debug.Trace(logMsg, 0)
   EndIf
 EndFunction
 
 Event OnLoad()
-  Self.Log("[Lazy Panda] OnLoad triggered") ; #DEBUG_LINE_NO:47
-  Self.StartTimer(lootTimerDelay, lootTimerID) ; #DEBUG_LINE_NO:48
+  Log("[Lazy Panda] OnLoad triggered")
+  StartTimer(lootTimerDelay, lootTimerID)
 EndEvent
 
 Event OnTimer(Int aiTimerID)
-  Self.Log("[Lazy Panda] OnTimer triggered with TimerID: " + aiTimerID as String) ; #DEBUG_LINE_NO:54
-  If aiTimerID == lootTimerID ; #DEBUG_LINE_NO:55
-    Self.ExecuteLooting() ; #DEBUG_LINE_NO:56
+  Log("[Lazy Panda] OnTimer triggered with TimerID: " + aiTimerID as String)
+  If aiTimerID == lootTimerID
+    ExecuteLooting()
   EndIf
 EndEvent
 
 Function ExecuteLooting()
-  Self.Log("[Lazy Panda] ExecuteLooting called") ; #DEBUG_LINE_NO:67
-  Self.StartTimer(lootTimerDelay, lootTimerID) ; #DEBUG_LINE_NO:68
-  Float fSearchRadius = Game.GetGameSettingFloat("fMaxShipTransferDistance") ; #DEBUG_LINE_NO:71
-  Bool bToggleLooting = LPSystemUtil_ToggleLooting.GetValue() == 1.0 ; #DEBUG_LINE_NO:72
-  Bool bEnableContSpace = LPEnableCont_Space.GetValue() == 1.0 ; #DEBUG_LINE_NO:73
-  Bool bHasPerk = Game.GetPlayer().HasPerk(ActivePerk) ; #DEBUG_LINE_NO:74
-  Self.Log("[Lazy Panda] fSearchRadius: " + fSearchRadius as String) ; #DEBUG_LINE_NO:76
-  If fSearchRadius > 0.0 && bToggleLooting && bEnableContSpace && bHasPerk ; #DEBUG_LINE_NO:79
-    Self.Log("[Lazy Panda] Looting enabled and within search radius") ; #DEBUG_LINE_NO:80
-    ObjectReference homeShipRef = PlayerHomeShip.GetRef() ; #DEBUG_LINE_NO:81
-    If homeShipRef != None ; #DEBUG_LINE_NO:82
-      Self.RemoveAllItems(homeShipRef, False, False) ; #DEBUG_LINE_NO:83
-      Self.Log("[Lazy Panda] Items removed and transferred to PlayerHomeShip") ; #DEBUG_LINE_NO:84
+  Log("[Lazy Panda] ExecuteLooting called")
+  StartTimer(lootTimerDelay, lootTimerID)
+  Float fSearchRadius = Game.GetGameSettingFloat("fMaxShipTransferDistance")
+  Bool bToggleLooting = LPSystemUtil_ToggleLooting.GetValue() == 1.0
+  Bool bEnableContSpace = LPEnableCont_Space.GetValue() == 1.0
+  Bool bHasPerk = Game.GetPlayer().HasPerk(ActivePerk)
+  Log("[Lazy Panda] fSearchRadius: " + fSearchRadius as String)
+  If fSearchRadius > 0.0 && bToggleLooting && bEnableContSpace && bHasPerk
+    Log("[Lazy Panda] Looting enabled and within search radius")
+    ObjectReference homeShipRef = PlayerHomeShip.GetRef()
+    If homeShipRef != None
+      RemoveAllItems(homeShipRef, False, False)
+      Log("[Lazy Panda] Items removed and transferred to PlayerHomeShip")
     Else
-      Self.Log("[Lazy Panda] PlayerHomeShip reference is None") ; #DEBUG_LINE_NO:86
+      Log("[Lazy Panda] PlayerHomeShip reference is None")
     EndIf
   Else
-    Self.Log("[Lazy Panda] Looting not enabled, you don't have the proper perk or out of search radius") ; #DEBUG_LINE_NO:90
+    Log("[Lazy Panda] Looting not enabled, you don't have the proper perk or out of search radius")
   EndIf
 EndFunction
