@@ -1,8 +1,18 @@
+;======================================================================
+; Script: LZP:Term:Menu_UtilInventoryScript
+; Description: This script manages the utility inventory menu functionality.
+; It updates settings based on user interactions and provides feedback
+; through messages. Debug logging is integrated to assist with troubleshooting.
+;======================================================================
+
 ScriptName LZP:Term:Menu_UtilInventoryScript Extends TerminalMenu hidden
 
-;-- Variables ---------------------------------------
+;======================================================================
+; PROPERTY GROUPS
+;======================================================================
 
-;-- Properties --------------------------------------
+;-- Menu Util Properties --
+; Properties required for the menu utility functionality.
 Group Menu_UtilProperties
   TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
   ObjectReference Property LodgeSafeRef Auto Const mandatory
@@ -11,14 +21,20 @@ Group Menu_UtilProperties
   ReferenceAlias Property PlayerHomeShip Auto Const mandatory
 EndGroup
 
+;-- Debug Properties --
+; Properties required for debugging functionality.
 Group DebugProperties
   GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory
 EndGroup
 
+;-- Global Variables --
+; Global variables for settings such as looting toggle.
 Group GlobalVariable_Autofill
   GlobalVariable Property LPSystemUtil_ToggleLooting Auto mandatory
 EndGroup
 
+;-- Messages --
+; Messages displayed to the player when toggling settings.
 Group Message_Autofill
   Message Property LPOffMsg Auto Const mandatory
   Message Property LPOnMsg Auto Const mandatory
@@ -26,15 +42,20 @@ Group Message_Autofill
   Message Property LPDebugOffMsg Auto Const mandatory
 EndGroup
 
+;======================================================================
+; HELPER FUNCTIONS
+;======================================================================
 
-;-- Functions ---------------------------------------
-
+;-- Log Function --
+; Logs a message if the global debug setting is enabled.
 Function Log(String logMsg)
   If LPSystemUtil_Debug.GetValue() as Bool
     Debug.Trace(logMsg, 0)
   EndIf
 EndFunction
 
+;-- UpdateLootingDisplay Function --
+; Updates the terminal display for the looting status.
 Function UpdateLootingDisplay(ObjectReference akTerminalRef, Bool currentLootSetting)
   If !currentLootSetting
     Log("Updating display: Looting is off")
@@ -45,30 +66,48 @@ Function UpdateLootingDisplay(ObjectReference akTerminalRef, Bool currentLootSet
   EndIf
 EndFunction
 
+;-- UpdateDebugDisplay Function --
+; Updates the terminal display for the debug status.
 Function UpdateDebugDisplay(ObjectReference akTerminalRef, Bool currentDebugStatus)
   If currentDebugStatus
     Log("Updating display: Debugging is on")
-    akTerminalRef.AddTextReplacementData("Logging", LPDebugOnMsg as Form)
+    akTerminalRef.AddTextReplacementData("Debugging", LPDebugOnMsg as Form)
   Else
     Log("Updating display: Debugging is off")
-    akTerminalRef.AddTextReplacementData("Logging", LPDebugOffMsg as Form)
+    akTerminalRef.AddTextReplacementData("Debugging", LPDebugOffMsg as Form)
   EndIf
 EndFunction
 
+;======================================================================
+; EVENT HANDLERS
+;======================================================================
+
+;-- OnTerminalMenuEnter Event Handler --
+; Called when the terminal menu opens.
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
   Log("OnTerminalMenuEnter triggered")
+  
+  ; Get current settings
   Bool currentLootSetting = LPSystemUtil_ToggleLooting.GetValue() as Bool
   Bool currentDebugStatus = LPSystemUtil_Debug.GetValue() as Bool
+  
+  ; Log current settings
   Log("Current loot setting: " + currentLootSetting as String)
   Log("Current debug status: " + currentDebugStatus as String)
+  
+  ; Update displays
   UpdateLootingDisplay(akTerminalRef, currentLootSetting)
   UpdateDebugDisplay(akTerminalRef, currentDebugStatus)
 EndEvent
 
+;-- OnTerminalMenuItemRun Event Handler --
+; Called when a menu item is selected.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
   Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
   If akTerminalBase == CurrentTerminalMenu
     Log("Terminal menu matches CurrentTerminalMenu")
+    
+    ; Toggle looting when menu item 1 is selected.
     If auiMenuItemID == 1
       Log("Menu item 1 selected")
       Bool currentLootSetting = LPSystemUtil_ToggleLooting.GetValue() as Bool
@@ -80,31 +119,41 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
         Log("Turning looting off")
         LPSystemUtil_ToggleLooting.SetValue(0.0)
       EndIf
+      ; Update the display after toggling.
       UpdateLootingDisplay(akTerminalRef, LPSystemUtil_ToggleLooting.GetValue() as Bool)
+      
+    ; Activate LodgeSafeRef when menu item 2 is selected.
     ElseIf auiMenuItemID == 2
       Log("Menu item 2 selected")
       Log("Activating LodgeSafeRef")
       LodgeSafeRef.Activate(PlayerRef, False)
+      
+    ; Open inventory for LPDummyHoldingRef when menu item 3 is selected.
     ElseIf auiMenuItemID == 3
       Log("Menu item 3 selected")
       Log("Opening inventory for LPDummyHoldingRef")
       (LPDummyHoldingRef as Actor).OpenInventory(True, None, False)
+      
+    ; Open inventory for PlayerHomeShip when menu item 4 is selected.
     ElseIf auiMenuItemID == 4
       Log("Menu item 4 selected")
       Log("Opening inventory for PlayerHomeShip")
       spaceshipreference PlayerShip = PlayerHomeShip.GetRef() as spaceshipreference
       PlayerShip.OpenInventory()
+      
+    ; Toggle debug status when menu item 5 is selected.
     ElseIf auiMenuItemID == 5
-      Log("Menu item 5 selected - Enable Debugging")
-      Bool currentDebugSetting = LPSystemUtil_Debug.GetValue() as Bool
-      Log("Current debug setting: " + currentDebugSetting as String)
-      If !currentDebugSetting
+      Log("Menu item 5 selected")
+      Bool currentDebugStatus = LPSystemUtil_Debug.GetValue() as Bool
+      Log("Current debug status: " + currentDebugStatus as String)
+      If !currentDebugStatus
         Log("Turning debugging on")
         LPSystemUtil_Debug.SetValue(1.0)
       Else
         Log("Turning debugging off")
         LPSystemUtil_Debug.SetValue(0.0)
       EndIf
+      ; Update the display after toggling.
       UpdateDebugDisplay(akTerminalRef, LPSystemUtil_Debug.GetValue() as Bool)
     EndIf
   EndIf
