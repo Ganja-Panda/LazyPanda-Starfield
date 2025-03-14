@@ -71,10 +71,10 @@ EndFunction
 Function UpdateDebugDisplay(ObjectReference akTerminalRef, Bool currentDebugStatus)
   If currentDebugStatus
     Log("Updating display: Debugging is on")
-    akTerminalRef.AddTextReplacementData("Debugging", LPDebugOnMsg as Form)
+    akTerminalRef.AddTextReplacementData("Logging", LPDebugOnMsg as Form)
   Else
     Log("Updating display: Debugging is off")
-    akTerminalRef.AddTextReplacementData("Debugging", LPDebugOffMsg as Form)
+    akTerminalRef.AddTextReplacementData("Logging", LPDebugOffMsg as Form)
   EndIf
 EndFunction
 

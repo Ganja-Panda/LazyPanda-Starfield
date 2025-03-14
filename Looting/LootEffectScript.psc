@@ -309,6 +309,8 @@ Function RemoveCorpse(ObjectReference theCorpse)
     Log("[Lazy Panda] RemoveCorpse called with corpse: " + theCorpse as String)
     If LPSetting_RemoveCorpses.GetValue() as Bool
         theCorpse.DisableNoWait(True)
+    Else
+        theCorpse.DisableNoWait(True)
     EndIf
 EndFunction
 
@@ -397,6 +399,7 @@ EndFunction
 ;-- IsInRestrictedLocation Function --
 ; Checks if the player is located within any restricted looting locations.
 Bool Function IsInRestrictedLocation()
+    Log("[Lazy Panda] IsInRestrictedLocation called")
     FormList restrictedLocations = LPFilter_NoLootLocations
     Int index = 0
     While index < restrictedLocations.GetSize()
