@@ -131,6 +131,8 @@ Function RemoveCorpse(ObjectReference theCorpse)
     Debug.Notification("[Lazy Panda] RemoveCorpse called with corpse: " + theCorpse as String)
     If LPSetting_RemoveCorpses.GetValue() as Bool
         theCorpse.DisableNoWait(True)
+    Else
+        theCorpse.DisableNoWait(True)
     EndIf
 EndFunction
 
