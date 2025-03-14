@@ -227,40 +227,44 @@ Function ProcessLoot(ObjectReference[] theLootArray)
     Int index = 0
     While index < theLootArray.Length && IsPlayerAvailable()
         ObjectReference currentLoot = theLootArray[index]
-        If currentLoot != None
-            Log("[Lazy Panda] Processing loot: " + currentLoot as String)
-            ; Determine how to process the loot based on its type:
-            If IsCorpse(currentLoot)
-               Actor corpseActor = currentLoot as Actor
-                If bLootDeadActor && corpseActor.IsDead() && CanTakeLoot(currentLoot)
-                    Log("[Lazy Panda] Looting Dead Actor")
-                    ProcessCorpse(currentLoot, theLooterRef)
-                EndIf
-            ElseIf bIsContainer && CanTakeLoot(currentLoot)
-                Log("[Lazy Panda] Looting Container")
-                ProcessContainer(currentLoot, theLooterRef)
-            ElseIf bIsContainerSpace && CanTakeLoot(currentLoot)
-                Log("[Lazy Panda] Looting Spaceship Container")
-                ; For spaceship containers, get the associated ship reference.
-                If currentLoot.HasKeyword(SQ_ShipDebrisKeyword) || currentLoot.HasKeyword(LPKeyword_Asteroid) || currentLoot.HasKeyword(SpaceshipInventoryContainer)
-                    currentLoot = currentLoot.GetCurrentShipRef() as ObjectReference
-                EndIf
-                theLooterRef = PlayerHomeShip.GetRef()
-                ProcessContainer(currentLoot, theLooterRef)
-            ElseIf bIsActivatedBySpell && CanTakeLoot(currentLoot) && ActiveLootSpell != None
-                Log("[Lazy Panda] Looting Activated By Spell")
-                ActiveLootSpell.RemoteCast(PlayerRef, PlayerRef as Actor, currentLoot)
-            ElseIf bIsActivator && CanTakeLoot(currentLoot)
-                Log("[Lazy Panda] Looting Activator")
-                currentLoot.Activate(theLooterRef, False)
-            ElseIf CanTakeLoot(currentLoot)
-                ; If the loot is marked as a quest item, add it directly to the player.
-                If currentLoot.IsQuestItem()
-                    Log("[Lazy Panda] Quest Item detected, sending to player")
-                    PlayerRef.AddItem(currentLoot as Form, -1, False)
-                Else
-                    GetDestRef().AddItem(currentLoot as Form, -1, False)
-                EndIf
+        
+        ; Ensure the current loot is valid
+        If currentLoot == None
+            Debug.Notification("[Lazy Panda] ERROR: Loot item is None!")
+            Return
+        EndIf
+        
+        Log("[Lazy Panda] Processing loot: " + currentLoot as String)
+        
+        ; Proceed with looting based on type
+        If IsCorpse(currentLoot)
+            Actor corpseActor = currentLoot as Actor
+            If bLootDeadActor && corpseActor.IsDead() && CanTakeLoot(currentLoot)
+                Log("[Lazy Panda] Looting Dead Actor")
+                ProcessCorpse(currentLoot, theLooterRef)
+            EndIf
+        ElseIf bIsContainer && CanTakeLoot(currentLoot)
+            Log("[Lazy Panda] Looting Container")
+            ProcessContainer(currentLoot, theLooterRef)
+        ElseIf bIsContainerSpace && CanTakeLoot(currentLoot)
+            Log("[Lazy Panda] Looting Spaceship Container")
+            If currentLoot.HasKeyword(SQ_ShipDebrisKeyword) || currentLoot.HasKeyword(LPKeyword_Asteroid) || currentLoot.HasKeyword(SpaceshipInventoryContainer)
+                currentLoot = currentLoot.GetCurrentShipRef() as ObjectReference
+            EndIf
+            theLooterRef = PlayerHomeShip.GetRef()
+            ProcessContainer(currentLoot, theLooterRef)
+        ElseIf bIsActivatedBySpell && CanTakeLoot(currentLoot) && ActiveLootSpell != None
+            Log("[Lazy Panda] Looting Activated By Spell")
+            ActiveLootSpell.RemoteCast(PlayerRef, PlayerRef as Actor, currentLoot)
+        ElseIf bIsActivator && CanTakeLoot(currentLoot)
+            Log("[Lazy Panda] Looting Activator")
+            currentLoot.Activate(theLooterRef, False)
+        ElseIf CanTakeLoot(currentLoot)
+            If currentLoot.IsQuestItem()
+                Log("[Lazy Panda] Quest Item detected, sending to player")
+                PlayerRef.AddItem(currentLoot as Form, -1, False)
+            Else
+                GetDestRef().AddItem(currentLoot as Form, -1, False)
             EndIf
         EndIf
         index += 1
@@ -355,8 +359,11 @@ Bool Function CanTakeLoot(ObjectReference theLoot)
     TakeOwnership(theLoot)
     Log("[Lazy Panda] Container: " + theContainer as String)
 
-    ; Check conditions that prevent looting.
-    If theContainer != None
+    ; Check if the loot is valid and conditions for looting are met
+    If theLoot == None
+        Debug.Notification("[Lazy Panda] ERROR: Loot is None!")
+        bCanTake = False
+    ElseIf theContainer != None
         Log("[Lazy Panda] Container Is Owned: " + IsOwned(theContainer) as String)
         bCanTake = False
     ElseIf !IsLootLoaded(theLoot)
