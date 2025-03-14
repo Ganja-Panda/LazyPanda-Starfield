@@ -230,7 +230,7 @@ Function ProcessLoot(ObjectReference[] theLootArray)
         
         ; Ensure the current loot is valid
         If currentLoot == None
-            Debug.Notification("[Lazy Panda] ERROR: Loot item is None!")
+           Log("[Lazy Panda] ERROR: Loot item is None!")
             Return
         EndIf
         
@@ -361,7 +361,7 @@ Bool Function CanTakeLoot(ObjectReference theLoot)
 
     ; Check if the loot is valid and conditions for looting are met
     If theLoot == None
-        Debug.Notification("[Lazy Panda] ERROR: Loot is None!")
+        Log("[Lazy Panda] ERROR: Loot is None!")
         bCanTake = False
     ElseIf theContainer != None
         Log("[Lazy Panda] Container Is Owned: " + IsOwned(theContainer) as String)
