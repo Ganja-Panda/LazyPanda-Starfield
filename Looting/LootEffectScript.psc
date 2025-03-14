@@ -112,7 +112,7 @@ EndGroup
 ; Timer and local flags for looting behavior.
 Group NoFill
     Int Property lootTimerID = 1 Auto                                  ; Timer identifier for looting
-    Float Property lootTimerDelay = 0.1 Auto                             ; Delay between loot cycles
+    Float Property lootTimerDelay = 0.5 Auto                             ; Delay between loot cycles
     Bool Property bAllowStealing = False Auto                            ; Local flag to allow stealing
     Bool Property bStealingIsHostile = False Auto                         ; Local flag indicating hostile stealing
     Bool Property bTakeAll = False Auto                                   ; Local flag to loot all items from a container
@@ -223,53 +223,64 @@ EndFunction
 ; Processes an array of loot references, determining how to handle each based on its type.
 Function ProcessLoot(ObjectReference[] theLootArray)
     Log("[Lazy Panda] ProcessLoot called with lootArray of length: " + theLootArray.Length as String)
-    theLooterRef = PlayerRef   ; Default looter is the player
+    theLooterRef = PlayerRef
     Int index = 0
+
     While index < theLootArray.Length && IsPlayerAvailable()
         ObjectReference currentLoot = theLootArray[index]
-        
-        ; Ensure the current loot is valid
+
         If currentLoot == None
-           Log("[Lazy Panda] ERROR: Loot item is None!")
-            Return
-        EndIf
-        
-        Log("[Lazy Panda] Processing loot: " + currentLoot as String)
-        
-        ; Proceed with looting based on type
-        If IsCorpse(currentLoot)
-            Actor corpseActor = currentLoot as Actor
-            If bLootDeadActor && corpseActor.IsDead() && CanTakeLoot(currentLoot)
-                Log("[Lazy Panda] Looting Dead Actor")
-                ProcessCorpse(currentLoot, theLooterRef)
-            EndIf
-        ElseIf bIsContainer && CanTakeLoot(currentLoot)
-            Log("[Lazy Panda] Looting Container")
-            ProcessContainer(currentLoot, theLooterRef)
-        ElseIf bIsContainerSpace && CanTakeLoot(currentLoot)
-            Log("[Lazy Panda] Looting Spaceship Container")
-            If currentLoot.HasKeyword(SQ_ShipDebrisKeyword) || currentLoot.HasKeyword(LPKeyword_Asteroid) || currentLoot.HasKeyword(SpaceshipInventoryContainer)
-                currentLoot = currentLoot.GetCurrentShipRef() as ObjectReference
-            EndIf
-            theLooterRef = PlayerHomeShip.GetRef()
-            ProcessContainer(currentLoot, theLooterRef)
-        ElseIf bIsActivatedBySpell && CanTakeLoot(currentLoot) && ActiveLootSpell != None
-            Log("[Lazy Panda] Looting Activated By Spell")
-            ActiveLootSpell.RemoteCast(PlayerRef, PlayerRef as Actor, currentLoot)
-        ElseIf bIsActivator && CanTakeLoot(currentLoot)
-            Log("[Lazy Panda] Looting Activator")
-            currentLoot.Activate(theLooterRef, False)
-        ElseIf CanTakeLoot(currentLoot)
-            If currentLoot.IsQuestItem()
-                Log("[Lazy Panda] Quest Item detected, sending to player")
-                PlayerRef.AddItem(currentLoot as Form, -1, False)
-            Else
-                GetDestRef().AddItem(currentLoot as Form, -1, False)
+            Log("[Lazy Panda] ERROR: Loot item is None!")
+        Else
+            Log("[Lazy Panda] Processing loot: " + currentLoot as String)
+
+            If IsCorpse(currentLoot)
+                Actor corpseActor = currentLoot as Actor
+                If bLootDeadActor && corpseActor.IsDead() && CanTakeLoot(currentLoot)
+                    Log("[Lazy Panda] Looting Dead Actor")
+                    ProcessCorpse(currentLoot, theLooterRef)
+                EndIf
+            ElseIf bIsContainer && CanTakeLoot(currentLoot)
+                Log("[Lazy Panda] Looting Container")
+                ProcessContainer(currentLoot, theLooterRef)
+            ElseIf bIsContainerSpace && CanTakeLoot(currentLoot)
+                Log("[Lazy Panda] Looting Spaceship Container")
+                If currentLoot.HasKeyword(SQ_ShipDebrisKeyword) || currentLoot.HasKeyword(LPKeyword_Asteroid) || currentLoot.HasKeyword(SpaceshipInventoryContainer)
+                    currentLoot = currentLoot.GetCurrentShipRef() as ObjectReference
+                EndIf
+                theLooterRef = PlayerHomeShip.GetRef()
+                ProcessContainer(currentLoot, theLooterRef)
+            ElseIf bIsActivatedBySpell && CanTakeLoot(currentLoot) && ActiveLootSpell != None
+                Log("[Lazy Panda] Looting Activated By Spell")
+                ActiveLootSpell.RemoteCast(PlayerRef, PlayerRef as Actor, currentLoot)
+            ElseIf bIsActivator && CanTakeLoot(currentLoot)
+                Log("[Lazy Panda] Looting Activator")
+                currentLoot.Activate(theLooterRef, False)
+            ElseIf CanTakeLoot(currentLoot)
+                Form lootForm = currentLoot.GetBaseObject()
+                ObjectReference lootDest = GetDestRef()
+
+                If lootForm != None && lootDest != None
+                    If currentLoot as ObjectReference != None && currentLoot != PlayerRef
+                        Log("[Lazy Panda] Removing placed object to destination instead of adding copies.")
+                        currentLoot.RemoveItem(lootForm, 1, True, lootDest)
+                    Else
+                If lootForm as MiscObject != None && lootDest as Container != None
+                    lootDest.AddItem(lootForm, 1, False)
+                Else
+                    Log("[Lazy Panda] ERROR: Attempted to add non-containerizable object to inventory: " + lootForm)
+                EndIf
+                    EndIf
+                Else
+                    Log("[Lazy Panda] ERROR: Loot item or destination is invalid!")
+                EndIf
             EndIf
         EndIf
         index += 1
     EndWhile
 EndFunction
+
+
 
 ;-- ProcessCorpse Function --
 ; Handles processing of a corpse object including unequipping, looting, and removal.
