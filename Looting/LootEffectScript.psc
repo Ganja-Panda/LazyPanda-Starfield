@@ -265,11 +265,7 @@ Function ProcessLoot(ObjectReference[] theLootArray)
                         Log("[Lazy Panda] Removing placed object to destination instead of adding copies.")
                         currentLoot.RemoveItem(lootForm, 1, True, lootDest)
                     Else
-                If lootForm as MiscObject != None && lootDest as Container != None
-                    lootDest.AddItem(lootForm, 1, False)
-                Else
-                    Log("[Lazy Panda] ERROR: Attempted to add non-containerizable object to inventory: " + lootForm)
-                EndIf
+                        lootDest.AddItem(lootForm, 1, False)
                     EndIf
                 Else
                     Log("[Lazy Panda] ERROR: Loot item or destination is invalid!")
