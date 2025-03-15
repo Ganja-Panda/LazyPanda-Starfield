@@ -88,7 +88,7 @@ Group Misc
     Keyword Property SQ_ShipDebrisKeyword Auto Const            ; Keyword for spaceship debris objects
     Keyword Property LPKeyword_Asteroid  Auto Const           ; Keyword for asteroid objects
     Armor Property LP_Skin_Naked_NOTPLAYABLE Auto Const mandatory       ; Armor for unequipping corpses (non-playable)
-    Race Property HumanRace Auto Const mandatory                       ; Standard human race
+    Race Property HumanRace Auto Const mandatory                       ; Standard human race  
     GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory         ; Global debug flag for logging
 EndGroup
 
