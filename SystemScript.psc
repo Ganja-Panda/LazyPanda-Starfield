@@ -40,7 +40,7 @@ EndFunction
 ; cgf "LZP:SystemScript.OpenLodgeSafe"
 Function OpenLodgeSafe() Global
     Log("[Lazy Panda] OpenLodgeSafe called")
-    ObjectReference LodgeSafeRef = Game.GetForm(0x269A1) as ObjectReference
+    ObjectReference LodgeSafeRef = Game.GetForm(0x266E81) as ObjectReference
     LodgeSafeRef.Activate(Game.GetPlayer() as ObjectReference, False)
 EndFunction
 
@@ -49,7 +49,7 @@ EndFunction
 ; cgf "LZP:SystemScript.OpenShipCargo"
 Function OpenShipCargo() Global
     Log("[Lazy Panda] OpenShipCargo called")
-    Quest SQ_PlayerShip = Game.GetForm(0x17452) as Quest
+    Quest SQ_PlayerShip = Game.GetForm(0x174A2) as Quest
     ReferenceAlias PlayerHomeShip = SQ_PlayerShip.GetAlias(16) as ReferenceAlias
     spaceshipreference PlayerShip = PlayerHomeShip.GetRef() as spaceshipreference
     PlayerShip.OpenInventory()
@@ -62,7 +62,7 @@ Function MoveAllToShip() Global
     Log("[Lazy Panda] MoveAllToShip called")
     Message LPAllItemsToShipMsg = Game.GetFormFromFile(0x091D, "LazyPanda.esm") as Message
     ObjectReference LPDummyHoldingRef = Game.GetFormFromFile(0x09C1, "LazyPanda.esm") as ObjectReference
-    Quest SQ_PlayerShip = Game.GetForm(0x17452) as Quest
+    Quest SQ_PlayerShip = Game.GetForm(0x174A2) as Quest
     ReferenceAlias PlayerHomeShip = SQ_PlayerShip.GetAlias(16) as ReferenceAlias
     ObjectReference PlayerShip = PlayerHomeShip.GetRef()
     LPDummyHoldingRef.RemoveAllItems(PlayerShip, False, False)
@@ -76,7 +76,7 @@ Function MoveResourcesToShip() Global
     Log("[Lazy Panda] MoveResourcesToShip called")
     Message LPResourcesToShipMsg = Game.GetFormFromFile(0x091E, "LazyPanda.esm") as Message
     FormList LPSystem_Script_Resources = Game.GetFormFromFile(0x08C9, "LazyPanda.esm") as FormList
-    Quest SQ_PlayerShip = Game.GetForm(0x17452) as Quest
+    Quest SQ_PlayerShip = Game.GetForm(0x174A2) as Quest
     ReferenceAlias PlayerHomeShip = SQ_PlayerShip.GetAlias(16) as ReferenceAlias
     ObjectReference PlayerShip = PlayerHomeShip.GetRef()
     ObjectReference LPDummyHoldingRef = Game.GetFormFromFile(0x09C1, "LazyPanda.esm") as ObjectReference
@@ -92,7 +92,7 @@ Function MoveValuablesToPlayer() Global
     Log("[Lazy Panda] MoveValuablesToPlayer called")
     Message LPValuablesToPlayerMsg = Game.GetFormFromFile(0x091F, "LazyPanda.esm") as Message
     FormList LPSystem_Script_Valuables = Game.GetFormFromFile(0x08CA, "LazyPanda.esm") as FormList
-    Quest SQ_PlayerShip = Game.GetForm(0x17452) as Quest
+    Quest SQ_PlayerShip = Game.GetForm(0x174A2) as Quest
     ReferenceAlias PlayerHomeShip = SQ_PlayerShip.GetAlias(16) as ReferenceAlias
     ObjectReference PlayerShip = PlayerHomeShip.GetRef()
     ObjectReference LPDummyHoldingRef = Game.GetFormFromFile(0x09C1, "LazyPanda.esm") as ObjectReference
@@ -119,7 +119,7 @@ EndFunction
 ; Reports the status of various perks, magic effects, and global variables.
 ; cgf "LZP:SystemScript.ReportStatus"
 Function ReportStatus() Global
-    GlobalVariable LPSystemUtil_Debug = Game.GetFormFromFile(0x0ABC, "LazyPanda.esm") as GlobalVariable
+    GlobalVariable LPSystemUtil_Debug = Game.GetFormFromFile(0x0922, "LazyPanda.esm") as GlobalVariable
     Log("[Lazy Panda] ReportStatus called")
     FormList LPSystem_Script_Perks = Game.GetFormFromFile(0x08C8, "LazyPanda.esm") as FormList
     Int perkCount = LPSystem_Script_Perks.GetSize()
