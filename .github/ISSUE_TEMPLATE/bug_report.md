@@ -33,4 +33,4 @@ If applicable, add screenshots to help explain your problem.
  - Mod Version [e.g. 2.0]
 
 **Additional context**
-Add any other context about the problem here. If you ahve generated a log please attach it to this report
+Add any other context about the problem here. If you have generated a log please attach it to this report
