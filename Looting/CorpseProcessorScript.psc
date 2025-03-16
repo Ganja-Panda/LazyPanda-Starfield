@@ -89,7 +89,7 @@ EndFunction
 ;-- ProcessCorpse Function --
 ; Handles processing of a corpse object including unequipping, looting, and removal.
 Function ProcessCorpse(ObjectReference akVictim, ObjectReference akKiller)
-    Debug.Notification("[Lazy Panda] ProcessCorpse called with corpse: " + akVictim)
+   Log("[Lazy Panda] ProcessCorpse called with corpse: " + akVictim)
 
     Bool takeAll = LPSetting_ContTakeAll.GetValue() as Bool
     bTakeAll = takeAll
@@ -103,16 +103,16 @@ Function ProcessCorpse(ObjectReference akVictim, ObjectReference akKiller)
             corpseActor.EquipItem(LP_Skin_Naked_NOTPLAYABLE as Form, False, False)
         EndIf
     Else
-        Debug.Notification("[Lazy Panda] Corpse is not an Actor; skipping actor-specific processing.")
+        Log("[Lazy Panda] Corpse is not an Actor; skipping actor-specific processing.")
     EndIf
 
     Utility.Wait(0.1)
 
     ; Log the killer if one is detected.
     If akKiller != None
-        Debug.Notification("[Lazy Panda] Killer: " + akKiller)
+        Log("[Lazy Panda] Killer: " + akKiller)
     Else
-        Debug.Notification("[Lazy Panda] No killer detected.")
+       Log("[Lazy Panda] No killer detected.")
     EndIf
 
     ; Loot the corpse if the setting is enabled.
@@ -128,7 +128,7 @@ EndFunction
 ;-- RemoveCorpse Function --
 ; Removes the corpse from the world if the setting is enabled.
 Function RemoveCorpse(ObjectReference theCorpse)
-    Debug.Notification("[Lazy Panda] RemoveCorpse called with corpse: " + theCorpse as String)
+   Log("[Lazy Panda] RemoveCorpse called with corpse: " + theCorpse as String)
     If LPSetting_RemoveCorpses.GetValue() as Bool
         theCorpse.DisableNoWait(True)
     Else
@@ -140,11 +140,11 @@ EndFunction
 ; Processes container items using filtering lists to remove specific items.
 Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectReference akLooter)
     If akContainer == None
-        Debug.Notification("[Lazy Panda] ProcessFilteredContainerItems: No valid container found!")
+       Log("[Lazy Panda] ProcessFilteredContainerItems: No valid container found!")
         Return
     EndIf
 
-    Debug.Notification("[Lazy Panda] Processing filtered items in: " + akContainer)
+   Log("[Lazy Panda] Processing filtered items in: " + akContainer)
 
     Int listSize = LPSystem_Looting_Lists.GetSize()
     Int index = 0
@@ -157,13 +157,13 @@ Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectRefere
             Float globalValue = currentGlobal.GetValue()
 
             If globalValue == 1.0
-                Debug.Notification("[Lazy Panda] Removing items from category: " + currentList)
+               Log("[Lazy Panda] Removing items from category: " + currentList)
                 akContainer.RemoveItem(currentList as Form, -1, True, GetDestRef())
             Else
-                Debug.Notification("[Lazy Panda] Skipping list: " + currentList)
+               Log("[Lazy Panda] Skipping list: " + currentList)
             EndIf
         Else
-            Debug.Notification("[Lazy Panda] Skipping index " + index + " due to missing data.")
+           Log("[Lazy Panda] Skipping index " + index + " due to missing data.")
         EndIf
 
         index += 1
@@ -173,19 +173,19 @@ EndFunction
 ;-- GetDestRef Function --
 ; Determines the destination reference for looted items based on the global "Send To" setting.
 ObjectReference Function GetDestRef()
-    Debug.Notification("[Lazy Panda] GetDestRef called")
+   Log("[Lazy Panda] GetDestRef called")
     Int destination = LPSetting_SendTo.GetValue() as Int
     If destination == 1
-        Debug.Notification("[Lazy Panda] Destination: Player")
+       Log("[Lazy Panda] Destination: Player")
         Return PlayerRef
     ElseIf destination == 2
-        Debug.Notification("[Lazy Panda] Destination: Lodge Safe")
+       Log("[Lazy Panda] Destination: Lodge Safe")
         Return LodgeSafeRef
     ElseIf destination == 3
-        Debug.Notification("[Lazy Panda] Destination: Dummy Holding")
+       Log("[Lazy Panda] Destination: Dummy Holding")
         Return LPDummyHoldingRef
     Else
-        Debug.Notification("[Lazy Panda] Destination: Unknown")
+       Log("[Lazy Panda] Destination: Unknown")
         Return None
     EndIf
 EndFunction
