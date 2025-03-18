@@ -1,0 +1,29 @@
+Lazy Panda - A Scav's Autoloot For Starfield
+
+:: REQUIREMENTS::
+Starfield up to date
+
+
+:: FEATURES::
+Autoloots all items/containers/corpses in the specified radius
+Can be toggled on and off
+Can be set to only loot specific items
+Loots Weapons, Armor, Junk, Ingestibles, Ammo, Books, Dataslates.
+
+
+:: GENERAL OTHER STUFF::
+BA2 Packed
+ESL Flagged
+
+:: RECOMMENDED MODS ::
+- Almost Weightless Starfield - https://www.nexusmods.com/starfield/mods/8135
+- Shades Glowy Stuff (Glowing Highlight without Scanner - Accessibility Enhancements) - https://www.nexusmods.com/starfield/mods/11818
+
+
+::  KNOWN ISSUES::
+- Not Looting Space Stuff. (I'm working on it)
+
+
+::  CREDITS ::
+Aurelianis - For allowing me to repurpose her origonal code from Lazy Scav - An Autoloot for Starfield - https://www.nexusmods.com/starfield/mods/8291
+Ahplla - For Header and Thumb images and initial translations.
