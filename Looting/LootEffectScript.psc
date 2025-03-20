@@ -189,9 +189,41 @@ Function LocateLoot(FormList LootList)
     ; If using multiple keywords, call the dedicated function.
     If bIsMultipleKeyword
         LocateLootByKeyword(LootList)
+    
     ; If a single keyword is used, find references using the first form in the list.
     ElseIf bIsKeyword
-        lootArray = PlayerRef.FindAllReferencesWithKeyword(LootList.GetAt(0), GetRadius())
+        If LootList == None
+            Log("[Lazy Panda] ERROR: LootList is NONE! The FormList might be uninitialized.")
+            Return
+        EndIf
+
+        If LootList.GetSize() == 0
+            Log("[Lazy Panda] ERROR: LootList is EMPTY! There are no entries to use for searching.")
+            Return
+        EndIf
+
+        Form lootKeyword = LootList.GetAt(0)
+
+        If lootKeyword == None
+            Log("[Lazy Panda] ERROR: LootList.GetAt(0) returned NONE! The FormList might not be set properly in CK.")
+            Return
+        EndIf
+
+        Keyword validKeyword = lootKeyword as Keyword
+        If validKeyword
+            Log("[Lazy Panda] lootKeyword is a valid Keyword: " + validKeyword)
+            lootArray = PlayerRef.FindAllReferencesWithKeyword(validKeyword, GetRadius())
+
+            If lootArray.Length > 0
+                Log("[Lazy Panda] Found " + lootArray.Length + " objects with keyword " + validKeyword)
+            Else
+                Log("[Lazy Panda] WARNING: No objects found with keyword " + validKeyword + " in range.")
+            EndIf
+        Else
+            Log("[Lazy Panda] ERROR: LootList.GetAt(0) is NOT a Keyword! It might be a different form type in CK.")
+            Return
+        EndIf
+    
     ; Otherwise, find references by type.
     Else
         lootArray = PlayerRef.FindAllReferencesOfType(LootList as Form, GetRadius())
@@ -202,6 +234,7 @@ Function LocateLoot(FormList LootList)
         ProcessLoot(lootArray)
     EndIf
 EndFunction
+
 
 ;-- LocateLootByKeyword Function --
 ; Iterates through the loot list and finds references based on keywords.
