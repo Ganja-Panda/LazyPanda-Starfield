@@ -72,24 +72,13 @@ Group NoFill
 EndGroup
 
 ;======================================================================
-; DEBUG LOGGING HELPER FUNCTION
-;======================================================================
-
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Log(logMsg)
-    EndIf
-EndFunction
-
-;======================================================================
 ; MAIN FUNCTIONS
 ;======================================================================
 
 ;-- ProcessCorpse Function --
 ; Handles processing of a corpse object including unequipping, looting, and removal.
 Function ProcessCorpse(ObjectReference akVictim, ObjectReference akKiller)
-   Log("[Lazy Panda] ProcessCorpse called with corpse: " + akVictim)
+    LZP:SystemScript.Log("ProcessCorpse called with corpse: " + akVictim as String, 3)
 
     Bool takeAll = LPSetting_ContTakeAll.GetValue() as Bool
     bTakeAll = takeAll
@@ -103,16 +92,16 @@ Function ProcessCorpse(ObjectReference akVictim, ObjectReference akKiller)
             corpseActor.EquipItem(LP_Skin_Naked_NOTPLAYABLE as Form, False, False)
         EndIf
     Else
-        Log("[Lazy Panda] Corpse is not an Actor; skipping actor-specific processing.")
+        LZP:SystemScript.Log("Corpse is not an Actor; skipping actor-specific processing.", 3)
     EndIf
 
     Utility.Wait(0.1)
 
     ; Log the killer if one is detected.
     If akKiller != None
-        Log("[Lazy Panda] Killer: " + akKiller)
+        LZP:SystemScript.Log("Killer: " + akKiller as String, 3)
     Else
-       Log("[Lazy Panda] No killer detected.")
+       LZP:SystemScript.Log("No killer detected.", 3)
     EndIf
 
     ; Loot the corpse if the setting is enabled.
@@ -128,11 +117,12 @@ EndFunction
 ;-- RemoveCorpse Function --
 ; Removes the corpse from the world if the setting is enabled.
 Function RemoveCorpse(ObjectReference theCorpse)
-   Log("[Lazy Panda] RemoveCorpse called with corpse: " + theCorpse as String)
+    LZP:SystemScript.Log("RemoveCorpse called with corpse: " + theCorpse as String, 3)
     If LPSetting_RemoveCorpses.GetValue() as Bool
+        LZP:SystemScript.Log("Corpse removal enabled, disabling corpse", 3)
         theCorpse.DisableNoWait(True)
     Else
-        theCorpse.DisableNoWait(True)
+        LZP:SystemScript.Log("Corpse removal disabled, leaving corpse in world", 3)
     EndIf
 EndFunction
 
@@ -140,11 +130,11 @@ EndFunction
 ; Processes container items using filtering lists to remove specific items.
 Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectReference akLooter)
     If akContainer == None
-       Log("[Lazy Panda] ProcessFilteredContainerItems: No valid container found!")
+        LZP:SystemScript.Log("ProcessFilteredContainerItems: No valid container found!", 3)
         Return
     EndIf
 
-   Log("[Lazy Panda] Processing filtered items in: " + akContainer)
+    LZP:SystemScript.Log("Processing filtered items in: " + akContainer as String, 3)
 
     Int listSize = LPSystem_Looting_Lists.GetSize()
     Int index = 0
@@ -157,13 +147,13 @@ Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectRefere
             Float globalValue = currentGlobal.GetValue()
 
             If globalValue == 1.0
-               Log("[Lazy Panda] Removing items from category: " + currentList)
+                LZP:SystemScript.Log("Removing items from category: " + currentList as String, 3)
                 akContainer.RemoveItem(currentList as Form, -1, True, GetDestRef())
             Else
-               Log("[Lazy Panda] Skipping list: " + currentList)
+                LZP:SystemScript.Log("Skipping list: " + currentList as String, 3)
             EndIf
         Else
-           Log("[Lazy Panda] Skipping index " + index + " due to missing data.")
+            LZP:SystemScript.Log("Skipping index " + index as String + " due to missing data.", 3)
         EndIf
 
         index += 1
@@ -173,19 +163,20 @@ EndFunction
 ;-- GetDestRef Function --
 ; Determines the destination reference for looted items based on the global "Send To" setting.
 ObjectReference Function GetDestRef()
-   Log("[Lazy Panda] GetDestRef called")
+    LZP:SystemScript.Log("GetDestRef called", 3)
     Int destination = LPSetting_SendTo.GetValue() as Int
     If destination == 1
-       Log("[Lazy Panda] Destination: Player")
+        LZP:SystemScript.Log("Destination: Player", 3)
         Return PlayerRef
     ElseIf destination == 2
-       Log("[Lazy Panda] Destination: Lodge Safe")
+        LZP:SystemScript.Log("Destination: Lodge Safe", 3)
         Return LodgeSafeRef
     ElseIf destination == 3
-       Log("[Lazy Panda] Destination: Dummy Holding")
+        LZP:SystemScript.Log("Destination: Dummy Holding", 3)
         Return LPDummyHoldingRef
     Else
-       Log("[Lazy Panda] Destination: Unknown")
+        LZP:SystemScript.Log("Destination: Unknown", 3)
         Return None
     EndIf
 EndFunction
+

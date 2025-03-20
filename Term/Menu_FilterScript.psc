@@ -37,14 +37,6 @@ GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
 ; HELPER FUNCTIONS
 ;======================================================================
 
-;-- Log Function --
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Debug.Trace(logMsg, 0)
-    EndIf
-EndFunction
-
 ;-- UpdateSetting Function --
 ; Updates a setting and logs the change.
 Function UpdateSetting(Int index, Float newValue, Message newMsg, ObjectReference akTerminalRef)
@@ -59,9 +51,9 @@ Function UpdateSetting(Int index, Float newValue, Message newMsg, ObjectReferenc
         Else
             stateStr = "LPOffMsg"
         EndIf
-        Log("Setting State" + index as String + " updated to " + stateStr)
+        LZP:SystemScript.Log("Setting State" + index as String + " updated to " + stateStr, 3)
     Else
-        Log("No setting found at index: " + index as String)
+        LZP:SystemScript.Log("No setting found at index: " + index as String, 3)
     EndIf
 EndFunction
 
@@ -72,7 +64,7 @@ EndFunction
 ;-- OnTerminalMenuEnter Event Handler --
 ; Called when the terminal menu is entered.
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    Log("OnTerminalMenuEnter triggered")
+    LZP:SystemScript.Log("OnTerminalMenuEnter triggered", 3)
     Int count = SettingsGlobals.GetSize()
     Int index = 0
     While index < count
@@ -89,9 +81,9 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
                 stateStr = "LPOffMsg"
             EndIf
             akTerminalRef.AddTextReplacementData("State" + index as String, replacementMsg as Form)
-            Log("Setting State" + index as String + " to " + stateStr)
+            LZP:SystemScript.Log("Setting State" + index as String + " to " + stateStr, 3)
         Else
-            Log("No setting found at index: " + index as String)
+            LZP:SystemScript.Log("No setting found at index: " + index as String, 3)
         EndIf
         index += 1
     EndWhile
@@ -100,13 +92,13 @@ EndEvent
 ;-- OnTerminalMenuItemRun Event Handler --
 ; Called when a terminal menu item is run.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
+    LZP:SystemScript.Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String, 3)
     If akTerminalBase != CurrentTerminalMenu
         Return
     EndIf
 
     If auiMenuItemID == 0
-        Log("Menu item 0 selected: Toggle all settings")
+        LZP:SystemScript.Log("Menu item 0 selected: Toggle all settings", 3)
         GlobalVariable allToggle = SettingsGlobals.GetAt(0) as GlobalVariable
         Float newValue = 0.0
         If allToggle.GetValue() == 1.0
@@ -129,7 +121,7 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             index += 1
         EndWhile
     Else
-        Log("Menu item " + auiMenuItemID as String + " selected: Toggle specific setting")
+        LZP:SystemScript.Log("Menu item " + auiMenuItemID as String + " selected: Toggle specific setting", 3)
         GlobalVariable setting = SettingsGlobals.GetAt(auiMenuItemID) as GlobalVariable
         If setting
             Float newValue = 0.0
@@ -148,7 +140,7 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
 
             UpdateSetting(auiMenuItemID, newValue, newMsg, akTerminalRef)
         Else
-            Log("No setting found for menu item " + auiMenuItemID as String)
+            LZP:SystemScript.Log("No setting found for menu item " + auiMenuItemID as String, 3)
         EndIf
     EndIf
 EndEvent

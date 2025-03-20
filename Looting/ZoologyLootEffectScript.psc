@@ -34,38 +34,27 @@ Int Property lootTimerID = 1 Auto mandatory                    ; Timer identifie
 Float Property lootTimerDelay = 0.5 Auto mandatory             ; Delay between loot cycles
 
 ;======================================================================
-; DEBUG LOGGING HELPER FUNCTION
-;======================================================================
-
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue()
-        Debug.Trace(logMsg, 0)
-    EndIf
-EndFunction
-
-;======================================================================
 ; EVENT HANDLERS
 ;======================================================================
 
 ;-- OnEffectStart Event Handler --
 ; Called when the magic effect starts. Begins the loot timer.
 Event OnEffectStart(ObjectReference akTarget, Actor akCaster, MagicEffect akBaseEffect, Float afMagnitude, Float afDuration)
-    Log("OnEffectStart triggered")
+    LZP:SystemScript.Log("OnEffectStart triggered", 3)
     StartTimer(lootTimerDelay, lootTimerID)
 EndEvent
 
 ;-- OnTimer Event Handler --
 ; Called when the loot timer expires. Checks if the player has the required perk before executing looting.
 Event OnTimer(Int aiTimerID)
-    Log("OnTimer triggered with aiTimerID: " + aiTimerID as String)
+    LZP:SystemScript.Log("OnTimer triggered with aiTimerID: " + aiTimerID as String, 3)
     If aiTimerID == lootTimerID
-        Log("lootTimerID matched")
+        LZP:SystemScript.Log("lootTimerID matched", 3)
         If Game.GetPlayer().HasPerk(ActivePerk)
-            Log("Player has ActivePerk")
+            LZP:SystemScript.Log("Player has ActivePerk", 3)
             ExecuteLooting()
         Else
-            Log("Player does not have ActivePerk")
+            LZP:SystemScript.Log("Player does not have ActivePerk", 3)
         EndIf
     EndIf
 EndEvent
@@ -77,7 +66,7 @@ EndEvent
 ;-- ExecuteLooting Function --
 ; Main function that initiates the looting process and restarts the loot timer.
 Function ExecuteLooting()
-    Log("ExecuteLooting called")
+    LZP:SystemScript.Log("ExecuteLooting called", 3)
     LocateLoot(ActiveLootList)
     StartTimer(lootTimerDelay, lootTimerID)
 EndFunction
@@ -86,19 +75,19 @@ EndFunction
 ; Determines the appropriate method for locating loot based on the form type.
 Function LocateLoot(FormList LootList)
     If LootList.GetSize() == 0
-        Log("ActiveLootList is empty")
+        LZP:SystemScript.Log("ActiveLootList is empty", 3)
         Return
     EndIf
 
-    Log("LocateLoot called with LootList: " + LootList as String)
+    LZP:SystemScript.Log("LocateLoot called with LootList: " + LootList as String, 3)
     ObjectReference[] lootArray = new ObjectReference[0]
     If LootList.GetSize() > 0
         lootArray = PlayerRef.FindAllReferencesWithKeyword(LootList.GetAt(0), GetRadius())
     Else
-        Log("LootList is empty, no references to find")
+        LZP:SystemScript.Log("LootList is empty, no references to find", 3)
         Return
     EndIf
-    Log("Found " + (lootArray.Length as String) + " loot items")
+    LZP:SystemScript.Log("Found " + (lootArray.Length as String) + " loot items", 3)
     If lootArray.Length > 0
         ProcessLoot(lootArray)
     EndIf
@@ -113,25 +102,25 @@ EndFunction
 ;-- ProcessLoot Function --
 ; Processes an array of loot references, determining how to handle each based on its type.
 Function ProcessLoot(ObjectReference[] theLootArray)
-    Log("ProcessLoot called with " + (theLootArray.Length as String) + " items")
+    LZP:SystemScript.Log("ProcessLoot called with " + (theLootArray.Length as String) + " items", 3)
     Int index = 0
     While index < theLootArray.Length && Game.IsActivateControlsEnabled()
         ObjectReference currentLoot = theLootArray[index]
-        Log("Processing loot at index: " + index as String)
+        LZP:SystemScript.Log("Processing loot at index: " + index as String, 3)
         If currentLoot != None && IsLootLoaded(currentLoot)
             If Perk_CND_Zoology_NonLethalHarvest_Target.IsTrue(currentLoot, PlayerRef)
-                Log("Condition is true for loot")
+                LZP:SystemScript.Log("Condition is true for loot", 3)
                 If PlayerRef As Actor
                     ActiveLootSpell.RemoteCast(PlayerRef, PlayerRef as Actor, currentLoot)
                     currentLoot.Activate(PlayerRef, False)
                 Else
-                    Log("PlayerRef is not an Actor")
+                    LZP:SystemScript.Log("PlayerRef is not an Actor", 3)
                 EndIf
             Else
-                Log("Condition is false for loot")
+                LZP:SystemScript.Log("Condition is false for loot", 3)
             EndIf
         Else
-            Log("Loot is not loaded or invalid")
+            LZP:SystemScript.Log("Loot is not loaded or invalid", 3)
         EndIf
         index += 1
     EndWhile
@@ -141,7 +130,7 @@ EndFunction
 ; Determines if the loot object is currently loaded in the game (and not disabled or deleted).
 Bool Function IsLootLoaded(ObjectReference theLoot)
     Bool isLoaded = theLoot.Is3DLoaded() && !theLoot.IsDisabled() && !theLoot.IsDeleted()
-    Log("IsLootLoaded called for " + theLoot as String + ": " + (isLoaded as String))
+    LZP:SystemScript.Log("IsLootLoaded called for " + theLoot as String + ": " + (isLoaded as String), 3)
     Return isLoaded
 EndFunction
 
@@ -149,6 +138,6 @@ EndFunction
 ; Returns the search radius for loot detection.
 Float Function GetRadius()
     Float radius = LPSetting_Radius.GetValue()
-    Log("GetRadius called: " + radius as String)
+    LZP:SystemScript.Log("GetRadius called: " + radius as String, 3)
     Return radius
 EndFunction

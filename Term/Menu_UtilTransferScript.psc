@@ -33,18 +33,8 @@ EndGroup
 ; HELPER FUNCTIONS
 ;======================================================================
 
-;-- Log Function --
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg)
-  If LPSystemUtil_Debug.GetValue() as Bool
-    Debug.Trace("[LZP:UtilTransfer] " + logMsg, 0)
-  EndIf
-EndFunction
-
-;-- ShowMsg Function --
-; Standardizes showing messages using default parameters (all zeros).
 Function ShowMsg(Message msgToShow)
-  msgToShow.Show(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    msgToShow.Show(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 EndFunction
 
 ;======================================================================
@@ -54,32 +44,32 @@ EndFunction
 ;-- OnTerminalMenuEnter Event Handler --
 ; Called when the terminal menu is entered.
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-  Log("OnTerminalMenuEnter triggered")
+    LZP:SystemScript.Log("OnTerminalMenuEnter triggered", 3)
 EndEvent
 
 ;-- OnTerminalMenuItemRun Event Handler --
 ; Called when a menu item is selected.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-  If akTerminalBase != CurrentTerminalMenu
-    Return
-  EndIf
+    If akTerminalBase != CurrentTerminalMenu
+        Return
+    EndIf
 
-  Log("Terminal menu matches CurrentTerminalMenu")
-  If auiMenuItemID == 0
-    Log("Menu item 0 selected: MoveAllToShip")
-    MoveAllToShip()
-  ElseIf auiMenuItemID == 1
-    Log("Menu item 1 selected: MoveResourcesToShip")
-    MoveResourcesToShip()
-  ElseIf auiMenuItemID == 2
-    Log("Menu item 2 selected: MoveInventoryToLodgeSafe")
-    MoveInventoryToLodgeSafe()
-  ElseIf auiMenuItemID == 3
-    Log("Menu item 3 selected: MoveValuablesToPlayer")
-    MoveValuablesToPlayer()
-  Else
-    Log("Invalid menu item selected: " + auiMenuItemID as String)
-  EndIf
+    LZP:SystemScript.Log("Terminal menu matches CurrentTerminalMenu", 3)
+    If auiMenuItemID == 0
+        LZP:SystemScript.Log("Menu item 0 selected: MoveAllToShip", 3)
+        MoveAllToShip()
+    ElseIf auiMenuItemID == 1
+        LZP:SystemScript.Log("Menu item 1 selected: MoveResourcesToShip", 3)
+        MoveResourcesToShip()
+    ElseIf auiMenuItemID == 2
+        LZP:SystemScript.Log("Menu item 2 selected: MoveInventoryToLodgeSafe", 3)
+        MoveInventoryToLodgeSafe()
+    ElseIf auiMenuItemID == 3
+        LZP:SystemScript.Log("Menu item 3 selected: MoveValuablesToPlayer", 3)
+        MoveValuablesToPlayer()
+    Else
+        LZP:SystemScript.Log("Invalid menu item selected: " + auiMenuItemID as String, 3)
+    EndIf
 EndEvent
 
 ;======================================================================
@@ -89,55 +79,55 @@ EndEvent
 ;-- MoveAllToShip Function --
 ; Moves all items from the dummy holding container to the player's ship.
 Function MoveAllToShip()
-  Log("MoveAllToShip called")
-  LPDummyHoldingRef.RemoveAllItems(PlayerHomeShip.GetRef(), False, False)
-  ShowMsg(LPAllItemsToShipMsg)
+    LZP:SystemScript.Log("MoveAllToShip called", 3)
+    LPDummyHoldingRef.RemoveAllItems(PlayerHomeShip.GetRef(), False, False)
+    ShowMsg(LPAllItemsToShipMsg)
 EndFunction
 
 ;-- MoveResourcesToShip Function --
 ; Moves resources from both the dummy holding container and the player to the ship.
 Function MoveResourcesToShip()
-  Log("MoveResourcesToShip called")
-  ObjectReference PlayerShip = PlayerHomeShip.GetRef()
-  If !PlayerShip
-    Log("MoveResourcesToShip failed: No player ship reference")
-    Return
-  EndIf
+    LZP:SystemScript.Log("MoveResourcesToShip called", 3)
+    ObjectReference PlayerShip = PlayerHomeShip.GetRef()
+    If !PlayerShip
+        LZP:SystemScript.Log("MoveResourcesToShip failed: No player ship reference", 2)
+        Return
+    EndIf
 
-  If Game.GetPlayer().GetItemCount(LPSystem_Script_Resources as Form) > 0
-    Game.GetPlayer().RemoveItem(LPSystem_Script_Resources as Form, -1, True, PlayerShip)
-  EndIf
-  If LPDummyHoldingRef.GetItemCount(LPSystem_Script_Resources as Form) > 0
-    LPDummyHoldingRef.RemoveItem(LPSystem_Script_Resources as Form, -1, True, PlayerShip)
-  EndIf
-  ShowMsg(LPResourcesToShipMsg)
+    If Game.GetPlayer().GetItemCount(LPSystem_Script_Resources as Form) > 0
+        Game.GetPlayer().RemoveItem(LPSystem_Script_Resources as Form, -1, True, PlayerShip)
+    EndIf
+    If LPDummyHoldingRef.GetItemCount(LPSystem_Script_Resources as Form) > 0
+        LPDummyHoldingRef.RemoveItem(LPSystem_Script_Resources as Form, -1, True, PlayerShip)
+    EndIf
+    ShowMsg(LPResourcesToShipMsg)
 EndFunction
 
 ;-- MoveValuablesToPlayer Function --
 ; Moves valuables from the player's ship and the dummy holding container to the player.
 Function MoveValuablesToPlayer()
-  Log("MoveValuablesToPlayer called")
-  ObjectReference PlayerShip = PlayerHomeShip.GetRef()
-  If !PlayerShip
-    Log("MoveValuablesToPlayer failed: No player ship reference")
-    Return
-  EndIf
+    LZP:SystemScript.Log("MoveValuablesToPlayer called", 3)
+    ObjectReference PlayerShip = PlayerHomeShip.GetRef()
+    If !PlayerShip
+        LZP:SystemScript.Log("MoveValuablesToPlayer failed: No player ship reference", 2)
+        Return
+    EndIf
 
-  PlayerShip.RemoveItem(LPSystem_Script_Valuables as Form, -1, True, Game.GetPlayer())
-  LPDummyHoldingRef.RemoveItem(LPSystem_Script_Valuables as Form, -1, True, Game.GetPlayer())
-  ShowMsg(LPValuablesToPlayerMsg)
+    PlayerShip.RemoveItem(LPSystem_Script_Valuables as Form, -1, True, Game.GetPlayer())
+    LPDummyHoldingRef.RemoveItem(LPSystem_Script_Valuables as Form, -1, True, Game.GetPlayer())
+    ShowMsg(LPValuablesToPlayerMsg)
 EndFunction
 
 ;-- MoveInventoryToLodgeSafe Function --
 ; Moves all items from the dummy holding container to the lodge safe if items exist.
 Function MoveInventoryToLodgeSafe()
-  Log("MoveInventoryToLodgeSafe called")
-  If LPDummyHoldingRef.GetItemCount(None) > 0
-    Log("LPDummyHoldingRef has items")
-    LPDummyHoldingRef.RemoveAllItems(LodgeSafeRef, False, False)
-    ShowMsg(LPAllItemsToLodgeMsg)
-  Else
-    Log("LPDummyHoldingRef has no items")
-    ShowMsg(LPNoItemsMsg)
-  EndIf
+    LZP:SystemScript.Log("MoveInventoryToLodgeSafe called", 3)
+    If LPDummyHoldingRef.GetItemCount(None) > 0
+        LZP:SystemScript.Log("LPDummyHoldingRef has items", 3)
+        LPDummyHoldingRef.RemoveAllItems(LodgeSafeRef, False, False)
+        ShowMsg(LPAllItemsToLodgeMsg)
+    Else
+        LZP:SystemScript.Log("LPDummyHoldingRef has no items", 3)
+        ShowMsg(LPNoItemsMsg)
+    EndIf
 EndFunction

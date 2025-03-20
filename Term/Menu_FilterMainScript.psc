@@ -36,14 +36,6 @@ GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
 ; HELPER FUNCTIONS
 ;======================================================================
 
-;-- Log Function --
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Debug.Trace(logMsg, 0)
-    EndIf
-EndFunction
-
 ;-- SetAllSettings Function --
 ; Sets all settings in the SettingsGlobals list to the specified value.
 Function SetAllSettings(float newValue)
@@ -52,7 +44,7 @@ Function SetAllSettings(float newValue)
     While index < size
         GlobalVariable currentSetting = Self.SettingsGlobals.GetAt(index) as GlobalVariable
         currentSetting.SetValue(newValue)
-        Log("Setting index " + index as String + " to " + newValue as String)
+        LZP:SystemScript.Log("Setting index " + index as String + " to " + newValue as String, 3)
         index += 1
     EndWhile
 EndFunction
@@ -62,10 +54,10 @@ EndFunction
 Function UpdateAllToggleDisplay(ObjectReference akTerminalRef, float currentValue)
     If currentValue == 1.0
         akTerminalRef.AddTextReplacementData("AllToggle", Self.LPOnMsg as Form)
-        Log("Setting AllToggle to LPOnMsg")
+        LZP:SystemScript.Log("Setting AllToggle to LPOnMsg", 3)
     ElseIf currentValue == 0.0
         akTerminalRef.AddTextReplacementData("AllToggle", Self.LPOffMsg as Form)
-        Log("Setting AllToggle to LPOffMsg")
+        LZP:SystemScript.Log("Setting AllToggle to LPOffMsg", 3)
     EndIf
 EndFunction
 
@@ -75,7 +67,7 @@ Function ForceTerminalRefresh(TerminalMenu akTerminalBase, ObjectReference akTer
     akTerminalBase.ClearDynamicMenuItems(akTerminalRef)
     akTerminalBase.ClearDynamicBodyTextItems(akTerminalRef)
     akTerminalBase.AddDynamicMenuItem(akTerminalRef, 0, 0, None)
-    Log("Terminal forced refresh triggered")
+    LZP:SystemScript.Log("Terminal forced refresh triggered", 3)
 EndFunction
 
 ;======================================================================
@@ -85,23 +77,23 @@ EndFunction
 ;-- OnTerminalMenuEnter Event Handler --
 ; Called when the terminal menu is entered. Updates the toggle display.
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    Log("OnTerminalMenuEnter triggered")
+    LZP:SystemScript.Log("OnTerminalMenuEnter triggered", 3)
     GlobalVariable currentSetting = Self.SettingsGlobals.GetAt(0) as GlobalVariable
-    Log("Current setting value: " + currentSetting.GetValue() as String)
+    LZP:SystemScript.Log("Current setting value: " + currentSetting.GetValue() as String, 3)
     UpdateAllToggleDisplay(akTerminalRef, currentSetting.GetValue())
 EndEvent
 
 ;-- OnTerminalMenuItemRun Event Handler --
 ; Called when a menu item is selected. Toggles all settings if the appropriate item is selected.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
+    LZP:SystemScript.Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String, 3)
     If akTerminalBase == Self.CurrentTerminalMenu
-        Log("Terminal menu matches CurrentTerminalMenu")
+        LZP:SystemScript.Log("Terminal menu matches CurrentTerminalMenu", 3)
         If auiMenuItemID == 0
-            Log("Menu item 0 selected: Toggle all settings")
+            LZP:SystemScript.Log("Menu item 0 selected: Toggle all settings", 3)
             GlobalVariable AllToggle = Self.SettingsGlobals.GetAt(0) as GlobalVariable
             float currentValue = AllToggle.GetValue()
-            Log("AllToggle current value: " + currentValue as String)
+            LZP:SystemScript.Log("AllToggle current value: " + currentValue as String, 3)
             
             float newValue
             If currentValue == 1.0

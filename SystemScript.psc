@@ -12,13 +12,50 @@ ScriptName LZP:SystemScript Extends ScriptObject
 ;======================================================================
 
 ;-- Log Function --
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg) Global
-    GlobalVariable LPSystemUtil_Debug = Game.GetFormFromFile(0x0ABC, "LazyPanda.esm") as GlobalVariable
-
-    If LPSystemUtil_Debug.GetValue() == 1.0
-        Debug.Trace(logMsg, 0)
-        ReportStatus()
+; Logs a message to the user log if debug mode is enabled.
+; Example Usage:
+; Log("System started successfully", 0)  ; INFO
+; Log("Potential issue detected", 1)  ; WARN
+; Log("Fatal error occurred!", 2)  ; ERROR
+; Log("Debugging variables: X=10", 3)  ; DEBUG
+Function Log(String logMsg, Int logLevel) Global
+    ; Define Log Levels inside the function
+    Int LOG_LEVEL_INFO = 0
+    Int LOG_LEVEL_WARN = 1
+    Int LOG_LEVEL_ERROR = 2
+    Int LOG_LEVEL_DEBUG = 3
+    
+    GlobalVariable LPSystemUtil_Debug = Game.GetFormFromFile(0x086A, "LazyPanda.esm") as GlobalVariable
+    Bool DebugEnabled = False
+    
+    If LPSystemUtil_Debug
+        DebugEnabled = (LPSystemUtil_Debug.GetValue() == 1.0)
+    EndIf
+    
+    If !DebugEnabled
+        Return  ; Skip logging if debug is disabled
+    EndIf
+    
+    String logPrefix
+    If logLevel == LOG_LEVEL_INFO
+        logPrefix = "[INFO] "
+    ElseIf logLevel == LOG_LEVEL_WARN
+        logPrefix = "[WARNING] "
+    ElseIf logLevel == LOG_LEVEL_ERROR
+        logPrefix = "[ERROR] "
+    ElseIf logLevel == LOG_LEVEL_DEBUG
+        logPrefix = "[DEBUG] "
+    Else
+        logPrefix = "[LOG] "
+    EndIf
+    
+    String fullMessage = "[Lazy Panda] " + logPrefix + logMsg
+    Debug.OpenUserLog("LazyPanda")  ; Ensure log file is open
+    Debug.TraceUser("LazyPanda", fullMessage)
+    
+    ; Additional Output Options
+    If logLevel == LOG_LEVEL_ERROR
+        Debug.Trace(fullMessage)  ; Log to Papyrus trace for critical errors
     EndIf
 EndFunction
 

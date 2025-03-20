@@ -34,7 +34,7 @@ Bool bDebugEnabled = False
 ;-- OnInit Event Handler --
 ; Called when the quest is initialized. Begins the debug check timer.
 Event OnInit()
-    Log("[Lazy Panda] DebugMonitorQuestScript OnInit triggered")
+    LZP:SystemScript.Log("[Lazy Panda] DebugMonitorQuestScript OnInit triggered", 3)
     StartTimer(checkInterval)
 EndEvent
 
@@ -48,13 +48,6 @@ EndEvent
 ;======================================================================
 ; UTILITY FUNCTIONS
 ;======================================================================
-
-;-- Log Function --
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg)
-    Debug.Trace(logMsg, 0)
-EndFunction
-
 ;-- CheckDebugStatus Function --
 ; Checks the current debug status and triggers updates if the status changes.
 Function CheckDebugStatus()
@@ -63,11 +56,11 @@ Function CheckDebugStatus()
     If currentDebugStatus != bDebugEnabled
         bDebugEnabled = currentDebugStatus
         If bDebugEnabled
-            Log("[Lazy Panda] Debugging enabled, triggering update")
+            LZP:SystemScript.Log("[Lazy Panda] Debugging enabled, triggering update", 3)
             ; Trigger the player's update (EvaluatePackage is assumed to be valid here)
             PlayerAlias.GetReference().GetActorRefOwner().EvaluatePackage()
         Else
-            Log("[Lazy Panda] Debugging disabled")
+            LZP:SystemScript.Log("[Lazy Panda] Debugging disabled", 3)
         EndIf
     EndIf
 EndFunction

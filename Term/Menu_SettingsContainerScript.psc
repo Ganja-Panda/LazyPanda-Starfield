@@ -31,23 +31,15 @@ EndGroup
 ; HELPER FUNCTIONS
 ;======================================================================
 
-;-- Log Function --
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Debug.Trace(logMsg, 0)
-    EndIf
-EndFunction
-
 ;-- UpdateSettingDisplay Function --
 ; Updates the display of the setting on the terminal.
 Function UpdateSettingDisplay(GlobalVariable setting, String label, ObjectReference akTerminalRef)
     If setting.GetValue() == 1.0
         akTerminalRef.AddTextReplacementData(label, LPOnMsg as Form)
-        Log("Setting " + label + " to LPOnMsg")
+        LZP:SystemScript.Log("Setting " + label + " to LPOnMsg", 3)
     Else
         akTerminalRef.AddTextReplacementData(label, LPOffMsg as Form)
-        Log("Setting " + label + " to LPOffMsg")
+        LZP:SystemScript.Log("Setting " + label + " to LPOffMsg", 3)
     EndIf
 EndFunction
 
@@ -69,14 +61,14 @@ EndFunction
 ;-- OnTerminalMenuEnter Event Handler --
 ; Called when the terminal menu is entered.
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    Log("OnTerminalMenuEnter triggered")
+    LZP:SystemScript.Log("OnTerminalMenuEnter triggered", 3)
 
     ; Log current settings for debugging purposes.
     Bool currentRemoveCorpsesSetting = LPSetting_RemoveCorpses.GetValue() == 1.0
     Bool currentTakeAllSetting = LPSetting_ContTakeAll.GetValue() == 1.0
     Bool currentAutoUnlockSetting = LPSetting_AutoUnlock.GetValue() == 1.0
     Bool currentAutoUnlockSkillCheckSetting = LPSetting_AutoUnlockSkillCheck.GetValue() == 1.0
-    Log("Current settings - RemoveCorpses: " + currentRemoveCorpsesSetting + ", TakeAll: " + currentTakeAllSetting + ", AutoUnlock: " + currentAutoUnlockSetting + ", AutoUnlockSkillCheck: " + currentAutoUnlockSkillCheckSetting)
+    LZP:SystemScript.Log("Current settings - " + "RemoveCorpses: " + currentRemoveCorpsesSetting + ", TakeAll: " + currentTakeAllSetting + ", AutoUnlock: " + currentAutoUnlockSetting + ", AutoUnlockSkillCheck: " + currentAutoUnlockSkillCheckSetting, 3)
 
     ; Update display for each setting.
     UpdateSettingDisplay(LPSetting_AutoUnlock, "AutoUnlock", akTerminalRef)
@@ -86,23 +78,23 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
 EndEvent
 
 ;-- OnTerminalMenuItemRun Event Handler --
-; Called when a terminal menu item is selected.
+; Called when a menu item is selected.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID)
+    LZP:SystemScript.Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID, 3)
     If akTerminalBase == CurrentTerminalMenu
-        Log("Terminal menu matches CurrentTerminalMenu")
+        LZP:SystemScript.Log("Terminal menu matches CurrentTerminalMenu", 3)
         ; Toggle the appropriate setting based on the menu item ID.
         If auiMenuItemID == 0
-            Log("Toggling AutoUnlock")
+            LZP:SystemScript.Log("Toggling AutoUnlock", 3)
             ToggleSetting(LPSetting_AutoUnlock, "AutoUnlock", akTerminalRef)
         ElseIf auiMenuItemID == 1
-            Log("Toggling AutoUnlockSkillCheck")
+            LZP:SystemScript.Log("Toggling AutoUnlockSkillCheck", 3)
             ToggleSetting(LPSetting_AutoUnlockSkillCheck, "AutoUnlockSkillCheck", akTerminalRef)
         ElseIf auiMenuItemID == 2
-            Log("Toggling Corpses")
+            LZP:SystemScript.Log("Toggling Corpses", 3)
             ToggleSetting(LPSetting_RemoveCorpses, "Corpses", akTerminalRef)
         ElseIf auiMenuItemID == 3
-            Log("Toggling TakeAll")
+            LZP:SystemScript.Log("Toggling TakeAll", 3)
             ToggleSetting(LPSetting_ContTakeAll, "TakeAll", akTerminalRef)
         EndIf
     EndIf

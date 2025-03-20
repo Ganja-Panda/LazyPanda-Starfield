@@ -26,17 +26,6 @@ Message Property LPLootingDisabledMsg Auto
 Potion Property LP_Aid_ToggleLooting Auto
 
 ;======================================================================
-; DEBUG LOGGING HELPER FUNCTION
-;======================================================================
-
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Debug.Trace(logMsg, 0)
-    EndIf
-EndFunction
-
-;======================================================================
 ; EVENT HANDLERS
 ;======================================================================
 
@@ -52,15 +41,15 @@ Event OnEffectStart(ObjectReference akTarget, Actor akCaster, MagicEffect akBase
     
     ; Check if the required global variables and messages are set.
     If LPSystemUtil_ToggleLooting == None
-        Log("Error: LPSystemUtil_ToggleLooting not set")
+        LZP:SystemScript.Log("Error: LPSystemUtil_ToggleLooting not set", 1)
         Return
     EndIf
     If LPLootingEnabledMsg == None || LPLootingDisabledMsg == None
-        Log("Error: Message properties not set")
+        LZP:SystemScript.Log("Error: Message properties not set", 1)
         Return
     EndIf
     If LP_Aid_ToggleLooting == None
-        Log("Error: LP_Aid_ToggleLooting not set")
+        LZP:SystemScript.Log("Error: LP_Aid_ToggleLooting not set", 1)
         Return
     EndIf
     
@@ -71,11 +60,11 @@ Event OnEffectStart(ObjectReference akTarget, Actor akCaster, MagicEffect akBase
     If toggleValue == 1
         LPLootingDisabledMsg.Show(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         LPSystemUtil_ToggleLooting.SetValue(0 as Float)
-        Log("Looting disabled")
+        LZP:SystemScript.Log("Looting disabled", 3)
     Else
         LPLootingEnabledMsg.Show(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         LPSystemUtil_ToggleLooting.SetValue(1 as Float)
-        Log("Looting enabled")
+        LZP:SystemScript.Log("Looting enabled", 3)
     EndIf
     
     ; Add the toggle potion back to the player's inventory.

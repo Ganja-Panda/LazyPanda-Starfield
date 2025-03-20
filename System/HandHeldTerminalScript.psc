@@ -23,29 +23,20 @@ GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
 ;======================================================================
 ; UTILITY FUNCTIONS
 ;======================================================================
-
-;-- Log Function --
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Debug.Trace(logMsg, 0)
-    EndIf
-EndFunction
-
 ;-- ValidateProperties Function --
 ; Validates that all required properties are set.
 Function ValidateProperties()
     If PlayerRef == None
-        Log("Error: PlayerRef is None")
+        LZP:SystemScript.Log("Error: PlayerRef is None", 1)
     EndIf
     If LP_TerminalDummyRef == None
-        Log("Error: LP_TerminalDummyRef is None")
+        LZP:SystemScript.Log("Error: LP_TerminalDummyRef is None", 1)
     EndIf
     If LP_TerminalControlWeapon == None
-        Log("Error: LP_TerminalControlWeapon is None")
+        LZP:SystemScript.Log("Error: LP_TerminalControlWeapon is None", 1)
     EndIf
     If LP_Aid_ToggleLooting == None
-        Log("Error: LP_Aid_ToggleLooting is None")
+        LZP:SystemScript.Log("Error: LP_Aid_ToggleLooting is None", 1)
     EndIf
 EndFunction
 
@@ -56,7 +47,7 @@ EndFunction
 ;-- OnAliasInit Event Handler --
 ; Called when the alias is initialized. Validates properties and gives the toggle looting item to the player.
 Event OnAliasInit()
-    Log("OnAliasInit triggered")
+    LZP:SystemScript.Log("OnAliasInit triggered", 3)
     ValidateProperties()
 EndEvent
 
@@ -64,7 +55,7 @@ EndEvent
 ; Called when an item is equipped. Activates the terminal dummy if the control weapon is equipped.
 Event OnItemEquipped(Form akBaseObject, ObjectReference akReference)
     If (akBaseObject == LP_TerminalControlWeapon) && (Game.IsMenuControlsEnabled() || Game.IsFavoritesControlsEnabled())
-        Log("Terminal control weapon equipped; activating terminal dummy")
+        LZP:SystemScript.Log("Terminal control weapon equipped; activating terminal dummy", 3)
         LP_TerminalDummyRef.Activate(PlayerRef, False)
         PlayerRef.UnequipItem(LP_TerminalControlWeapon, False, True)
     EndIf

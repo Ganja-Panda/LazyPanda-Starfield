@@ -22,8 +22,6 @@ Message Property LPOnMsg Auto Const mandatory
 ; HELPER FUNCTIONS
 ;======================================================================
 
-;-- UpdateSettingDisplay Function --
-; Updates the display message for a setting based on its current value.
 Function UpdateSettingDisplay(Int index, ObjectReference akTerminalRef)
     GlobalVariable setting = SettingsGlobals[index] as GlobalVariable
     If setting
@@ -36,7 +34,7 @@ Function UpdateSettingDisplay(Int index, ObjectReference akTerminalRef)
         EndIf
         akTerminalRef.AddTextReplacementData("State" + index as String, replacementMsg as Form)
     Else
-        Debug.Trace("UpdateSettingDisplay: Setting at index " + index as String + " not found", 0)
+        LZP:SystemScript.Log("UpdateSettingDisplay: Setting at index " + index as String + " not found", 3)
     EndIf
 EndFunction
 
@@ -68,7 +66,7 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             EndIf
             UpdateSettingDisplay(auiMenuItemID, akTerminalRef)
         Else
-            Debug.Trace("OnTerminalMenuItemRun: Setting at index " + auiMenuItemID as String + " not found", 0)
+            LZP:SystemScript.Log("OnTerminalMenuItemRun: Setting at index " + auiMenuItemID as String + " not found", 3)
         EndIf
     EndIf
 EndEvent

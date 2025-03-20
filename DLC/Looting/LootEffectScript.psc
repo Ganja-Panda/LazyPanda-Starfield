@@ -127,37 +127,26 @@ EndGroup
 Bool bIsLooting = False ; Flag indicating if the looting process is active
 
 ;======================================================================
-; DEBUG LOGGING HELPER FUNCTION
-;======================================================================
-
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Debug.Trace(logMsg, 0)
-    EndIf
-EndFunction
-
-;======================================================================
 ; EVENT HANDLERS
 ;======================================================================
 
 ;-- OnInit Event Handler --
 ; Called when the script is initialized. Initializes the Shattered Space and Tracker Alliance human races if the plugin is loaded.
 Event OnInit()
-    Log("[Lazy Panda] OnInit triggered")
+    LZP:SystemScript.Log("OnInit triggered", 0)
 EndEvent
 
 ;-- OnEffectStart Event Handler --
 ; Called when the magic effect starts. Begins the loot timer.
 Event OnEffectStart(ObjectReference akTarget, Actor akCaster, MagicEffect akBaseEffect, Float afMagnitude, Float afDuration)
-    Log("[Lazy Panda] OnEffectStart triggered")
+    LZP:SystemScript.Log("OnEffectStart triggered", 0)
     StartTimer(lootTimerDelay, lootTimerID)
 EndEvent
 
 ;-- OnTimer Event Handler --
 ; Called when the loot timer expires. Checks if the player has the required perk before executing looting.
 Event OnTimer(Int aiTimerID)
-    Log("[Lazy Panda] OnTimer triggered with TimerID: " + aiTimerID as String)
+    LZP:SystemScript.Log("OnTimer triggered with TimerID: " + aiTimerID as String, 3)
     
     If aiTimerID == lootTimerID && Game.GetPlayer().HasPerk(ActivePerk)
         If !bIsLooting  ; Prevent stacking loot calls
@@ -165,7 +154,7 @@ Event OnTimer(Int aiTimerID)
             ExecuteLooting()
             bIsLooting = False
         Else
-            Log("[Lazy Panda] Looting skipped, already running.")
+            LZP:SystemScript.Log("OnTimer skipped: Looting process already running", 1)
         EndIf
     EndIf
 EndEvent
@@ -177,7 +166,7 @@ EndEvent
 ;-- ExecuteLooting Function --
 ; Main function that initiates the looting process and restarts the loot timer.
 Function ExecuteLooting()
-    Log("[Lazy Panda] ExecuteLooting called")
+    LZP:SystemScript.Log("ExecuteLooting called", 3)
     LocateLoot(ActiveLootList)
     StartTimer(lootTimerDelay, lootTimerID)
 EndFunction
@@ -185,7 +174,7 @@ EndFunction
 ;-- LocateLoot Function --
 ; Determines the appropriate method for locating loot based on the form type.
 Function LocateLoot(FormList LootList)
-    Log("[Lazy Panda] LocateLoot called with LootList: " + LootList as String)
+    LZP:SystemScript.Log("LocateLoot called with LootList: " + LootList as String, 3)
     ObjectReference[] lootArray = None
 
     ; If using multiple keywords, call the dedicated function.
@@ -208,7 +197,7 @@ EndFunction
 ;-- LocateLootByKeyword Function --
 ; Iterates through the loot list and finds references based on keywords.
 Function LocateLootByKeyword(FormList LootList)
-    Log("[Lazy Panda] LocateLootByKeyword called with LootList: " + LootList as String)
+    LZP:SystemScript.Log("LocateLootByKeyword called with LootList: " + LootList as String, 3)
     ObjectReference[] lootArray
     Int index = 0
     While index < LootList.GetSize()
@@ -224,25 +213,25 @@ EndFunction
 ;-- ProcessLoot Function --
 ; Processes an array of loot references, determining how to handle each based on its type.
 Function ProcessLoot(ObjectReference[] theLootArray)
-    Log("[Lazy Panda] ProcessLoot called with lootArray of length: " + theLootArray.Length as String)
+    LZP:SystemScript.Log("ProcessLoot called with lootArray of length: " + theLootArray.Length as String, 3)
     theLooterRef = PlayerRef   ; Default looter is the player
     Int index = 0
     While index < theLootArray.Length && IsPlayerAvailable()
         ObjectReference currentLoot = theLootArray[index]
         If currentLoot != None
-            Log("[Lazy Panda] Processing loot: " + currentLoot as String)
+            LZP:SystemScript.Log("Processing loot: " + currentLoot as String, 3)
             ; Determine how to process the loot based on its type:
             If IsCorpse(currentLoot)
-               Actor corpseActor = currentLoot as Actor
+                Actor corpseActor = currentLoot as Actor
                 If bLootDeadActor && corpseActor.IsDead() && CanTakeLoot(currentLoot)
-                    Log("[Lazy Panda] Looting Dead Actor")
+                    LZP:SystemScript.Log("Looting Dead Actor", 3)
                     ProcessCorpse(currentLoot, theLooterRef)
                 EndIf
             ElseIf bIsContainer && CanTakeLoot(currentLoot)
-                Log("[Lazy Panda] Looting Container")
+                LZP:SystemScript.Log("Looting Container", 3)
                 ProcessContainer(currentLoot, theLooterRef)
             ElseIf bIsContainerSpace && CanTakeLoot(currentLoot)
-                Log("[Lazy Panda] Looting Spaceship Container")
+                LZP:SystemScript.Log("Looting Spaceship Container", 3)
                 ; For spaceship containers, get the associated ship reference.
                 If currentLoot.HasKeyword(SQ_ShipDebrisKeyword) || currentLoot.HasKeyword(LPKeyword_Asteroid) || currentLoot.HasKeyword(SpaceshipInventoryContainer)
                     currentLoot = currentLoot.GetCurrentShipRef() as ObjectReference
@@ -250,19 +239,13 @@ Function ProcessLoot(ObjectReference[] theLootArray)
                 theLooterRef = PlayerHomeShip.GetRef()
                 ProcessContainer(currentLoot, theLooterRef)
             ElseIf bIsActivatedBySpell && CanTakeLoot(currentLoot) && ActiveLootSpell != None
-                Log("[Lazy Panda] Looting Activated By Spell")
+                LZP:SystemScript.Log("Looting Activated By Spell", 3)
                 ActiveLootSpell.RemoteCast(PlayerRef, PlayerRef as Actor, currentLoot)
             ElseIf bIsActivator && CanTakeLoot(currentLoot)
-                Log("[Lazy Panda] Looting Activator")
+                LZP:SystemScript.Log("Looting Activator", 3)
                 currentLoot.Activate(theLooterRef, False)
             ElseIf CanTakeLoot(currentLoot)
-                ; If the loot is marked as a quest item, add it directly to the player.
-                If currentLoot.IsQuestItem()
-                    Log("[Lazy Panda] Quest Item detected, sending to player")
-                    PlayerRef.AddItem(currentLoot as Form, -1, False)
-                Else
-                    GetDestRef().AddItem(currentLoot as Form, -1, False)
-                EndIf
+                GetDestRef().AddItem(currentLoot as Form, -1, False)
             EndIf
         EndIf
         index += 1
@@ -272,7 +255,7 @@ EndFunction
 ;-- ProcessCorpse Function --
 ; Handles processing of a corpse object including unequipping, looting, and removal.
 Function ProcessCorpse(ObjectReference theCorpse, ObjectReference theLooter)
-    Log("[Lazy Panda] ProcessCorpse called with corpse: " + theCorpse as String)
+    LZP:SystemScript.Log("ProcessCorpse called with corpse: " + theCorpse as String, 3)
     Bool takeAll = LPSetting_ContTakeAll.GetValue() as Bool
     bTakeAll = takeAll
     Actor corpseActor = theCorpse as Actor
@@ -287,26 +270,32 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference theLooter)
     Utility.Wait(0.1)
     ; Loot the corpse based on the take-all setting.
     If takeAll
+        LZP:SystemScript.Log("Removing all items from corpse", 3)
         theCorpse.RemoveAllItems(GetDestRef(), False, False)
     Else
+        LZP:SystemScript.Log("Processing filtered items from corpse", 3)
         ProcessFilteredContainerItems(theCorpse, theLooter)
     EndIf
+    LZP:SystemScript.Log("Removing corpse from world", 3)
     RemoveCorpse(theCorpse)
 EndFunction
 
 ;-- RemoveCorpse Function --
 ; Removes the corpse from the world if the setting is enabled.
 Function RemoveCorpse(ObjectReference theCorpse)
-    Log("[Lazy Panda] RemoveCorpse called with corpse: " + theCorpse as String)
+    LZP:SystemScript.Log("RemoveCorpse called with corpse: " + theCorpse as String, 3)
     If LPSetting_RemoveCorpses.GetValue() as Bool
+        LZP:SystemScript.Log("Corpse removal enabled, disabling corpse", 3)
         theCorpse.DisableNoWait(True)
+    Else
+        LZP:SystemScript.Log("Corpse removal disabled, leaving corpse in world", 3)
     EndIf
 EndFunction
 
 ;-- ProcessContainer Function --
 ; Processes a container by attempting to unlock it (if needed) and then looting its contents.
 Function ProcessContainer(ObjectReference theContainer, ObjectReference theLooter)
-    Log("[Lazy Panda] ProcessContainer called with container: " + theContainer as String)
+    LZP:SystemScript.Log("ProcessContainer called with container: " + theContainer as String, 3)
     Bool stealingIsHostile = LPSetting_StealingIsHostile.GetValue() as Bool
     Bool takeAll = LPSetting_ContTakeAll.GetValue() as Bool
     Bool autoUnlock = LPSetting_AutoUnlock.GetValue() as Bool
@@ -314,17 +303,20 @@ Function ProcessContainer(ObjectReference theContainer, ObjectReference theLoote
     ; If the container is locked, attempt to unlock it if auto-unlock is enabled.
     If theContainer.IsLocked()
         If autoUnlock
+            LZP:SystemScript.Log("Attempting to unlock container", 3)
             TryUnlock(theContainer)
         Else
-            Log("[Lazy Panda] Container Ignored: Locked, AutoUnlock is disabled")
+            LZP:SystemScript.Log("Container Ignored: Locked, AutoUnlock is disabled", 1)
             Return
         EndIf
     EndIf
 
     ; Loot the container: remove all items if take-all is enabled, otherwise process filtered items.
     If takeAll
+        LZP:SystemScript.Log("Removing all items from container", 3)
         theContainer.RemoveAllItems(GetDestRef(), False, stealingIsHostile)
     Else
+        LZP:SystemScript.Log("Processing filtered items from container", 3)
         ProcessFilteredContainerItems(theContainer, theLooter)
     EndIf
 EndFunction
@@ -332,7 +324,7 @@ EndFunction
 ;-- ProcessFilteredContainerItems Function --
 ; Processes container items using filtering lists to remove specific items.
 Function ProcessFilteredContainerItems(ObjectReference theContainer, ObjectReference theLooter)
-    Log("[Lazy Panda] ProcessFilteredContainerItems called with container: " + theContainer as String)
+    LZP:SystemScript.Log("ProcessFilteredContainerItems called with container: " + theContainer as String, 3)
     Int listSize = LPSystem_Looting_Lists.GetSize()
     Int index = 0
     While index < listSize
@@ -341,110 +333,124 @@ Function ProcessFilteredContainerItems(ObjectReference theContainer, ObjectRefer
         Float globalValue = currentGlobal.GetValue()
         ; Remove items matching the current list if the corresponding global value is enabled.
         If globalValue == 1.0
+            LZP:SystemScript.Log("Removing items from container matching list index: " + index as String, 3)
             theContainer.RemoveItem(currentList as Form, -1, True, GetDestRef())
+        Else
+            LZP:SystemScript.Log("Skipping item removal for list index: " + index as String, 3)
         EndIf
         index += 1
     EndWhile
 EndFunction
 
+
 ;-- CanTakeLoot Function --
 ; Determines whether a loot item can be taken based on ownership, load status, quest status, and location.
 Bool Function CanTakeLoot(ObjectReference theLoot)
-    Log("[Lazy Panda] CanTakeLoot called with loot: " + theLoot as String)
+    LZP:SystemScript.Log("CanTakeLoot called with loot: " + theLoot as String, 3)
     Bool bCanTake = True
     Bool allowStealing = LPSetting_AllowStealing.GetValue() as Bool
     ObjectReference theContainer = theLoot.GetContainer()
     TakeOwnership(theLoot)
-    Log("[Lazy Panda] Container: " + theContainer as String)
+    LZP:SystemScript.Log("Container: " + theContainer as String, 3)
 
     ; Check conditions that prevent looting.
     If theContainer != None
-        Log("[Lazy Panda] Container Is Owned: " + IsOwned(theContainer) as String)
+        LZP:SystemScript.Log("Container Is Owned: " + IsOwned(theContainer) as String, 3)
         bCanTake = False
     ElseIf !IsLootLoaded(theLoot)
-        Log("[Lazy Panda] Loot Not Loaded")
+        LZP:SystemScript.Log("Loot Not Loaded", 3)
         bCanTake = False
     ElseIf theLoot.IsQuestItem()
-        Log("[Lazy Panda] Quest Item")
+        LZP:SystemScript.Log("Quest Item", 3)
         bCanTake = False
     ElseIf (PlayerRef as Actor).WouldBeStealing(theLoot) && !allowStealing
-        Log("[Lazy Panda] Would Be Stealing")
+        LZP:SystemScript.Log("Would Be Stealing", 3)
         bCanTake = False
     ElseIf IsPlayerStealing(theLoot) && !allowStealing
-        Log("[Lazy Panda] Is Stealing")
+        LZP:SystemScript.Log("Is Stealing", 3)
         bCanTake = False
     ElseIf IsInRestrictedLocation()
-        Log("[Lazy Panda] In Restricted Location")
+        LZP:SystemScript.Log("In Restricted Location", 3)
         bCanTake = False
     EndIf
 
-    Log("[Lazy Panda] Can Take: " + bCanTake as String)
+    LZP:SystemScript.Log("Can Take: " + bCanTake as String, 3)
     Return bCanTake
 EndFunction
 
 ;-- IsInRestrictedLocation Function --
 ; Checks if the player is located within any restricted looting locations.
 Bool Function IsInRestrictedLocation()
+    LZP:SystemScript.Log("Checking if player is in a restricted location", 3)
     FormList restrictedLocations = LPFilter_NoLootLocations
     Int index = 0
     While index < restrictedLocations.GetSize()
         If PlayerRef.IsInLocation(restrictedLocations.GetAt(index) as Location)
+            LZP:SystemScript.Log("Player is in a restricted location", 3)
             Return True
         EndIf
         index += 1
     EndWhile
     ; Additionally, check if the player is inside the player's ship interior and ship looting is disallowed.
     If PlayerRef.IsInLocation(playerShipInterior.GetLocation()) && !CanLootShip()
+        LZP:SystemScript.Log("Player is inside ship interior where looting is disallowed", 3)
         Return True
     EndIf
+    LZP:SystemScript.Log("Player is not in a restricted location", 3)
     Return False
 EndFunction
 
 ;-- TakeOwnership Function --
 ; Attempts to assign loot ownership to the player if allowed.
 Function TakeOwnership(ObjectReference theLoot)
-    Log("[Lazy Panda] TakeOwnership called with loot: " + theLoot as String)
+    LZP:SystemScript.Log("TakeOwnership called with loot: " + theLoot as String, 3)
     Bool allowStealing = LPSetting_AllowStealing.GetValue() as Bool
     Bool stealingIsHostile = LPSetting_StealingIsHostile.GetValue() as Bool
     If allowStealing && !stealingIsHostile && IsOwned(theLoot)
+        LZP:SystemScript.Log("Setting player as loot owner", 3)
         theLoot.SetActorRefOwner(PlayerRef as Actor, True)
+    Else
+        LZP:SystemScript.Log("Ownership unchanged", 3)
     EndIf
 EndFunction
 
 ;-- CanLootShip Function --
 ; Checks if looting from a ship is permitted.
 Bool Function CanLootShip()
-    Log("[Lazy Panda] CanLootShip called")
+    LZP:SystemScript.Log("CanLootShip called", 3)
     Return LPSetting_AllowLootingShip.GetValue() as Bool
 EndFunction
 
 ;-- IsOwned Function --
 ; Checks if a loot item is considered owned by someone or would be flagged as stealing.
 Bool Function IsOwned(ObjectReference theLoot)
-    Log("[Lazy Panda] IsOwned called with loot: " + theLoot as String)
+    LZP:SystemScript.Log("IsOwned called with loot: " + theLoot as String, 3)
     Return (PlayerRef as Actor).WouldBeStealing(theLoot) || IsPlayerStealing(theLoot) || theLoot.HasOwner()
 EndFunction
 
 ;-- TryUnlock Function --
 ; Attempts to unlock a container using an appropriate method based on lock level.
 Function TryUnlock(ObjectReference theContainer)
-    Log("[Lazy Panda] TryUnlock called with container: " + theContainer as String)
+    LZP:SystemScript.Log("TryUnlock called with container: " + theContainer as String, 3)
     Bool bLockSkillCheck = LPSetting_AutoUnlockSkillCheck.GetValue() as Bool
-    Log("[Lazy Panda] Lock Skill Check: " + bLockSkillCheck as String)
+    LZP:SystemScript.Log("Lock Skill Check: " + bLockSkillCheck as String, 3)
     Bool bIsOwned = theContainer.HasOwner()
-    Log("[Lazy Panda] Is Owned: " + bIsOwned as String)
+    LZP:SystemScript.Log("Is Owned: " + bIsOwned as String, 3)
     Int iLockLevel = theContainer.GetLockLevel()
-    Log("[Lazy Panda] Lock Level: " + iLockLevel as String)
+    LZP:SystemScript.Log("Lock Level: " + iLockLevel as String, 3)
     Int iRequiresKey = LockLevel_RequiresKey.GetValue() as Int
-    Log("[Lazy Panda] Requires Key: " + iRequiresKey as String)
+    LZP:SystemScript.Log("Requires Key: " + iRequiresKey as String, 3)
     Int iInaccessible = LockLevel_Inaccessible.GetValue() as Int
 
     ; Choose the unlocking strategy based on the container's lock level.
     If iLockLevel == iInaccessible
+        LZP:SystemScript.Log("Handling inaccessible lock", 3)
         HandleInaccessibleLock()
     ElseIf iLockLevel == iRequiresKey
+        LZP:SystemScript.Log("Handling requires key", 3)
         HandleRequiresKey(theContainer, bIsOwned)
     Else
+        LZP:SystemScript.Log("Handling digipick unlock", 3)
         HandleDigipickUnlock(theContainer, bIsOwned, bLockSkillCheck)
     EndIf
 EndFunction
@@ -452,28 +458,28 @@ EndFunction
 ;-- HandleInaccessibleLock Function --
 ; Handles containers with locks that cannot be unlocked.
 Function HandleInaccessibleLock()
-    Log("[Lazy Panda] HandleInaccessibleLock called")
+    LZP:SystemScript.Log("HandleInaccessibleLock called", 3)
 EndFunction
 
 ;-- HandleRequiresKey Function --
 ; Handles unlocking for containers that require a key.
 Function HandleRequiresKey(ObjectReference theContainer, Bool bIsOwned)
-    Log("[Lazy Panda] HandleRequiresKey called with container: " + theContainer as String)
+    LZP:SystemScript.Log("HandleRequiresKey called with container: " + theContainer as String, 3)
     Key theKey = theContainer.GetKey()
     FindKey(theKey)
     If PlayerRef.GetItemCount(theKey as Form) > 0
-        Log("[Lazy Panda] Key Found")
+        LZP:SystemScript.Log("Key Found", 3)
         theContainer.Unlock(bIsOwned)
-        Log("[Lazy Panda] Container Unlocked: With Key")
+        LZP:SystemScript.Log("Container Unlocked: With Key", 3)
     Else
-        Log("[Lazy Panda] Locked Container Ignored: Requires Key")
+        LZP:SystemScript.Log("Locked Container Ignored: Requires Key", 3)
     EndIf
 EndFunction
 
 ;-- HandleDigipickUnlock Function --
 ; Handles unlocking using a Digipick item, including a skill check.
 Function HandleDigipickUnlock(ObjectReference theContainer, Bool bIsOwned, Bool bLockSkillCheck)
-    Log("[Lazy Panda] HandleDigipickUnlock called with container: " + theContainer as String)
+    LZP:SystemScript.Log("HandleDigipickUnlock called with container: " + theContainer as String, 3)
     If PlayerRef.GetItemCount(Digipick as Form) == 0
         FindDigipick()
     EndIf
@@ -483,27 +489,27 @@ Function HandleDigipickUnlock(ObjectReference theContainer, Bool bIsOwned, Bool 
             If !theContainer.IsLocked()
                 Game.RewardPlayerXP(10, False)
                 PlayerRef.RemoveItem(Digipick as Form, 1, False, None)
-                Log("[Lazy Panda] Container Unlocked: With Digipick")
+                LZP:SystemScript.Log("Container Unlocked: With Digipick", 3)
             EndIf
         Else
-            Log("[Lazy Panda] Locked Container Ignored: Failed Skill Check")
+            LZP:SystemScript.Log("Locked Container Ignored: Failed Skill Check", 3)
         EndIf
     Else
-        Log("[Lazy Panda] Locked Container Ignored: No Digipick")
+        LZP:SystemScript.Log("Locked Container Ignored: No Digipick", 3)
     EndIf
 EndFunction
 
 ;-- FindDigipick Function --
 ; Searches for a Digipick in designated holding locations and transfers it to the player.
 Function FindDigipick()
-    Log("[Lazy Panda] FindDigipick called")
+    LZP:SystemScript.Log("FindDigipick called", 3)
     ObjectReference[] searchLocations = new ObjectReference[2]
     searchLocations[0] = LPDummyHoldingRef
     searchLocations[1] = LodgeSafeRef
     Int index = 0
     While index < searchLocations.Length
         If searchLocations[index].GetItemCount(Digipick as Form) > 0
-            Log("[Lazy Panda] Digipick Found: In " + searchLocations[index] as String)
+            LZP:SystemScript.Log("Digipick Found: In " + searchLocations[index] as String, 3)
             searchLocations[index].RemoveItem(Digipick as Form, -1, True, PlayerRef)
             Return
         EndIf
@@ -514,14 +520,14 @@ EndFunction
 ;-- FindKey Function --
 ; Searches for a key in designated holding locations and transfers it to the player.
 Function FindKey(Key theKey)
-    Log("[Lazy Panda] FindKey called with key: " + theKey as String)
+    LZP:SystemScript.Log("FindKey called with key: " + theKey as String, 3)
     ObjectReference[] searchLocations = new ObjectReference[2]
     searchLocations[0] = LPDummyHoldingRef
     searchLocations[1] = LodgeSafeRef
     Int index = 0
     While index < searchLocations.Length
         If searchLocations[index].GetItemCount(theKey as Form) > 0
-            Log("[Lazy Panda] Key Found: In " + searchLocations[index] as String)
+            LZP:SystemScript.Log("Key Found: In " + searchLocations[index] as String, 3)
             searchLocations[index].RemoveItem(theKey as Form, -1, True, PlayerRef)
             Return
         EndIf
@@ -532,7 +538,7 @@ EndFunction
 ;-- CanUnlock Function --
 ; Determines if the container can be unlocked based on its lock level and the player's perks.
 Bool Function CanUnlock(ObjectReference theContainer)
-    Log("[Lazy Panda] CanUnlock called with container: " + theContainer as String)
+    LZP:SystemScript.Log("CanUnlock called with container: " + theContainer as String, 3)
     Int iLockLevel = theContainer.GetLockLevel()
     ; Build an array of lock level thresholds.
     Int[] lockLevels = new Int[4]
@@ -551,42 +557,42 @@ Bool Function CanUnlock(ObjectReference theContainer)
     Int index = 0
     While index < lockLevels.Length
         If iLockLevel == lockLevels[index]
-            Log("[Lazy Panda] Can Unlock: " + canUnlock[index] as String)
+            LZP:SystemScript.Log("Can Unlock: " + canUnlock[index] as String, 3)
             Return canUnlock[index]
         EndIf
         index += 1
     EndWhile
 
-    Log("[Lazy Panda] Can Unlock: False")
+    LZP:SystemScript.Log("Can Unlock: False", 3)
     Return False
 EndFunction
 
 ;-- IsCorpse Function --
 ; Checks whether the given object reference is a corpse (an Actor).
 Bool Function IsCorpse(ObjectReference theCorpse)
-    Log("[Lazy Panda] IsCorpse called with corpse: " + theCorpse as String)
+    LZP:SystemScript.Log("IsCorpse called with corpse: " + theCorpse as String, 3)
     Actor theCorpseActor = theCorpse as Actor
     Bool isCorpse = (theCorpseActor != None)
-    Log("[Lazy Panda] Is Corpse: " + isCorpse as String)
+    LZP:SystemScript.Log("Is Corpse: " + isCorpse as String, 3)
     Return isCorpse
 EndFunction
 
 ;-- GetDestRef Function --
 ; Determines the destination reference for looted items based on the global "Send To" setting.
 ObjectReference Function GetDestRef()
-    Log("[Lazy Panda] GetDestRef called")
+    LZP:SystemScript.Log("GetDestRef called", 3)
     Int destination = LPSetting_SendTo.GetValue() as Int
     If destination == 1
-        Log("[Lazy Panda] Destination: Player")
+        LZP:SystemScript.Log("Destination: Player", 3)
         Return PlayerRef
     ElseIf destination == 2
-        Log("[Lazy Panda] Destination: Lodge Safe")
+        LZP:SystemScript.Log("Destination: Lodge Safe", 3)
         Return LodgeSafeRef
     ElseIf destination == 3
-        Log("[Lazy Panda] Destination: Dummy Holding")
+        LZP:SystemScript.Log("Destination: Dummy Holding", 3)
         Return LPDummyHoldingRef
     Else
-        Log("[Lazy Panda] Destination: Unknown")
+        LZP:SystemScript.Log("Destination: Unknown", 3)
         Return None
     EndIf
 EndFunction
@@ -594,36 +600,36 @@ EndFunction
 ;-- IsPlayerStealing Function --
 ; Checks if the player is considered to be stealing the given loot based on its faction ownership.
 Bool Function IsPlayerStealing(ObjectReference theLoot)
-    Log("[Lazy Panda] IsPlayerStealing called with loot: " + theLoot as String)
+    LZP:SystemScript.Log("IsPlayerStealing called with loot: " + theLoot as String, 3)
     Faction currentOwner = theLoot.GetFactionOwner()
-    Log("[Lazy Panda] Current Owner: " + currentOwner as String)
+    LZP:SystemScript.Log("Current Owner: " + currentOwner as String, 3)
     Return !(currentOwner == None || currentOwner == PlayerFaction)
 EndFunction
 
 ;-- IsPlayerAvailable Function --
 ; Returns whether the player controls (activate/looking) are enabled.
 Bool Function IsPlayerAvailable()
-    Log("[Lazy Panda] IsPlayerAvailable called")
+    LZP:SystemScript.Log("IsPlayerAvailable called", 3)
     Return Game.IsActivateControlsEnabled() || Game.IsLookingControlsEnabled()
 EndFunction
 
 ;-- IsLootLoaded Function --
 ; Determines if the loot object is currently loaded in the game (and not disabled or deleted).
 Bool Function IsLootLoaded(ObjectReference theLoot)
-    Log("[Lazy Panda] IsLootLoaded called with loot: " + theLoot as String)
+    LZP:SystemScript.Log("IsLootLoaded called with loot: " + theLoot as String, 3)
     Return theLoot.Is3DLoaded() && !theLoot.IsDisabled() && !theLoot.IsDeleted()
 EndFunction
 
 ;-- GetRadius Function --
 ; Returns the search radius for loot detection. Uses a different radius if the loot is in a container space.
 Float Function GetRadius()
-    Log("[Lazy Panda] GetRadius called")
+    LZP:SystemScript.Log("GetRadius called", 3)
     Float fSearchRadius
     If bIsContainerSpace
         fSearchRadius = Game.GetGameSettingFloat("fMaxShipTransferDistance")
     Else
         fSearchRadius = LPSetting_Radius.GetValue()
     EndIf
-    Log("[Lazy Panda] Search Radius: " + fSearchRadius as String)
+    LZP:SystemScript.Log("Search Radius: " + fSearchRadius as String, 3)
     Return fSearchRadius
 EndFunction

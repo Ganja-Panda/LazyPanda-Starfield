@@ -27,31 +27,20 @@ Group NoFill
 EndGroup
 
 ;======================================================================
-; DEBUG LOGGING HELPER FUNCTION
-;======================================================================
-
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Debug.Trace(logMsg, 0)
-    EndIf
-EndFunction
-
-;======================================================================
 ; EVENT HANDLERS
 ;======================================================================
 
 ;-- OnLoad Event Handler --
 ; Called when the object is loaded. Begins the loot timer.
 Event OnLoad()
-    Log("[Lazy Panda] OnLoad triggered")
+    LZP:SystemScript.Log("OnLoad triggered", 3)
     StartTimer(lootTimerDelay, lootTimerID)
 EndEvent
 
 ;-- OnTimer Event Handler --
 ; Called when the loot timer expires. Checks if the timer ID matches before executing looting.
 Event OnTimer(Int aiTimerID)
-    Log("[Lazy Panda] OnTimer triggered with TimerID: " + aiTimerID as String)
+    LZP:SystemScript.Log("OnTimer triggered with TimerID: " + aiTimerID as String, 3)
     If aiTimerID == lootTimerID
         ExecuteLooting()
     EndIf
@@ -64,7 +53,7 @@ EndEvent
 ;-- ExecuteLooting Function --
 ; Main function that initiates the looting process and restarts the loot timer.
 Function ExecuteLooting()
-    Log("[Lazy Panda] ExecuteLooting called")
+    LZP:SystemScript.Log("ExecuteLooting called", 3)
     StartTimer(lootTimerDelay, lootTimerID)
     
     ; Retrieve game settings and properties
@@ -73,21 +62,21 @@ Function ExecuteLooting()
     Bool bEnableContSpace = LPEnableCont_Space.GetValue() == 1.0
     Bool bHasPerk = Game.GetPlayer().HasPerk(ActivePerk)
     
-    Log("[Lazy Panda] fSearchRadius: " + fSearchRadius as String)
+    LZP:SystemScript.Log("fSearchRadius: " + fSearchRadius as String, 3)
     
     ; Check if looting conditions are met
     If fSearchRadius > 0.0 && bToggleLooting && bEnableContSpace && bHasPerk
-        Log("[Lazy Panda] Looting enabled and within search radius")
+        LZP:SystemScript.Log("Looting enabled and within search radius", 3)
         ObjectReference homeShipRef = PlayerHomeShip.GetRef()
         If homeShipRef != None
             RemoveAllItems(homeShipRef, False, False)
-            Log("[Lazy Panda] Items removed and transferred to PlayerHomeShip")
+            LZP:SystemScript.Log("Items removed and transferred to PlayerHomeShip", 3)
         Else
-            Log("[Lazy Panda] PlayerHomeShip reference is None")
+            LZP:SystemScript.Log("PlayerHomeShip reference is None", 3)
             ; Additional error handling or fallback behavior can be added here
         EndIf
     Else
-        Log("[Lazy Panda] Looting not enabled, you don't have the proper perk or out of search radius")
+        LZP:SystemScript.Log("Looting not enabled, you don't have the proper perk or out of search radius", 3)
         ; Additional error handling or fallback behavior can be added here
     EndIf
 EndFunction

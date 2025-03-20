@@ -34,20 +34,12 @@ GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
 ; UTILITY FUNCTIONS
 ;======================================================================
 
-;-- Log Function --
-; Logs a message if the global debug setting is enabled.
-Function Log(String logMsg)
-    If LPSystemUtil_Debug.GetValue() as Bool
-        Debug.Trace(logMsg, 0)
-    EndIf
-EndFunction
-
 ;-- CheckDebugGlobal Function --
 ; Periodically checks if the debug global is set to 1 and logs a message if it is.
 Function CheckDebugGlobal()
     While True  ; Infinite loop, but controlled by Wait() to avoid recursion
         If LPSystemUtil_Debug.GetValue() as Bool
-            Log("Debugging enabled")
+            LZP:SystemScript.Log("Debugging enabled", 3)
         EndIf
         Utility.Wait(fDebugCheckInterval)  ; Wait before running again
     EndWhile
@@ -60,7 +52,7 @@ EndFunction
 ;-- OnAliasInit Event Handler --
 ; Called when the alias is initialized. Checks for updates.
 Event OnAliasInit()
-    Log("OnAliasInit triggered")
+    LZP:SystemScript.Log("OnAliasInit triggered", 3)
     CheckForUpdates()
     ; Start the timer to check the debug global.
     CheckDebugGlobal()
@@ -69,7 +61,7 @@ EndEvent
 ;-- OnPlayerLoadGame Event Handler --
 ; Called when the player loads a game. Checks for updates.
 Event OnPlayerLoadGame()
-    Log("OnPlayerLoadGame triggered")
+    LZP:SystemScript.Log("OnPlayerLoadGame triggered", 3)
     CheckForUpdates()
     ; Start the timer to check the debug global.
     CheckDebugGlobal()
@@ -82,19 +74,19 @@ EndEvent
 ;-- CheckForUpdates Function --
 ; Checks if updates are needed and applies them if necessary.
 Function CheckForUpdates()
-    Log("CheckForUpdates called")
+    LZP:SystemScript.Log("CheckForUpdates called", 3)
     
     ; Compute the current version as an integer (e.g., major * 1000 + minor).
     Int iCurrentVersion = (LPVersion_Major.GetValueInt() * 1000) + LPVersion_Minor.GetValueInt()
-    Log("Current version number: " + iCurrentVersion as String)
+    LZP:SystemScript.Log("Current version number: " + iCurrentVersion as String, 3)
     
     ; Retrieve the previously applied version; if not set, it defaults to 0.
     Int iAppliedVersion = sUpdatesAppliedVersion as Int
-    Log("Previously applied version: " + iAppliedVersion as String)
+    LZP:SystemScript.Log("Previously applied version: " + iAppliedVersion as String, 3)
     
     ; Check if updates are needed.
     If iAppliedVersion < iCurrentVersion
-        Log("Updates needed. Applying updates from version " + iAppliedVersion as String + " to " + iCurrentVersion as String)
+        LZP:SystemScript.Log("Updates needed. Applying updates from version " + iAppliedVersion as String + " to " + iCurrentVersion as String, 3)
         
         ; Dynamic update step(s)
         ; For example, if the applied version is less than 1001, run UpdateStep_1001().
@@ -111,32 +103,32 @@ Function CheckForUpdates()
         
         ; Store the new applied version.
         sUpdatesAppliedVersion = iCurrentVersion as String
-        Log("Updates applied. New applied version: " + sUpdatesAppliedVersion)
+        LZP:SystemScript.Log("Updates applied. New applied version: " + sUpdatesAppliedVersion, 3)
     Else
-        Log("No updates needed")
+        LZP:SystemScript.Log("No updates needed", 3)
     EndIf
 EndFunction
 
 ;-- UpdateStep_1001 Function --
 ; Applies updates for version 1001.
 Function UpdateStep_1001()
-    Log("Executing UpdateStep_1001: Adding missing perks")
+    LZP:SystemScript.Log("Executing UpdateStep_1001: Adding missing perks", 3)
     AddPerks()
 EndFunction
 
 ;-- AddPerks Function --
 ; Adds missing perks to the player.
 Function AddPerks()
-    Log("AddPerks called")
+    LZP:SystemScript.Log("AddPerks called", 3)
     Int index = 0
     While index < LPSystem_Script_Perks.GetSize()
         Perk currentPerk = LPSystem_Script_Perks.GetAt(index) as Perk
-        Log("Checking perk: " + currentPerk as String)
+        LZP:SystemScript.Log("Checking perk: " + currentPerk as String, 3)
         If !Game.GetPlayer().HasPerk(currentPerk)
-            Log("Adding perk: " + currentPerk as String)
+            LZP:SystemScript.Log("Adding perk: " + currentPerk as String, 3)
             Game.GetPlayer().AddPerk(currentPerk, False)
         Else
-            Log("Player already has perk: " + currentPerk as String)
+            LZP:SystemScript.Log("Player already has perk: " + currentPerk as String, 3)
         EndIf
         index += 1
     EndWhile
