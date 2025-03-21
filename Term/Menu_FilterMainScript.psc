@@ -30,7 +30,10 @@ Group Terminal
     TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
 EndGroup
 
-GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
+;-- Logger Property --
+Group Logger
+    LZP:Debug:LoggerScript Property Logger Auto Const
+EndGroup
 
 ;======================================================================
 ; HELPER FUNCTIONS
@@ -44,7 +47,9 @@ Function SetAllSettings(float newValue)
     While index < size
         GlobalVariable currentSetting = Self.SettingsGlobals.GetAt(index) as GlobalVariable
         currentSetting.SetValue(newValue)
-        LZP:SystemScript.Log("Setting index " + index as String + " to " + newValue as String, 3)
+        If Logger && Logger.IsEnabled()
+            Logger.Log("LZP:Term:Menu_FilterMainScript: Setting index " + index as String + " to " + newValue as String)
+        EndIf
         index += 1
     EndWhile
 EndFunction
@@ -54,10 +59,14 @@ EndFunction
 Function UpdateAllToggleDisplay(ObjectReference akTerminalRef, float currentValue)
     If currentValue == 1.0
         akTerminalRef.AddTextReplacementData("AllToggle", Self.LPOnMsg as Form)
-        LZP:SystemScript.Log("Setting AllToggle to LPOnMsg", 3)
+        If Logger && Logger.IsEnabled()
+            Logger.Log("LZP:Term:Menu_FilterMainScript: Setting AllToggle to LPOnMsg")
+        EndIf
     ElseIf currentValue == 0.0
         akTerminalRef.AddTextReplacementData("AllToggle", Self.LPOffMsg as Form)
-        LZP:SystemScript.Log("Setting AllToggle to LPOffMsg", 3)
+        If Logger && Logger.IsEnabled()
+            Logger.Log("LZP:Term:Menu_FilterMainScript: Setting AllToggle to LPOffMsg")
+        EndIf
     EndIf
 EndFunction
 
@@ -67,7 +76,9 @@ Function ForceTerminalRefresh(TerminalMenu akTerminalBase, ObjectReference akTer
     akTerminalBase.ClearDynamicMenuItems(akTerminalRef)
     akTerminalBase.ClearDynamicBodyTextItems(akTerminalRef)
     akTerminalBase.AddDynamicMenuItem(akTerminalRef, 0, 0, None)
-    LZP:SystemScript.Log("Terminal forced refresh triggered", 3)
+    If Logger && Logger.IsEnabled()
+        Logger.Log("LZP:Term:Menu_FilterMainScript: Terminal forced refresh triggered")
+    EndIf
 EndFunction
 
 ;======================================================================
@@ -77,23 +88,35 @@ EndFunction
 ;-- OnTerminalMenuEnter Event Handler --
 ; Called when the terminal menu is entered. Updates the toggle display.
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    LZP:SystemScript.Log("OnTerminalMenuEnter triggered", 3)
+    If Logger && Logger.IsEnabled()
+        Logger.Log("LZP:Term:Menu_FilterMainScript: OnTerminalMenuEnter triggered")
+    EndIf
     GlobalVariable currentSetting = Self.SettingsGlobals.GetAt(0) as GlobalVariable
-    LZP:SystemScript.Log("Current setting value: " + currentSetting.GetValue() as String, 3)
+    If Logger && Logger.IsEnabled()
+        Logger.Log("LZP:Term:Menu_FilterMainScript: Current setting value: " + currentSetting.GetValue() as String)
+    EndIf
     UpdateAllToggleDisplay(akTerminalRef, currentSetting.GetValue())
 EndEvent
 
 ;-- OnTerminalMenuItemRun Event Handler --
 ; Called when a menu item is selected. Toggles all settings if the appropriate item is selected.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    LZP:SystemScript.Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String, 3)
+    If Logger && Logger.IsEnabled()
+        Logger.Log("LZP:Term:Menu_FilterMainScript: OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
+    EndIf
     If akTerminalBase == Self.CurrentTerminalMenu
-        LZP:SystemScript.Log("Terminal menu matches CurrentTerminalMenu", 3)
+        If Logger && Logger.IsEnabled()
+            Logger.Log("LZP:Term:Menu_FilterMainScript: Terminal menu matches CurrentTerminalMenu")
+        EndIf
         If auiMenuItemID == 0
-            LZP:SystemScript.Log("Menu item 0 selected: Toggle all settings", 3)
+            If Logger && Logger.IsEnabled()
+                Logger.Log("LZP:Term:Menu_FilterMainScript: Menu item 0 selected: Toggle all settings")
+            EndIf
             GlobalVariable AllToggle = Self.SettingsGlobals.GetAt(0) as GlobalVariable
             float currentValue = AllToggle.GetValue()
-            LZP:SystemScript.Log("AllToggle current value: " + currentValue as String, 3)
+            If Logger && Logger.IsEnabled()
+                Logger.Log("LZP:Term:Menu_FilterMainScript: AllToggle current value: " + currentValue as String)
+            EndIf
             
             float newValue
             If currentValue == 1.0

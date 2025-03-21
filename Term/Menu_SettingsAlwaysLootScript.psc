@@ -18,6 +18,11 @@ Form[] Property SettingsGlobals Auto Const mandatory
 Message Property LPOffMsg Auto Const mandatory
 Message Property LPOnMsg Auto Const mandatory
 
+;-- Logger Property --
+Group Logger
+    LZP:Debug:LoggerScript Property Logger Auto Const
+EndGroup
+
 ;======================================================================
 ; HELPER FUNCTIONS
 ;======================================================================
@@ -34,7 +39,9 @@ Function UpdateSettingDisplay(Int index, ObjectReference akTerminalRef)
         EndIf
         akTerminalRef.AddTextReplacementData("State" + index as String, replacementMsg as Form)
     Else
-        LZP:SystemScript.Log("UpdateSettingDisplay: Setting at index " + index as String + " not found", 3)
+        If Logger && Logger.IsEnabled()
+            Logger.Log("LZP:Term:Menu_SettingsAlwaysLootScript: UpdateSettingDisplay: Setting at index " + index as String + " not found")
+        EndIf
     EndIf
 EndFunction
 
@@ -66,7 +73,9 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             EndIf
             UpdateSettingDisplay(auiMenuItemID, akTerminalRef)
         Else
-            LZP:SystemScript.Log("OnTerminalMenuItemRun: Setting at index " + auiMenuItemID as String + " not found", 3)
+            If Logger && Logger.IsEnabled()
+                Logger.Log("LZP:Term:Menu_SettingsAlwaysLootScript: OnTerminalMenuItemRun: Setting at index " + auiMenuItemID as String + " not found")
+            EndIf
         EndIf
     EndIf
 EndEvent

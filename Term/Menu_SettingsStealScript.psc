@@ -12,24 +12,25 @@ ScriptName LZP:Term:Menu_SettingsStealScript Extends TerminalMenu Hidden
 ;======================================================================
 
 ;-- Global Variables --
-; Global variables that control the stealing settings.
 Group GlobalVariable_Autofill
     GlobalVariable Property LPSetting_AllowStealing Auto Mandatory
     GlobalVariable Property LPSetting_StealingIsHostile Auto Mandatory
 EndGroup
 
 ;-- Messages --
-; Messages displayed to the player when updating the settings.
 Group Message_Autofill
     Message Property LPOffMsg Auto Const Mandatory
     Message Property LPOnMsg Auto Const Mandatory
 EndGroup
 
 ;-- Miscellaneous --
-; Miscellaneous properties including the current terminal menu and debug setting.
 Group Misc
     TerminalMenu Property CurrentTerminalMenu Auto Const Mandatory
-    GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
+EndGroup
+
+;-- Logger Property --
+Group Logger
+    LZP:Debug:LoggerScript Property Logger Auto Const
 EndGroup
 
 ;======================================================================
@@ -44,7 +45,9 @@ Function UpdateStealingSetting(ObjectReference akTerminalRef, Bool isEnabled)
         msgToUse = LPOnMsg
     EndIf
     akTerminalRef.AddTextReplacementData("Stealing", msgToUse as Form)
-    LZP:SystemScript.Log("Updated Stealing to " + (isEnabled as String), 3)
+    If Logger && Logger.IsEnabled()
+        Logger.Log("Updated Stealing to " + (isEnabled as String))
+    EndIf
 EndFunction
 
 ;-- UpdateHostileSetting Function --
@@ -55,7 +58,9 @@ Function UpdateHostileSetting(ObjectReference akTerminalRef, Bool isEnabled)
         msgToUse = LPOnMsg
     EndIf
     akTerminalRef.AddTextReplacementData("Hostile", msgToUse as Form)
-    LZP:SystemScript.Log("Updated Hostile to " + (isEnabled as String), 3)
+    If Logger && Logger.IsEnabled()
+        Logger.Log("Updated Hostile to " + (isEnabled as String))
+    EndIf
 EndFunction
 
 ;======================================================================
@@ -65,7 +70,9 @@ EndFunction
 ;-- OnTerminalMenuEnter Event Handler --
 ; Called when the terminal menu is entered. Updates the settings based on current values.
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    LZP:SystemScript.Log("OnTerminalMenuEnter triggered", 3)
+    If Logger && Logger.IsEnabled()
+        Logger.Log("OnTerminalMenuEnter triggered")
+    EndIf
 
     Bool allowStealing = LPSetting_AllowStealing.GetValue() as Bool
     Bool stealingIsHostile = LPSetting_StealingIsHostile.GetValue() as Bool
@@ -77,10 +84,14 @@ EndEvent
 ;-- OnTerminalMenuItemRun Event Handler --
 ; Called when a menu item is selected. Updates the settings based on user input.
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    LZP:SystemScript.Log("OnTerminalMenuItemRun triggered: MenuItemID = " + auiMenuItemID, 3)
+    If Logger && Logger.IsEnabled()
+        Logger.Log("OnTerminalMenuItemRun triggered: MenuItemID = " + auiMenuItemID as String)
+    EndIf
 
     If akTerminalBase != CurrentTerminalMenu
-        LZP:SystemScript.Log("Terminal menu does not match. Exiting event.", 3)
+        If Logger && Logger.IsEnabled()
+            Logger.Log("Terminal menu does not match. Exiting event.")
+        EndIf
         Return
     EndIf
 
