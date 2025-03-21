@@ -21,19 +21,28 @@ Actor Property PlayerRef Auto Const Mandatory
 FormList Property LPSystem_Script_Perks Auto Const Mandatory
 
 ;-- Version Manager --
+; Reference to the VersionManagerScript for version control.
 LZP:System:VersionManagerScript Property VersionManager Auto Const Mandatory
+
+;-- Logging System --
+; Reference to the LoggerScript for centralized logging.
+LZP:Debug:LoggerScript Property LoggerScript Auto Const Mandatory
 
 ;======================================================================
 ; EVENT HANDLERS
 ;======================================================================
 
 Event OnAliasInit()
-    LZP:SystemScript.Log("OnAliasInit triggered", 3)
+    If LoggerScript
+        LoggerScript.Log("UpdateHandler: OnAliasInit triggered", 3)
+    EndIf
     CheckForUpdates()
 EndEvent
 
 Event OnPlayerLoadGame()
-    LZP:SystemScript.Log("OnPlayerLoadGame triggered", 3)
+    If LoggerScript
+        LoggerScript.Log("UpdateHandler: OnPlayerLoadGame triggered", 3)
+    EndIf
     CheckForUpdates()
 EndEvent
 
@@ -42,17 +51,33 @@ EndEvent
 ;======================================================================
 
 Function CheckForUpdates()
-    LZP:SystemScript.Log("CheckForUpdates called", 3)
+    If LoggerScript
+        LoggerScript.Log("UpdateHandler: CheckForUpdates called", 3)
+    EndIf
 
-    Int iCurrentVersion = (VersionManager.GetMajor() * 1000) + VersionManager.GetMinor()
-    LZP:SystemScript.Log("Current version number: " + iCurrentVersion as String, 3)
+    ; Grab version components from the VersionManager
+    Float major = VersionManager.GetMajor()
+    Float minor = VersionManager.GetMinor()
+    Float patch = VersionManager.GetPatch()
+    
+    ; Convert to a single Int version for comparison
+    Int iCurrentVersion = ((major * 1000.0) + minor) as Int
+
+    If LoggerScript
+        LoggerScript.Log("UpdateHandler: Current version number: " + iCurrentVersion as String, 3)
+    EndIf
 
     Int iAppliedVersion = sUpdatesAppliedVersion as Int
-    LZP:SystemScript.Log("Previously applied version: " + iAppliedVersion as String, 3)
+    If LoggerScript
+        LoggerScript.Log("UpdateHandler: Previously applied version: " + iAppliedVersion as String, 3)
+    EndIf
 
     If iAppliedVersion < iCurrentVersion
-        LZP:SystemScript.Log("Updates needed. Applying updates from version " + iAppliedVersion as String + " to " + iCurrentVersion as String, 3)
+        If LoggerScript
+            LoggerScript.Log("UpdateHandler: Updates needed. Applying updates from version " + iAppliedVersion as String + " to " + iCurrentVersion as String, 3)
+        EndIf
 
+        ; === Begin update steps ===
         If iAppliedVersion < 1001
             UpdateStep_1001()
             iAppliedVersion = 1001
@@ -60,30 +85,48 @@ Function CheckForUpdates()
 
         ; [Add future version steps here]
 
+        ; Record applied version
         sUpdatesAppliedVersion = iAppliedVersion as String
-        LZP:SystemScript.Log("Updates applied. New applied version: " + sUpdatesAppliedVersion, 3)
+        If LoggerScript
+            LoggerScript.Log("UpdateHandler: Updates applied. New applied version: " + sUpdatesAppliedVersion, 3)
+        EndIf
     Else
-        LZP:SystemScript.Log("No updates needed", 3)
+        If LoggerScript
+            LoggerScript.Log("UpdateHandler: No updates needed", 3)
+        EndIf
     EndIf
 EndFunction
 
 Function UpdateStep_1001()
-    LZP:SystemScript.Log("Executing UpdateStep_1001: Adding missing perks", 3)
+    If LoggerScript
+        LoggerScript.Log("UpdateHandler: Executing UpdateStep_1001: Adding missing perks", 3)
+    EndIf
     AddPerks()
 EndFunction
 
 Function AddPerks()
-    LZP:SystemScript.Log("AddPerks called", 3)
+    If LoggerScript
+        LoggerScript.Log("UpdateHandler: AddPerks called", 3)
+    EndIf
+
     Int index = 0
     While index < LPSystem_Script_Perks.GetSize()
         Perk currentPerk = LPSystem_Script_Perks.GetAt(index) as Perk
-        LZP:SystemScript.Log("Checking perk: " + currentPerk as String, 3)
+        If LoggerScript
+            LoggerScript.Log("UpdateHandler: Checking perk: " + currentPerk as String, 3)
+        EndIf
+
         If !Game.GetPlayer().HasPerk(currentPerk)
-            LZP:SystemScript.Log("Adding perk: " + currentPerk as String, 3)
+            If LoggerScript
+                LoggerScript.Log("UpdateHandler: Adding perk: " + currentPerk as String, 3)
+            EndIf
             Game.GetPlayer().AddPerk(currentPerk, False)
         Else
-            LZP:SystemScript.Log("Player already has perk: " + currentPerk as String, 3)
+            If LoggerScript
+                LoggerScript.Log("UpdateHandler: Player already has perk: " + currentPerk as String, 3)
+            EndIf
         EndIf
+
         index += 1
     EndWhile
 EndFunction

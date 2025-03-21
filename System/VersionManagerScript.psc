@@ -5,7 +5,7 @@
 ; Debug logging is integrated to assist with troubleshooting.
 ;======================================================================
 
-ScriptName LZP:System:VersionManagerScript Extends Quest
+ScriptName LZP:System:VersionManagerScript Extends ReferenceAlias hidden
 
 ;======================================================================
 ; PROPERTY DEFINITIONS
@@ -22,6 +22,11 @@ Float Property CurrentPatch = 1.0 Auto Const
 GlobalVariable Property LPVersion_Major Auto Const Mandatory
 GlobalVariable Property LPVersion_Minor Auto Const Mandatory
 GlobalVariable Property LPVersion_Patch Auto Const Mandatory
+
+;-- Logging System --
+; Reference to the LoggerScript for debug output.
+LZP:Debug:LoggerScript Property LoggerScript Auto Const Mandatory
+
 
 ;-- Reference Aliases --
 ; Alias for the player.
@@ -54,9 +59,16 @@ Function CheckModVersion()
     Float savedMinor = LPVersion_Minor.GetValue()
     Float savedPatch = LPVersion_Patch.GetValue()
 
+    ; Optional debug output: show current saved version
+    If LoggerScript
+        LoggerScript.Log("[VersionManager] Detected: Save Version " + savedMajor + "." + savedMinor + "." + savedPatch, 3)
+    EndIf
+
     ; Check if any component of the version has changed
     If savedMajor < CurrentMajor || savedMinor < CurrentMinor || savedPatch < CurrentPatch
-        LZP:SystemScript.Log("[VersionManager] Updating to " + CurrentMajor + "." + CurrentMinor + "." + CurrentPatch, 3)
+        If LoggerScript
+            LoggerScript.Log("[VersionManager] Updating to " + CurrentMajor + "." + CurrentMinor + "." + CurrentPatch, 3)
+        EndIf
 
         ; Reset the PlayerAlias to reload its script
         PlayerAlias.Clear()
@@ -87,40 +99,4 @@ EndFunction
 ; Returns the current patch version from the GlobalVariable
 Float Function GetPatch()
     return LPVersion_Patch.GetValue()
-EndFunction
-
-; Returns the version as a formatted string, e.g., "2.0.1"
-String Function GetVersionString()
-    return GetMajor() + "." + GetMinor() + "." + GetPatch()
-EndFunction
-
-;======================================================================
-; VERSION COMPARISON UTILITIES
-;======================================================================
-
-; Returns True if the current saved version is *less than* the given version
-Bool Function IsVersionNewerThan(Float major, Float minor, Float patch)
-    Float savedMajor = GetMajor()
-    Float savedMinor = GetMinor()
-    Float savedPatch = GetPatch()
-
-    If savedMajor < major
-        return True
-    ElseIf savedMajor == major && savedMinor < minor
-        return True
-    ElseIf savedMajor == major && savedMinor == minor && savedPatch < patch
-        return True
-    EndIf
-
-    return False
-EndFunction
-
-; Returns True if the saved version exactly matches the provided version
-Bool Function IsVersionEqualTo(Float major, Float minor, Float patch)
-    return GetMajor() == major && GetMinor() == minor && GetPatch() == patch
-EndFunction
-
-; Returns True if the current version (in code) is different from the saved version
-Bool Function HasVersionChanged()
-    return CurrentMajor != GetMajor() || CurrentMinor != GetMinor() || CurrentPatch != GetPatch()
 EndFunction

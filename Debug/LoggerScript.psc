@@ -12,6 +12,8 @@ ScriptName LZP:Debug:LoggerScript Extends Quest
 ;======================================================================
 
 GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
+Message Property LPDebugOnMsg Auto Const Mandatory
+Message Property LPDebugOffMsg Auto Const Mandatory
 
 ;======================================================================
 ; VARIABLES
@@ -44,8 +46,7 @@ Function Log(String msg, Int severity = 1)
 
         String fullMsg = "[Lazy Panda] " + msg
 
-        ; Always use TraceUser to ensure it goes to LazyPanda.log
-        Debug.TraceUser(fullMsg)
+        Debug.TraceUser("Lazy Panda", fullMsg)
     EndIf
 EndFunction
 
@@ -63,13 +64,42 @@ Function Toggle()
 
     InitializeLog()
 
-    String msg
     If newState
-        msg = "[Lazy Panda] Logging Enabled"
+        LPDebugOnMsg.Show()
+        Debug.TraceUser("Lazy Panda", "Debug mode enabled")
     Else
-        msg = "[Lazy Panda] Logging Disabled"
+        LPDebugOffMsg.Show()
+        Debug.TraceUser("Lazy Panda", "Debug mode disabled")
     EndIf
-
-    Debug.Notification(msg)
-    Debug.TraceUser(msg)
 EndFunction
+
+;======================================================================
+; GLOBAL FUNCTIONS
+;======================================================================
+
+;-- ToggleLogging Function --
+; Global function for CGF/hotkey toggle
+; Example: cgf "LZP:Debug:LoggerScript.ToggleLogging"
+Function ToggleLogging() Global
+    LoggerScript loggerInstance = Game.GetFormFromFile(0x0000098D, "LazyPanda.esm") as LoggerScript
+    Message LPDebugOnMsgGlobal = Game.GetFormFromFile(0x00000996, "LazyPanda.esm") as Message
+    Message LPDebugOffMsgGlobal = Game.GetFormFromFile(0x00000995, "LazyPanda.esm") as Message
+
+    If loggerInstance
+        Bool newState = !loggerInstance.IsEnabled()
+        loggerInstance.LPSystemUtil_Debug.SetValue(newState as Float)
+
+        If newState
+            LPDebugOnMsgGlobal.Show()
+            Debug.TraceUser("Lazy Panda", "Debug mode enabled")
+        Else
+            LPDebugOffMsgGlobal.Show()
+            Debug.TraceUser("Lazy Panda", "Debug mode disabled")
+        EndIf
+    Else
+        Debug.Notification("[Lazy Panda] ERROR: LoggerScript not found")
+        Debug.Trace("[Lazy Panda] ERROR: LoggerScript quest not found at expected FormID.")
+    EndIf
+EndFunction
+
+
