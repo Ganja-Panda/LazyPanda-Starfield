@@ -14,8 +14,8 @@ ScriptName LZP:System:VersionManagerScript Extends ReferenceAlias hidden
 ;-- Version Properties --
 ; Current version of the mod.
 Float Property CurrentMajor = 2.0 Auto Const
-Float Property CurrentMinor = 0.0 Auto Const
-Float Property CurrentPatch = 1.0 Auto Const
+Float Property CurrentMinor = 1.0 Auto Const
+Float Property CurrentPatch = 0.0 Auto Const
 
 ;-- Global Variables --
 ; Global variables to store the saved version.
