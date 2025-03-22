@@ -1,9 +1,15 @@
 ;======================================================================
-; Script: LZP:Looting:CorpseProcessorScript
-; Description: This Quest Script is designed to handle the processing of corpses when called from LZP:System:ActorAliasDeathListnerScript.
-; It provides functionality for processing corpses, including unequipping
-; items, looting, and removing the corpse from the world. Debug logging is integrated to
-; assist with troubleshooting.
+; Script Name   : LZP:Looting:CorpseProcessorScript
+; Author        : Ganja Panda
+; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
+; Purpose       : Handles corpse processing and looting after actor death.
+; Description   : Supports unequipping, filtered looting, destination sorting,
+;                 and corpse removal with integrated logging using LoggerScript.
+;                 unequipping, filtered looting, destination sorting, and corpse
+;                 removal with integrated logging using LoggerScript. Verbosity:
+;                   1 = Info, 2 = Warning, 3 = Error
+; Dependencies  : LazyPanda.esm
+; Usage         : Automatically invoked on actor death. Must have LoggerScript attached.
 ;======================================================================
 Scriptname LZP:Looting:CorpseProcessorScript extends Quest
 
@@ -12,58 +18,50 @@ Scriptname LZP:Looting:CorpseProcessorScript extends Quest
 ;======================================================================
 
 Group EffectSpecific_Mandatory
-    Perk Property ActivePerk Auto Const mandatory              ; Perk required for activating the loot effect
-    FormList Property ActiveLootList Auto Const mandatory        ; List of forms representing potential loot targets
+    Perk Property ActivePerk Auto Const mandatory
+    FormList Property ActiveLootList Auto Const mandatory
 EndGroup
 
-;-- Loot Method Configuration --
 Group EffectSpecific_LootMethod
-    Bool Property bLootDeadActor = False Auto                    ; Should the effect loot dead actors?
+    Bool Property bLootDeadActor = False Auto
 EndGroup
 
-;-- Form Type Configuration --
 Group EffectSpecific_FormType
-    Bool Property bIsKeyword = False Auto                         ; Use a single keyword to locate loot?
-    Bool Property bIsMultipleKeyword = False Auto                 ; Use multiple keywords to locate loot?
+    Bool Property bIsKeyword = False Auto
+    Bool Property bIsMultipleKeyword = False Auto
 EndGroup
 
-;-- Settings Autofill --
 Group Settings_Autofill
-    GlobalVariable Property LPSetting_Radius Auto Const           ; Global setting for loot search radius
-    GlobalVariable Property LPSetting_RemoveCorpses Auto Const      ; Remove corpses after looting?
-    GlobalVariable Property LPSetting_SendTo Auto Const             ; Destination setting for looted items
-    GlobalVariable Property LPSetting_ContTakeAll Auto Const        ; Loot all items from a container?
-    GlobalVariable Property LPSetting_AllowLootingShip Auto Const    ; Allow looting from ships?
+    GlobalVariable Property LPSetting_Radius Auto Const
+    GlobalVariable Property LPSetting_RemoveCorpses Auto Const
+    GlobalVariable Property LPSetting_SendTo Auto Const
+    GlobalVariable Property LPSetting_ContTakeAll Auto Const
+    GlobalVariable Property LPSetting_AllowLootingShip Auto Const
 EndGroup
 
-;-- List Autofill --
 Group List_Autofill
-    FormList Property LPSystem_Looting_Globals Auto Const          ; Global looting configuration list
-    FormList Property LPSystem_Looting_Lists Auto Const             ; Loot filtering lists for containers
+    FormList Property LPSystem_Looting_Globals Auto Const
+    FormList Property LPSystem_Looting_Lists Auto Const
 EndGroup
 
-;-- Miscellaneous Properties --
 Group Misc
-    Armor Property LP_Skin_Naked_NOTPLAYABLE Auto Const mandatory   ; Armor for unequipping corpses (non-playable)
-    Race Property HumanRace Auto Const mandatory                    ; Standard human race
+    Armor Property LP_Skin_Naked_NOTPLAYABLE Auto Const mandatory
+    Race Property HumanRace Auto Const mandatory
 EndGroup
 
-;-- Destination Locations --
 Group DestinationLocations
-    ObjectReference Property PlayerRef Auto Const                   ; Reference to the player
-    ObjectReference Property LodgeSafeRef Auto Const                  ; Reference to the lodge safe container
-    ObjectReference Property LPDummyHoldingRef Auto Const             ; Reference to a dummy holding container for loot
-    ReferenceAlias Property PlayerHomeShip Auto Const mandatory       ; Alias for the player's home ship
+    ObjectReference Property PlayerRef Auto Const
+    ObjectReference Property LodgeSafeRef Auto Const
+    ObjectReference Property LPDummyHoldingRef Auto Const
+    ReferenceAlias Property PlayerHomeShip Auto Const mandatory
 EndGroup
 
-;-- No Fill Settings --
 Group NoFill
-    Bool Property bTakeAll = False Auto                              ; Local flag to loot all items from a container
+    Bool Property bTakeAll = False Auto
 EndGroup
 
-;-- Logger Property --
 Group Logger
-    LZP:Debug:LoggerScript Property Logger Auto Const                ; Declared logger using the new logging system
+    LZP:Debug:LoggerScript Property Logger Auto Const
 EndGroup
 
 ;======================================================================
@@ -71,15 +69,17 @@ EndGroup
 ;======================================================================
 
 ;-- ProcessCorpse Function --
+; @param akVictim: The actor or container representing the corpse
+; @param akKiller: The actor responsible for the death, if any
+; Processes looting behavior and corpse cleanup.
 Function ProcessCorpse(ObjectReference akVictim, ObjectReference akKiller)
     If Logger && Logger.IsEnabled()
-        Logger.Log("LZP:Looting:CorpseProcessorScript: ProcessCorpse called with corpse: " + akVictim as String)
+        Logger.Log("ProcessCorpse called with corpse: " + akVictim as String, 1)
     EndIf
 
     Bool takeAll = LPSetting_ContTakeAll.GetValue() as Bool
     bTakeAll = takeAll
-    
-    ; Check if the corpse is an actor and unequip items if it is.
+
     Actor corpseActor = akVictim as Actor
     If corpseActor != None
         Race corpseRace = corpseActor.GetRace()
@@ -89,24 +89,22 @@ Function ProcessCorpse(ObjectReference akVictim, ObjectReference akKiller)
         EndIf
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Looting:CorpseProcessorScript: Corpse is not an Actor; skipping actor-specific processing.")
+            Logger.Log("Corpse is not an Actor; skipping actor-specific processing.", 2)
         EndIf
     EndIf
 
     Utility.Wait(0.1)
 
-    ; Log the killer if one is detected.
     If akKiller != None
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Looting:CorpseProcessorScript: Killer: " + akKiller as String)
+            Logger.Log("Killer: " + akKiller as String, 1)
         EndIf
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Looting:CorpseProcessorScript: No killer detected.")
+            Logger.Log("No killer detected.", 2)
         EndIf
     EndIf
 
-    ; Loot the corpse if the setting is enabled.
     If takeAll
         akVictim.RemoveAllItems(GetDestRef(), False, False)
     Else
@@ -117,38 +115,43 @@ Function ProcessCorpse(ObjectReference akVictim, ObjectReference akKiller)
 EndFunction
 
 ;-- RemoveCorpse Function --
+; @param theCorpse: The ObjectReference representing the corpse
+; Handles corpse removal if enabled by settings.
 Function RemoveCorpse(ObjectReference theCorpse)
     If Logger && Logger.IsEnabled()
-        Logger.Log("LZP:Looting:CorpseProcessorScript: RemoveCorpse called with corpse: " + theCorpse as String)
+        Logger.Log("RemoveCorpse called with corpse: " + theCorpse as String, 1)
     EndIf
 
     If LPSetting_RemoveCorpses.GetValue() as Bool
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Looting:CorpseProcessorScript: Corpse removal enabled, disabling corpse")
+            Logger.Log("Corpse removal enabled, disabling corpse", 1)
         EndIf
         theCorpse.DisableNoWait(True)
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Looting:CorpseProcessorScript: Corpse removal disabled, leaving corpse in world")
+            Logger.Log("Corpse removal disabled, leaving corpse in world", 2)
         EndIf
     EndIf
 EndFunction
 
 ;-- ProcessFilteredContainerItems Function --
+; @param akContainer: The corpse container to filter
+; @param akLooter: The entity looting
+; Processes items from the corpse based on configured filters.
 Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectReference akLooter)
     If Logger && Logger.IsEnabled()
-        Logger.Log("LZP:Looting:CorpseProcessorScript: ProcessFilteredContainerItems called")
+        Logger.Log("ProcessFilteredContainerItems called", 1)
     EndIf
-    
+
     If akContainer == None
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Looting:CorpseProcessorScript: No valid container found!")
+            Logger.Log("No valid container found!", 3)
         EndIf
         Return
     EndIf
 
     If Logger && Logger.IsEnabled()
-        Logger.Log("LZP:Looting:CorpseProcessorScript: Processing filtered items in: " + akContainer as String)
+        Logger.Log("Processing filtered items in: " + akContainer as String, 1)
     EndIf
 
     Int listSize = LPSystem_Looting_Lists.GetSize()
@@ -162,17 +165,17 @@ Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectRefere
             Float globalValue = currentGlobal.GetValue()
             If globalValue == 1.0
                 If Logger && Logger.IsEnabled()
-                    Logger.Log("LZP:Looting:CorpseProcessorScript: Removing items from category: " + currentList as String)
+                    Logger.Log("Removing items from category: " + currentList as String, 1)
                 EndIf
                 akContainer.RemoveItem(currentList as Form, -1, True, GetDestRef())
             Else
                 If Logger && Logger.IsEnabled()
-                    Logger.Log("LZP:Looting:CorpseProcessorScript: Skipping list: " + currentList as String)
+                    Logger.Log("Skipping list: " + currentList as String, 2)
                 EndIf
             EndIf
         Else
             If Logger && Logger.IsEnabled()
-                Logger.Log("LZP:Looting:CorpseProcessorScript: Skipping index " + index as String + " due to missing data.")
+                Logger.Log("Skipping index " + index as String + " due to missing data.", 3)
             EndIf
         EndIf
 
@@ -181,30 +184,32 @@ Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectRefere
 EndFunction
 
 ;-- GetDestRef Function --
+; @return: The destination reference for looted items
+; Determines where items should be sent after looting
 ObjectReference Function GetDestRef()
     If Logger && Logger.IsEnabled()
-        Logger.Log("LZP:Looting:CorpseProcessorScript: GetDestRef called")
+        Logger.Log("GetDestRef called", 1)
     EndIf
 
     Int destination = LPSetting_SendTo.GetValue() as Int
     If destination == 1
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Looting:CorpseProcessorScript: Destination: Player")
+            Logger.Log("Destination: Player", 1)
         EndIf
         Return PlayerRef
     ElseIf destination == 2
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Looting:CorpseProcessorScript: Destination: Lodge Safe")
+            Logger.Log("Destination: Lodge Safe", 1)
         EndIf
         Return LodgeSafeRef
     ElseIf destination == 3
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Looting:CorpseProcessorScript: Destination: Dummy Holding")
+            Logger.Log("Destination: Dummy Holding", 1)
         EndIf
         Return LPDummyHoldingRef
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Looting:CorpseProcessorScript: Destination: Unknown")
+            Logger.Log("Destination: Unknown", 3)
         EndIf
         Return None
     EndIf

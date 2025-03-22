@@ -1,7 +1,7 @@
 ;======================================================================
 ; Script Name   : LZP:SystemScript
 ; Author        : Ganja Panda
-; Mod           : Lazy Panda Utility Framework
+; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
 ; Purpose       : Stateless utility functions for use with cgf calls.
 ; Description   : Provides global inventory and system control functions
 ;                 including ship transfers, lodge access, and safe toggles.
