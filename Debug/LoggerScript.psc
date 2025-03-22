@@ -67,10 +67,10 @@ Function PollDebugState()
 
             If currentState
                 LPDebugOnMsg.Show()
-                Debug.TraceUser("Lazy Panda", "Debug mode enabled")
+                Debug.TraceUser("Lazy Panda", "[INFO] Debug mode enabled")
             Else
                 LPDebugOffMsg.Show()
-                Debug.TraceUser("Lazy Panda", "Debug mode disabled")
+                Debug.TraceUser("Lazy Panda", "[INFO] Debug mode disabled")
             EndIf
 
             bLastKnownState = currentState
@@ -84,50 +84,52 @@ EndFunction
 ; PUBLIC FUNCTIONS
 ;======================================================================
 
-;-- Log Function --
-; @param msg: The message to write to the log file.
-; @param severity: Unused optional level of severity (default = 1).
-; Writes to LazyPanda.log if debug is enabled.
-Function Log(String msg, Int severity = 1)
-    If IsEnabled()
-        InitializeLog()
-
-        String fullMsg = "[Lazy Panda] " + msg
-        Debug.TraceUser("Lazy Panda", fullMsg)
-    EndIf
-EndFunction
-
-;-- IsEnabled Function --
-; @return: True if debug logging is currently enabled.
+;-- Determines if debug mode is currently enabled
 Bool Function IsEnabled()
-    return LPSystemUtil_Debug.GetValue() as Bool
+    Return (LPSystemUtil_Debug.GetValueInt() > 0)
 EndFunction
 
-;-- Toggle Function --
-; Flips debug state and shows a notification.
-Function Toggle()
-    Bool newState = !IsEnabled()
-    LPSystemUtil_Debug.SetValue(newState as Float)
-
-    InitializeLog()
-
-    If newState
-        LPDebugOnMsg.Show()
-        Debug.TraceUser("Lazy Panda", "Debug mode enabled")
-    Else
-        LPDebugOffMsg.Show()
-        Debug.TraceUser("Lazy Panda", "Debug mode disabled")
+;-- Starts the polling thread if not already started
+Function StartPolling()
+    If !bPollingStarted
+        bPollingStarted = True
+        PollDebugState()
     EndIf
 EndFunction
 
-;-- StartPolling Function --
-; Begins background thread to monitor debug state changes.
-Function StartPolling()
-    If bPollingStarted
+;-- Toggles the debug variable between on and off
+Function Toggle()
+    If IsEnabled()
+        LPSystemUtil_Debug.SetValueInt(0)
+    Else
+        LPSystemUtil_Debug.SetValueInt(1)
+    EndIf
+EndFunction
+
+;-- Logs a message with optional severity: 1=Info (default), 2=Warning, 3=Error
+Function Log(String msg, Int severity = 1)
+    If !IsEnabled()
         Return
     EndIf
 
-    bLastKnownState = IsEnabled()
-    bPollingStarted = True
-    PollDebugState()
+    InitializeLog()
+
+    String prefix = "[INFO] "
+    If severity == 2
+        prefix = "[WARN] "
+    ElseIf severity == 3
+        prefix = "[ERROR] "
+    EndIf
+
+    Debug.TraceUser("Lazy Panda", prefix + msg)
+EndFunction
+
+;-- Convenience wrapper for warning-level log
+Function LogWarn(String msg)
+    Log(msg, 2)
+EndFunction
+
+;-- Convenience wrapper for error-level log
+Function LogError(String msg)
+    Log(msg, 3)
 EndFunction
