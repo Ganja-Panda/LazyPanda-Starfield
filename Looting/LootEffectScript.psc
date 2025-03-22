@@ -1,5 +1,6 @@
 ;======================================================================
 ; Script: LZP:Looting:LootEffectScript
+; Author: Ganja Panda
 ; Description: This ActiveMagicEffect script manages the looting process.
 ; It locates loot based on various criteria (keywords, container types, etc.),
 ; processes the loot (including corpses, containers, and spell-activated objects),
