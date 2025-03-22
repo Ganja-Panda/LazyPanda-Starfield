@@ -20,6 +20,16 @@ Message Property LPDebugOffMsg Auto Const Mandatory
 ;======================================================================
 
 Bool bLogInitialized = False  ; Tracks whether the user log has been opened
+Bool bLastKnownState = False  ; Tracks previous debug value to detect change
+Bool bPollingStarted = False  ; Prevents duplicate polling threads
+
+;======================================================================
+; EVENTS
+;======================================================================
+
+Event OnInit()
+    StartPolling()
+EndEvent
 
 ;======================================================================
 ; PRIVATE FUNCTIONS
@@ -32,6 +42,30 @@ Function InitializeLog()
         Debug.OpenUserLog("LazyPanda")
         bLogInitialized = True
     EndIf
+EndFunction
+
+;-- PollDebugState Function --
+; Internal polling thread that detects changes in debug state
+Function PollDebugState()
+    While bPollingStarted
+        Bool currentState = IsEnabled()
+
+        If currentState != bLastKnownState
+            InitializeLog()
+
+            If currentState
+                LPDebugOnMsg.Show()
+                Debug.TraceUser("Lazy Panda", "Debug mode enabled")
+            Else
+                LPDebugOffMsg.Show()
+                Debug.TraceUser("Lazy Panda", "Debug mode disabled")
+            EndIf
+
+            bLastKnownState = currentState
+        EndIf
+
+        Utility.Wait(5.0)
+    EndWhile
 EndFunction
 
 ;======================================================================
@@ -73,33 +107,14 @@ Function Toggle()
     EndIf
 EndFunction
 
-;======================================================================
-; GLOBAL FUNCTIONS
-;======================================================================
-
-;-- ToggleLogging Function --
-; Global function for CGF/hotkey toggle
-; Example: cgf "LZP:Debug:LoggerScript.ToggleLogging"
-Function ToggleLogging() Global
-    LoggerScript loggerInstance = Game.GetFormFromFile(0x0000098D, "LazyPanda.esm") as LoggerScript
-    Message LPDebugOnMsgGlobal = Game.GetFormFromFile(0x00000996, "LazyPanda.esm") as Message
-    Message LPDebugOffMsgGlobal = Game.GetFormFromFile(0x00000995, "LazyPanda.esm") as Message
-
-    If loggerInstance
-        Bool newState = !loggerInstance.IsEnabled()
-        loggerInstance.LPSystemUtil_Debug.SetValue(newState as Float)
-
-        If newState
-            LPDebugOnMsgGlobal.Show()
-            Debug.TraceUser("Lazy Panda", "Debug mode enabled")
-        Else
-            LPDebugOffMsgGlobal.Show()
-            Debug.TraceUser("Lazy Panda", "Debug mode disabled")
-        EndIf
-    Else
-        Debug.Notification("[Lazy Panda] ERROR: LoggerScript not found")
-        Debug.Trace("[Lazy Panda] ERROR: LoggerScript quest not found at expected FormID.")
+;-- StartPolling Function --
+; Launches background monitoring of debug toggle
+Function StartPolling()
+    If bPollingStarted
+        Return
     EndIf
+
+    bLastKnownState = IsEnabled()
+    bPollingStarted = True
+    PollDebugState()
 EndFunction
-
-
