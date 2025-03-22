@@ -1,17 +1,21 @@
 ;======================================================================
-; Script: LZP:Looting:LootEffectScript
-; Author: Ganja Panda
-; Description: This ActiveMagicEffect script manages the looting process.
-; It locates loot based on various criteria (keywords, container types, etc.),
-; processes the loot (including corpses, containers, and spell-activated objects),
-; and handles container unlocking via keys or Digipick.
-; Debug logging is integrated to assist with troubleshooting.
+; Script Name   : LZP:Looting:LootEffectScript
+; Author        : Ganja Panda
+; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
+; Purpose       : Handles all looting scenarios for various object types
+; Description   : Supports scanning, filtering, looting, stealing logic,
+;                 quest item detection, ship container handling, and destination
+;                 routing. Integrated with LoggerScript for event-level tracking.
+;                 Verbosity Levels:
+;                   1 = Info, 2 = Warning, 3 = Error
+; Dependencies  : LazyPanda.esm, LoggerScript
+; Usage         : Activated by radius scanning or loot spell effect triggers
 ;======================================================================
 
 ScriptName LZP:Looting:LootEffectScript Extends ActiveMagicEffect hidden
 
 ;======================================================================
-; PROPERTY GROUPS
+; PROPERTIES
 ;======================================================================
 
 ;-- Effect-Specific Mandatory Properties --
@@ -41,6 +45,8 @@ Group EffectSpecific_FormType
 EndGroup
 
 ;-- Settings Autofill --
+;-- Settings
+; Global variables that define looting behavior and permissions.
 Group Settings_Autofill
     GlobalVariable Property LPSetting_Radius Auto Const          ; Global setting for loot search radius
     GlobalVariable Property LPSetting_AllowStealing Auto Const      ; Allow stealing items?
@@ -108,6 +114,8 @@ Group NoFill
 EndGroup
 
 ;-- Logger Property --
+;-- Logger
+; LoggerScript reference for runtime debugging.
 Group Logger
     LZP:Debug:LoggerScript Property Logger Auto Const                    ; Declared logger using the new logging system
 EndGroup
@@ -314,6 +322,10 @@ Function ProcessLoot(ObjectReference[] theLootArray)
 EndFunction
 
 ;-- ProcessCorpse Function --
+;-- ProcessCorpse Function --
+; @param theCorpse: The corpse object to process
+; @param theLooter: The entity performing the looting
+; Handles looting and cleanup of a corpse.
 Function ProcessCorpse(ObjectReference theCorpse, ObjectReference theLooter)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: ProcessCorpse called with corpse: " + theCorpse as String)
@@ -340,6 +352,9 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference theLooter)
 EndFunction
 
 ;-- RemoveCorpse Function --
+;-- RemoveCorpse Function --
+; @param theCorpse: The corpse object to remove
+; Disables the corpse if settings allow it.
 Function RemoveCorpse(ObjectReference theCorpse)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: RemoveCorpse called with corpse: " + theCorpse as String)
@@ -350,6 +365,10 @@ Function RemoveCorpse(ObjectReference theCorpse)
 EndFunction
 
 ;-- ProcessContainer Function --
+;-- ProcessContainer Function --
+; @param theContainer: The container to loot
+; @param theLooter: The looting entity
+; Handles logic for unlocking and looting containers.
 Function ProcessContainer(ObjectReference theContainer, ObjectReference theLooter)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: ProcessContainer called with container: " + theContainer as String)
@@ -379,6 +398,10 @@ Function ProcessContainer(ObjectReference theContainer, ObjectReference theLoote
 EndFunction
 
 ;-- ProcessFilteredContainerItems Function --
+;-- ProcessFilteredContainerItems Function --
+; @param theContainer: The container to process
+; @param theLooter: The looting entity
+; Removes items based on active filters.
 Function ProcessFilteredContainerItems(ObjectReference theContainer, ObjectReference theLooter)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: ProcessFilteredContainerItems called with container: " + theContainer as String)
@@ -398,6 +421,10 @@ Function ProcessFilteredContainerItems(ObjectReference theContainer, ObjectRefer
 EndFunction
 
 ;-- CanTakeLoot Function --
+;-- CanTakeLoot Function --
+; @param theLoot: The item or object to evaluate
+; @return: True if the object can be safely looted
+; Evaluates whether looting is safe, legal, and enabled.
 Bool Function CanTakeLoot(ObjectReference theLoot)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: CanTakeLoot called with loot: " + theLoot as String)
@@ -450,6 +477,9 @@ Bool Function CanTakeLoot(ObjectReference theLoot)
 EndFunction
 
 ;-- IsInRestrictedLocation Function --
+;-- IsInRestrictedLocation Function --
+; @return: True if player is in a no-loot zone
+; Checks if looting is disallowed in the current location.
 Bool Function IsInRestrictedLocation()
     FormList restrictedLocations = LPFilter_NoLootLocations
     Int index = 0
@@ -467,6 +497,9 @@ Bool Function IsInRestrictedLocation()
 EndFunction
 
 ;-- TakeOwnership Function --
+;-- TakeOwnership Function --
+; @param theLoot: The object to assume ownership of
+; Forces ownership of loot if stealing is allowed.
 Function TakeOwnership(ObjectReference theLoot)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: TakeOwnership called with loot: " + theLoot as String)
@@ -479,6 +512,9 @@ Function TakeOwnership(ObjectReference theLoot)
 EndFunction
 
 ;-- CanLootShip Function --
+;-- CanLootShip Function --
+; @return: True if ship containers can be looted
+; Reads global setting to determine permission.
 Bool Function CanLootShip()
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: CanLootShip called")
@@ -487,6 +523,10 @@ Bool Function CanLootShip()
 EndFunction
 
 ;-- IsOwned Function --
+;-- IsOwned Function --
+; @param theLoot: The item to evaluate
+; @return: True if the item is owned by another
+; Checks multiple conditions for ownership.
 Bool Function IsOwned(ObjectReference theLoot)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: IsOwned called with loot: " + theLoot as String)
@@ -495,6 +535,9 @@ Bool Function IsOwned(ObjectReference theLoot)
 EndFunction
 
 ;-- TryUnlock Function --
+;-- TryUnlock Function --
+; @param theContainer: The container to unlock
+; Attempts appropriate unlock strategy based on lock state.
 Function TryUnlock(ObjectReference theContainer)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: TryUnlock called with container: " + theContainer as String)
@@ -528,6 +571,8 @@ Function TryUnlock(ObjectReference theContainer)
 EndFunction
 
 ;-- HandleInaccessibleLock Function --
+;-- HandleInaccessibleLock Function --
+; Handles logic for containers marked as inaccessible.
 Function HandleInaccessibleLock()
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: HandleInaccessibleLock called")
@@ -535,6 +580,10 @@ Function HandleInaccessibleLock()
 EndFunction
 
 ;-- HandleRequiresKey Function --
+;-- HandleRequiresKey Function --
+; @param theContainer: Locked container
+; @param bIsOwned: Whether it's owned by someone
+; Attempts to find and use a key.
 Function HandleRequiresKey(ObjectReference theContainer, Bool bIsOwned)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: HandleRequiresKey called with container: " + theContainer as String)
@@ -557,6 +606,11 @@ Function HandleRequiresKey(ObjectReference theContainer, Bool bIsOwned)
 EndFunction
 
 ;-- HandleDigipickUnlock Function --
+;-- HandleDigipickUnlock Function --
+; @param theContainer: Locked container
+; @param bIsOwned: Whether it's owned
+; @param bLockSkillCheck: If skill checks are enforced
+; Uses digipick logic with skill check validation.
 Function HandleDigipickUnlock(ObjectReference theContainer, Bool bIsOwned, Bool bLockSkillCheck)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: HandleDigipickUnlock called with container: " + theContainer as String)
@@ -587,6 +641,8 @@ Function HandleDigipickUnlock(ObjectReference theContainer, Bool bIsOwned, Bool 
 EndFunction
 
 ;-- FindDigipick Function --
+;-- FindDigipick Function --
+; Searches known locations for digipicks and gives to player.
 Function FindDigipick()
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: FindDigipick called")
@@ -608,6 +664,9 @@ Function FindDigipick()
 EndFunction
 
 ;-- FindKey Function --
+;-- FindKey Function --
+; @param theKey: The key to find
+; Looks in known stash locations for a specific key.
 Function FindKey(Key theKey)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: FindKey called with key: " + theKey as String)
@@ -629,6 +688,10 @@ Function FindKey(Key theKey)
 EndFunction
 
 ;-- CanUnlock Function --
+;-- CanUnlock Function --
+; @param theContainer: The container to evaluate
+; @return: True if the player meets perk unlock conditions
+; Evaluates player unlock capabilities against lock level.
 Bool Function CanUnlock(ObjectReference theContainer)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: CanUnlock called with container: " + theContainer as String)
@@ -666,6 +729,10 @@ Bool Function CanUnlock(ObjectReference theContainer)
 EndFunction
 
 ;-- IsCorpse Function --
+;-- IsCorpse Function --
+; @param theCorpse: The reference to evaluate
+; @return: True if the reference is an actor/corpse
+; Checks if the reference is a valid corpse.
 Bool Function IsCorpse(ObjectReference theCorpse)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: IsCorpse called with corpse: " + theCorpse as String)
@@ -679,6 +746,9 @@ Bool Function IsCorpse(ObjectReference theCorpse)
 EndFunction
 
 ;-- GetDestRef Function --
+;-- GetDestRef Function --
+; @return: The destination reference where items are sent
+; Determines the loot destination based on user setting.
 ObjectReference Function GetDestRef()
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: GetDestRef called")
@@ -708,6 +778,10 @@ ObjectReference Function GetDestRef()
 EndFunction
 
 ;-- IsPlayerStealing Function --
+;-- IsPlayerStealing Function --
+; @param theLoot: The item to evaluate
+; @return: True if item would be considered stolen
+; Checks faction ownership for theft validation.
 Bool Function IsPlayerStealing(ObjectReference theLoot)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: IsPlayerStealing called with loot: " + theLoot as String)
@@ -720,6 +794,9 @@ Bool Function IsPlayerStealing(ObjectReference theLoot)
 EndFunction
 
 ;-- IsPlayerAvailable Function --
+;-- IsPlayerAvailable Function --
+; @return: True if player can perform activation
+; Verifies player controls are enabled.
 Bool Function IsPlayerAvailable()
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: IsPlayerAvailable called")
@@ -728,6 +805,10 @@ Bool Function IsPlayerAvailable()
 EndFunction
 
 ;-- IsLootLoaded Function --
+;-- IsLootLoaded Function --
+; @param theLoot: The loot object
+; @return: True if it's loaded and valid in-world
+; Ensures the loot is loaded and not deleted/disabled.
 Bool Function IsLootLoaded(ObjectReference theLoot)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: IsLootLoaded called with loot: " + theLoot as String)
@@ -736,6 +817,9 @@ Bool Function IsLootLoaded(ObjectReference theLoot)
 EndFunction
 
 ;-- GetRadius Function --
+;-- GetRadius Function --
+; @return: Loot scanning radius
+; Determines the scan radius from context or setting.
 Float Function GetRadius()
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:LootEffectScript: GetRadius called")

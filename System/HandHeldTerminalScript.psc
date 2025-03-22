@@ -1,9 +1,14 @@
 ;======================================================================
-; Script: LZP:System:HandHeldTerminalScript
-; Description: This script manages the handheld terminal functionality.
-; It provides the player with a toggle looting potion and handles the
-; activation of the terminal dummy when the control weapon is equipped.
-; Debug logging is integrated to assist with troubleshooting.
+; Script Name   : LZP:System:HandHeldTerminalScript
+; Author        : Ganja Panda
+; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
+; Purpose       : Manages handheld terminal activation via weapon equip
+; Description   : When the player equips a specific control weapon, this
+;                 script triggers the dummy terminal reference to simulate
+;                 a terminal interface. Also gives the player a toggle
+;                 potion on alias init for enabling looting.
+; Dependencies  : LazyPanda.esm, LoggerScript, LP_TerminalDummyRef, LP_Aid_ToggleLooting
+; Usage         : Attach to a ReferenceAlias bound to the player or other actor
 ;======================================================================
 
 ScriptName LZP:System:HandHeldTerminalScript Extends ReferenceAlias

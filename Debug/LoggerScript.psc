@@ -15,9 +15,19 @@ ScriptName LZP:Debug:LoggerScript Extends Quest
 ;======================================================================
 ; PROPERTIES
 ;======================================================================
-GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
-Message Property LPDebugOnMsg Auto Const Mandatory
-Message Property LPDebugOffMsg Auto Const Mandatory
+
+;-- Debug Controls
+; Controls whether debug logging is enabled at runtime.
+Group DebugControls
+    GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
+EndGroup
+
+;-- Debug Messages
+; Messages displayed when toggling debug on or off.
+Group DebugMessages
+    Message Property LPDebugOnMsg  Auto Const Mandatory
+    Message Property LPDebugOffMsg Auto Const Mandatory
+EndGroup
 
 ;======================================================================
 ; VARIABLES

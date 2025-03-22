@@ -1,6 +1,14 @@
 ;======================================================================
-; Script: LZP:System:UpdateHandlerPlayerAliasScript
-; Description: Handles updates for the player alias. Version logic is centralized.
+; Script Name   : LZP:System:UpdateHandlerPlayerAliasScript
+; Author        : Ganja Panda
+; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
+; Purpose       : Tracks and applies version-controlled updates for the player
+; Description   : Compares current mod version with last applied update version.
+;                 Executes update steps such as adding perks to the player. Uses
+;                 VersionManagerScript for version state, and LoggerScript for
+;                 debugging each stage of update execution.
+; Dependencies  : LazyPanda.esm, VersionManagerScript, LoggerScript
+; Usage         : Attach to the player alias in a system quest. Triggers on init/load.
 ;======================================================================
 
 ScriptName LZP:System:UpdateHandlerPlayerAliasScript Extends ReferenceAlias hidden
@@ -9,29 +17,39 @@ ScriptName LZP:System:UpdateHandlerPlayerAliasScript Extends ReferenceAlias hidd
 ; VARIABLES
 ;======================================================================
 
-; Stores the last applied update version as a string.
+;-- Runtime State
+; Tracks the last applied version to avoid reapplying updates
 String sUpdatesAppliedVersion = "0"
 
 ;======================================================================
 ; PROPERTIES
 ;======================================================================
 
-;-- References --
-Actor Property PlayerRef Auto Const Mandatory
-FormList Property LPSystem_Script_Perks Auto Const Mandatory
+;-- References
+; Required player and perk references
+Group ReferenceData
+    Actor Property PlayerRef Auto Const Mandatory
+    FormList Property LPSystem_Script_Perks Auto Const Mandatory
+EndGroup
 
-;-- Version Manager --
-; Reference to the VersionManagerScript for version control.
-LZP:System:VersionManagerScript Property VersionManager Auto Const Mandatory
+;-- Version Manager
+; Handles current version data
+Group Versioning
+    LZP:System:VersionManagerScript Property VersionManager Auto Const Mandatory
+EndGroup
 
-;-- Logging System --
-; Reference to the LoggerScript for centralized logging.
-LZP:Debug:LoggerScript Property LoggerScript Auto Const Mandatory
+;-- Logging System
+; Central debug output system
+Group Logger
+    LZP:Debug:LoggerScript Property LoggerScript Auto Const Mandatory
+EndGroup
 
 ;======================================================================
 ; EVENT HANDLERS
 ;======================================================================
 
+;-- OnAliasInit Event Handler --
+; Called when the alias initializes. Used to check for updates.
 Event OnAliasInit()
     If LoggerScript
         LoggerScript.Log("UpdateHandler: OnAliasInit triggered", 3)
@@ -39,6 +57,8 @@ Event OnAliasInit()
     CheckForUpdates()
 EndEvent
 
+;-- OnPlayerLoadGame Event Handler --
+; Called after a save is loaded. Ensures updates are checked post-load.
 Event OnPlayerLoadGame()
     If LoggerScript
         LoggerScript.Log("UpdateHandler: OnPlayerLoadGame triggered", 3)
@@ -50,6 +70,8 @@ EndEvent
 ; UPDATE SYSTEM FUNCTIONS
 ;======================================================================
 
+;-- CheckForUpdates Function --
+; Compares applied version to current version and triggers updates if needed.
 Function CheckForUpdates()
     If LoggerScript
         LoggerScript.Log("UpdateHandler: CheckForUpdates called", 3)
@@ -97,6 +119,8 @@ Function CheckForUpdates()
     EndIf
 EndFunction
 
+;-- UpdateStep_1001 Function --
+; First update step: adds missing perks to player.
 Function UpdateStep_1001()
     If LoggerScript
         LoggerScript.Log("UpdateHandler: Executing UpdateStep_1001: Adding missing perks", 3)
@@ -104,6 +128,8 @@ Function UpdateStep_1001()
     AddPerks()
 EndFunction
 
+;-- AddPerks Function --
+; Adds any perks from the system perk list that the player is missing.
 Function AddPerks()
     If LoggerScript
         LoggerScript.Log("UpdateHandler: AddPerks called", 3)

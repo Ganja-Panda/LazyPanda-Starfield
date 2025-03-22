@@ -1,14 +1,19 @@
 ;======================================================================
-; Script: LZP:System:VersionManagerScript
-; Description: This script manages the version control for the Lazy Panda mod.
-; It checks the current version against the saved version and updates if necessary.
-; Debug logging is integrated to assist with troubleshooting.
+; Script Name   : LZP:System:VersionManagerScript
+; Author        : Ganja Panda
+; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
+; Purpose       : Tracks and manages the mod's version state
+; Description   : Compares the mod's current version to saved values on load.
+;                 If the version has changed, it reinitializes player systems
+;                 and stores the updated version into GlobalVariables.
+; Dependencies  : LazyPanda.esm, LoggerScript, player alias reference
+; Usage         : Attach to a quest alias to monitor version updates
 ;======================================================================
 
 ScriptName LZP:System:VersionManagerScript Extends ReferenceAlias hidden
 
 ;======================================================================
-; PROPERTY DEFINITIONS
+; PROPERTIES
 ;======================================================================
 
 ;-- Version Properties --
@@ -37,13 +42,15 @@ ReferenceAlias Property PlayerAlias Auto Const Mandatory
 ;======================================================================
 
 ;-- OnInit Event Handler --
-; Called when the quest starts or the game loads.
+; Triggered when the version quest initializes
+; Calls version check to determine if updates are needed
 Event OnInit()
     CheckModVersion()
 EndEvent
 
 ;-- OnPlayerLoadGame Event Handler --
-; Called when the player loads a game.
+; Triggered after a save is loaded
+; Ensures version check runs after load
 Event OnPlayerLoadGame()
     CheckModVersion()
 EndEvent
@@ -53,7 +60,8 @@ EndEvent
 ;======================================================================
 
 ;-- CheckModVersion Function --
-; Checks the current mod version against the saved version and updates if necessary.
+; Compares saved GlobalVariables to hardcoded version
+; If mismatched, updates version and resets PlayerAlias
 Function CheckModVersion()
     Float savedMajor = LPVersion_Major.GetValue()
     Float savedMinor = LPVersion_Minor.GetValue()
@@ -86,17 +94,20 @@ EndFunction
 ; PUBLIC ACCESSORS
 ;======================================================================
 
-; Returns the current major version from the GlobalVariable
+;-- GetMajor Function --
+; @return: The major version number stored in GlobalVariable
 Float Function GetMajor()
     return LPVersion_Major.GetValue()
 EndFunction
 
-; Returns the current minor version from the GlobalVariable
+;-- GetMinor Function --
+; @return: The minor version number stored in GlobalVariable
 Float Function GetMinor()
     return LPVersion_Minor.GetValue()
 EndFunction
 
-; Returns the current patch version from the GlobalVariable
+;-- GetPatch Function --
+; @return: The patch version number stored in GlobalVariable
 Float Function GetPatch()
     return LPVersion_Patch.GetValue()
 EndFunction

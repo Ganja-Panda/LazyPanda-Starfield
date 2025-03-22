@@ -1,25 +1,39 @@
 ;======================================================================
-; Script: LZP:Potion:AidLootToggleScript
-; Description: This ActiveMagicEffect script toggles the looting system on or off.
-; It uses global variables to manage the state and provides feedback to the player
-; through messages. Debug logging is integrated to assist with troubleshooting.
+; Script Name   : LZP:Potion:AidLootToggleScript
+; Author        : Ganja Panda
+; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
+; Purpose       : Toggles the core looting system on or off via consumable
+; Description   : This ActiveMagicEffect toggles looting using a global variable.
+;                 It displays messages to the player and restores the toggle potion
+;                 upon use. Logging is available for tracking toggle events.
+; Dependencies  : LazyPanda.esm, LoggerScript, Message forms, Potion
+; Usage         : Used in an aid item that triggers this effect
 ;======================================================================
 
 ScriptName LZP:Potion:AidLootToggleScript Extends ActiveMagicEffect hidden
 
 ;======================================================================
-; PROPERTY GROUPS
+; PROPERTIES
 ;======================================================================
 
-;-- Global Variables --
-GlobalVariable Property LPSystemUtil_ToggleLooting Auto
+;-- Toggle Control
+; Global that tracks the current looting enabled state
+Group ToggleControl
+    GlobalVariable Property LPSystemUtil_ToggleLooting Auto
+EndGroup
 
-;-- Messages --
-Message Property LPLootingEnabledMsg Auto
-Message Property LPLootingDisabledMsg Auto
+;-- Message Feedback
+; Messages displayed to the player when looting is toggled
+Group MessageFeedback
+    Message Property LPLootingEnabledMsg Auto
+    Message Property LPLootingDisabledMsg Auto
+EndGroup
 
-;-- Potion --
-Potion Property LP_Aid_ToggleLooting Auto
+;-- Potion Reference
+; The aid item that triggers this script and is returned to the player
+Group PotionReference
+    Potion Property LP_Aid_ToggleLooting Auto
+EndGroup
 
 ;-- Logger Property --
 Group Logger
@@ -27,10 +41,16 @@ Group Logger
 EndGroup
 
 ;======================================================================
-; EVENT HANDLERS
+; EVENTS
 ;======================================================================
 
 ;-- OnEffectStart Event Handler --
+; @param akTarget: The reference the effect is applied to (should be the player)
+; @param akCaster: The actor who cast the effect
+; @param akBaseEffect: The originating MagicEffect
+; @param afMagnitude: Effect magnitude
+; @param afDuration: Effect duration
+; Main logic for toggling looting, showing messages, and restoring the item
 Event OnEffectStart(ObjectReference akTarget, Actor akCaster, MagicEffect akBaseEffect, Float afMagnitude, Float afDuration)
     ObjectReference playerRef = Game.GetPlayer()
     

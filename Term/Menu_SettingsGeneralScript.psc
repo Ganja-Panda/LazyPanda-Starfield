@@ -1,9 +1,15 @@
 ;======================================================================
-; Script: LZP:Term:Menu_SettingsGeneralScript
-; Description: This script manages the general settings menu functionality.
-; It updates settings based on user interactions and provides feedback
-; through messages. Debug logging is integrated to assist with troubleshooting.
+; Script Name   : LZP:Term:Menu_SettingsGeneralScript
+; Author        : Ganja Panda
+; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
+; Purpose       : Handles general mod settings via terminal interface
+; Description   : Allows user to cycle between preset loot radius values and 
+;                 change destination for looted items. Reflects values on the 
+;                 terminal UI and logs all actions using LoggerScript.
+; Dependencies  : LazyPanda.esm, LoggerScript, GlobalVariables, TerminalMenu
+; Usage         : Attach to a terminal menu; configure menu items by index
 ;======================================================================
+
 
 ScriptName LZP:Term:Menu_SettingsGeneralScript Extends TerminalMenu hidden
 

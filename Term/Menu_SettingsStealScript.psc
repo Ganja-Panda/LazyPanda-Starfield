@@ -1,44 +1,58 @@
 ;======================================================================
-; Script: LZP:Term:Menu_SettingsStealScript
-; Description: This script handles the settings for stealing in the terminal menu.
-; It updates the settings based on user input and provides feedback through messages.
-; Debug logging is integrated to assist with troubleshooting.
+; Script Name   : LZP:Term:Menu_SettingsStealScript
+; Author        : Ganja Panda
+; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
+; Purpose       : Controls theft-related settings via a terminal menu
+; Description   : Allows toggling of stealing permission and whether it
+;                 triggers hostility. Updates terminal text feedback using
+;                 replacement data and logs events with LoggerScript.
+; Dependencies  : LazyPanda.esm, LoggerScript, TerminalMenu, GlobalVariables
+; Usage         : Attach to a TerminalMenu where menu item IDs correspond to
+;                 stealing toggles
 ;======================================================================
+
 
 ScriptName LZP:Term:Menu_SettingsStealScript Extends TerminalMenu Hidden
 
 ;======================================================================
-; PROPERTY GROUPS
+; PROPERTIES
 ;======================================================================
 
-;-- Global Variables --
+;-- GlobalSettings
+; Controls stealing behavior toggles
 Group GlobalVariable_Autofill
     GlobalVariable Property LPSetting_AllowStealing Auto Mandatory
     GlobalVariable Property LPSetting_StealingIsHostile Auto Mandatory
 EndGroup
 
-;-- Messages --
+;-- FeedbackMessages
+; Replacement messages for On/Off feedback
 Group Message_Autofill
     Message Property LPOffMsg Auto Const Mandatory
     Message Property LPOnMsg Auto Const Mandatory
 EndGroup
 
-;-- Miscellaneous --
+;-- TerminalConfig
+; Menu object currently in use
 Group Misc
     TerminalMenu Property CurrentTerminalMenu Auto Const Mandatory
 EndGroup
 
-;-- Logger Property --
+;-- Logger
+; Central debug logging utility
 Group Logger
     LZP:Debug:LoggerScript Property Logger Auto Const
 EndGroup
+
 
 ;======================================================================
 ; FUNCTIONS
 ;======================================================================
 
 ;-- UpdateStealingSetting Function --
-; Updates the stealing setting and provides feedback to the player.
+; @param akTerminalRef: Terminal instance being modified
+; @param isEnabled: Boolean indicating whether stealing is allowed
+; Updates terminal replacement label for stealing status
 Function UpdateStealingSetting(ObjectReference akTerminalRef, Bool isEnabled)
     Message msgToUse = LPOffMsg
     If isEnabled
@@ -51,7 +65,9 @@ Function UpdateStealingSetting(ObjectReference akTerminalRef, Bool isEnabled)
 EndFunction
 
 ;-- UpdateHostileSetting Function --
-; Updates the hostile setting and provides feedback to the player.
+; @param akTerminalRef: Terminal instance being modified
+; @param isEnabled: Boolean indicating if stealing triggers hostility
+; Updates terminal replacement label for hostile behavior
 Function UpdateHostileSetting(ObjectReference akTerminalRef, Bool isEnabled)
     Message msgToUse = LPOffMsg
     If isEnabled
@@ -68,7 +84,9 @@ EndFunction
 ;======================================================================
 
 ;-- OnTerminalMenuEnter Event Handler --
-; Called when the terminal menu is entered. Updates the settings based on current values.
+; @param akTerminalBase: Terminal menu base object
+; @param akTerminalRef: Terminal instance being entered
+; Updates text replacements for current stealing/hostility settings
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
         Logger.Log("OnTerminalMenuEnter triggered")
@@ -82,7 +100,10 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
 EndEvent
 
 ;-- OnTerminalMenuItemRun Event Handler --
-; Called when a menu item is selected. Updates the settings based on user input.
+; @param auiMenuItemID: Selected menu item index
+; @param akTerminalBase: Terminal menu base
+; @param akTerminalRef: Terminal instance where the menu item was selected
+; Handles toggles for stealing settings and updates UI
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
         Logger.Log("OnTerminalMenuItemRun triggered: MenuItemID = " + auiMenuItemID as String)

@@ -14,23 +14,31 @@
 Scriptname LZP:Looting:CorpseProcessorScript extends Quest
 
 ;======================================================================
-; PROPERTY GROUPS
+; PROPERTIES
 ;======================================================================
 
+;-- EffectSpecific_Mandatory
+; Required perk and loot list dependencies.
 Group EffectSpecific_Mandatory
     Perk Property ActivePerk Auto Const mandatory
     FormList Property ActiveLootList Auto Const mandatory
 EndGroup
 
+;-- EffectSpecific_LootMethod
+; Toggle settings related to how corpses are looted.
 Group EffectSpecific_LootMethod
     Bool Property bLootDeadActor = False Auto
 EndGroup
 
+;-- EffectSpecific_FormType
+; Flags for handling specific keyword-based logic.
 Group EffectSpecific_FormType
     Bool Property bIsKeyword = False Auto
     Bool Property bIsMultipleKeyword = False Auto
 EndGroup
 
+;-- Settings_Autofill
+; Auto-filled global variables governing loot behavior.
 Group Settings_Autofill
     GlobalVariable Property LPSetting_Radius Auto Const
     GlobalVariable Property LPSetting_RemoveCorpses Auto Const
@@ -39,16 +47,22 @@ Group Settings_Autofill
     GlobalVariable Property LPSetting_AllowLootingShip Auto Const
 EndGroup
 
+;-- List_Autofill
+; Filter lists and global mappings used for selective looting.
 Group List_Autofill
     FormList Property LPSystem_Looting_Globals Auto Const
     FormList Property LPSystem_Looting_Lists Auto Const
 EndGroup
 
+;-- Misc
+; Core data definitions for actor skin and race.
 Group Misc
     Armor Property LP_Skin_Naked_NOTPLAYABLE Auto Const mandatory
     Race Property HumanRace Auto Const mandatory
 EndGroup
 
+;-- DestinationLocations
+; References for where looted items may be sent.
 Group DestinationLocations
     ObjectReference Property PlayerRef Auto Const
     ObjectReference Property LodgeSafeRef Auto Const
@@ -56,10 +70,14 @@ Group DestinationLocations
     ReferenceAlias Property PlayerHomeShip Auto Const mandatory
 EndGroup
 
+;-- NoFill
+; Local flags not filled by CK.
 Group NoFill
     Bool Property bTakeAll = False Auto
 EndGroup
 
+;-- Logger
+; LoggerScript reference for runtime debugging.
 Group Logger
     LZP:Debug:LoggerScript Property Logger Auto Const
 EndGroup

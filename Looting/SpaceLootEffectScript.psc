@@ -1,10 +1,24 @@
+;======================================================================
+; Script Name   : LZP:Looting:SpaceLootEffectScript
+; Author        : Ganja Panda
+; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
+; Purpose       : Controls looting logic for floating space objects
+; Description   : Handles continuous looting in space environments. Tied to
+;                 player ship presence and loot toggle states. Timer-driven
+;                 activation of nearby lootable space objects.
+; Dependencies  : LazyPanda.esm, LoggerScript, ship aliases
+; Usage         : Automatically triggered by object reference OnLoad event
+;======================================================================
+
 ScriptName LZP:Looting:SpaceLootEffectScript Extends ObjectReference
 
 ;======================================================================
-; PROPERTY GROUPS
+; PROPERTIES
 ;======================================================================
 
 ;-- Effect-Specific Mandatory Properties --
+;-- EffectSpecific_Mandatory
+; Required perk and toggle globals for space looting logic.
 Group EffectSpecific_Mandatory
     Perk Property ActivePerk Auto Const mandatory              ; Perk required for activating the loot effect
     GlobalVariable Property LPEnableCont_Space Auto Const mandatory ; Enable continuous space looting
@@ -12,17 +26,23 @@ Group EffectSpecific_Mandatory
 EndGroup
 
 ;-- Destination Locations --
+;-- DestinationLocations
+; Reference aliases for target ship destinations.
 Group DestinationLocations
     ReferenceAlias Property PlayerHomeShip Auto Const           ; Alias for the player's home ship
 EndGroup
 
 ;-- No Fill Settings --
+;-- NoFill
+; Internal properties used for tracking timer-driven events.
 Group NoFill
     Int Property lootTimerID = 1 Auto                           ; Timer identifier for looting
     Float Property lootTimerDelay = 0.5 Auto                    ; Delay between loot cycles
 EndGroup
 
 ;-- Logger Property --
+;-- Logger
+; Logger reference for debug output.
 Group Logger
     LZP:Debug:LoggerScript Property Logger Auto Const            ; Declared logger using the new logging system
 EndGroup
@@ -32,6 +52,8 @@ EndGroup
 ;======================================================================
 
 ;-- OnLoad Event Handler --
+; Triggered when the object loads into the game world.
+; Used to initialize the logging system and auto-start looting.
 Event OnLoad()
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Looting:SpaceLootEffectScript: OnLoad triggered")

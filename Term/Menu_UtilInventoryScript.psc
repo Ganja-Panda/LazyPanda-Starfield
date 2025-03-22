@@ -1,17 +1,25 @@
 ;======================================================================
-; Script: LZP:Term:Menu_UtilInventoryScript
-; Description: This script manages the utility inventory menu functionality.
-; It updates settings based on user interactions and provides feedback
-; through messages. Debug logging is integrated to assist with troubleshooting.
+; Script Name   : LZP:Term:Menu_UtilInventoryScript
+; Author        : Ganja Panda
+; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
+; Purpose       : Provides access to utility containers and system toggles
+; Description   : This script allows the player to interact with utility options
+;                 such as toggling looting/debugging, opening the Lodge Safe, the
+;                 Dummy Holding container, or the Player Home Ship. Displays feedback
+;                 in the terminal via replacement messages and logs all actions.
+; Dependencies  : LazyPanda.esm, LoggerScript, TerminalMenu, GlobalVariables
+; Usage         : Attach to a terminal menu that maps these utilities to item IDs
 ;======================================================================
+
 
 ScriptName LZP:Term:Menu_UtilInventoryScript Extends TerminalMenu hidden
 
 ;======================================================================
-; PROPERTY GROUPS
+; PROPERTIES
 ;======================================================================
 
-;-- Menu Util Properties --
+;-- TerminalConfig
+; Primary references for inventory/activation targets
 Group Menu_UtilProperties
     TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
     ObjectReference Property LodgeSafeRef Auto Const mandatory
@@ -20,17 +28,20 @@ Group Menu_UtilProperties
     ReferenceAlias Property PlayerHomeShip Auto Const mandatory
 EndGroup
 
-;-- Debug Properties --
+;-- DebugGlobals
+; GlobalVariable controlling debug toggle
 Group DebugProperties
     GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory
 EndGroup
 
-;-- Global Variables --
+;-- LootSettings
+; GlobalVariable for system-wide toggle looting
 Group GlobalVariable_Autofill
     GlobalVariable Property LPSystemUtil_ToggleLooting Auto mandatory
 EndGroup
 
-;-- Messages --
+;-- FeedbackMessages
+; Terminal message output (On/Off/Debug)
 Group Message_Autofill
     Message Property LPOffMsg Auto Const mandatory
     Message Property LPOnMsg Auto Const mandatory
@@ -38,17 +49,21 @@ Group Message_Autofill
     Message Property LPDebugOffMsg Auto Const mandatory
 EndGroup
 
-;-- Logger Property --
+;-- Logger
+; LoggerScript instance for debug output
 Group Logger
     LZP:Debug:LoggerScript Property Logger Auto Const
 EndGroup
+
 
 ;======================================================================
 ; HELPER FUNCTIONS
 ;======================================================================
 
 ;-- UpdateLootingDisplay Function --
-; Updates the terminal display for the looting status.
+; @param akTerminalRef: Terminal reference to update
+; @param currentLootSetting: Bool value of looting enabled
+; Sets terminal label for current looting status
 Function UpdateLootingDisplay(ObjectReference akTerminalRef, Bool currentLootSetting)
     If !currentLootSetting
         If Logger && Logger.IsEnabled()
@@ -64,7 +79,9 @@ Function UpdateLootingDisplay(ObjectReference akTerminalRef, Bool currentLootSet
 EndFunction
 
 ;-- UpdateDebugDisplay Function --
-; Updates the terminal display for the debug status.
+; @param akTerminalRef: Terminal reference to update
+; @param currentDebugStatus: Bool value of debug enabled
+; Sets terminal label for current debug setting
 Function UpdateDebugDisplay(ObjectReference akTerminalRef, Bool currentDebugStatus)
     If currentDebugStatus
         If Logger && Logger.IsEnabled()
@@ -84,7 +101,9 @@ EndFunction
 ;======================================================================
 
 ;-- OnTerminalMenuEnter Event Handler --
-; Called when the terminal menu opens.
+; @param akTerminalBase: Terminal menu base
+; @param akTerminalRef: Terminal instance the player entered
+; Initializes display values for loot and debug toggles
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
         Logger.Log("OnTerminalMenuEnter triggered")
@@ -106,7 +125,10 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
 EndEvent
 
 ;-- OnTerminalMenuItemRun Event Handler --
-; Called when a menu item is selected.
+; @param auiMenuItemID: Selected terminal menu item index
+; @param akTerminalBase: Base terminal definition
+; @param akTerminalRef: Terminal instance being interacted with
+; Executes action based on selected menu item index
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
         Logger.Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
