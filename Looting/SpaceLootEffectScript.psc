@@ -3,11 +3,11 @@
 ; Author        : Ganja Panda
 ; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
 ; Purpose       : Controls looting logic for floating space objects
-; Description   : Handles continuous looting in space environments. Tied to
-;                 player ship presence and loot toggle states. Timer-driven
-;                 activation of nearby lootable space objects.
-; Dependencies  : LazyPanda.esm, LoggerScript, ship aliases
-; Usage         : Automatically triggered by object reference OnLoad event
+; Description   : Handles continuous looting of space debris or asteroids.
+;                 Timer-based scanning of loot state, perk validation,
+;                 and inventory transfer to PlayerHomeShip.
+; Dependencies  : LazyPanda.esm, LoggerScript, PlayerHomeShip alias
+; Usage         : Attached to space loot references (asteroids, debris).
 ;======================================================================
 
 ScriptName LZP:Looting:SpaceLootEffectScript Extends ObjectReference
@@ -16,93 +16,104 @@ ScriptName LZP:Looting:SpaceLootEffectScript Extends ObjectReference
 ; PROPERTIES
 ;======================================================================
 
-;-- Effect-Specific Mandatory Properties --
 ;-- EffectSpecific_Mandatory
-; Required perk and toggle globals for space looting logic.
+; Controls whether looting is active and gated by player perk
 Group EffectSpecific_Mandatory
-    Perk Property ActivePerk Auto Const mandatory              ; Perk required for activating the loot effect
-    GlobalVariable Property LPEnableCont_Space Auto Const mandatory ; Enable continuous space looting
-    GlobalVariable Property LPSystemUtil_ToggleLooting Auto Const mandatory ; Toggle looting system
+    Perk Property ActivePerk Auto Const mandatory           ; Required perk to allow looting
+    GlobalVariable Property LPEnableCont_Space Auto Const mandatory  ; Global toggle for continuous space looting
+    GlobalVariable Property LPSystemUtil_ToggleLooting Auto Const mandatory ; Master toggle for all looting systems
 EndGroup
 
-;-- Destination Locations --
 ;-- DestinationLocations
-; Reference aliases for target ship destinations.
+; Reference alias for player home ship to receive looted items
 Group DestinationLocations
-    ReferenceAlias Property PlayerHomeShip Auto Const           ; Alias for the player's home ship
+    ReferenceAlias Property PlayerHomeShip Auto Const           ; Ship that receives transferred items
 EndGroup
 
-;-- No Fill Settings --
 ;-- NoFill
-; Internal properties used for tracking timer-driven events.
+; Timer configuration used to repeat the looting cycle
 Group NoFill
-    Int Property lootTimerID = 1 Auto                           ; Timer identifier for looting
-    Float Property lootTimerDelay = 0.5 Auto                    ; Delay between loot cycles
+    Int Property lootTimerID = 1 Auto                           ; Unique ID for timer-based scanning
+    Float Property lootTimerDelay = 0.5 Auto                    ; Time in seconds between looting cycles
 EndGroup
 
-;-- Logger Property --
 ;-- Logger
-; Logger reference for debug output.
+; LoggerScript reference for centralized debug tracing
 Group Logger
-    LZP:Debug:LoggerScript Property Logger Auto Const            ; Declared logger using the new logging system
+    LZP:Debug:LoggerScript Property Logger Auto Const           ; Lazy Panda logging system instance
 EndGroup
 
 ;======================================================================
-; EVENT HANDLERS
+; EVENT: OnLoad
 ;======================================================================
-
-;-- OnLoad Event Handler --
-; Triggered when the object loads into the game world.
-; Used to initialize the logging system and auto-start looting.
 Event OnLoad()
-    If Logger && Logger.IsEnabled()
-        Logger.Log("LZP:Looting:SpaceLootEffectScript: OnLoad triggered")
-    EndIf
+    if Logger && Logger.IsEnabled()
+        Logger.LogInfo("SpaceLootEffectScript: OnLoad triggered")
+    endif
     StartTimer(lootTimerDelay, lootTimerID)
 EndEvent
 
-;-- OnTimer Event Handler --
+;======================================================================
+; EVENT: OnTimer
+;======================================================================
 Event OnTimer(Int aiTimerID)
-    If Logger && Logger.IsEnabled()
-        Logger.Log("LZP:Looting:SpaceLootEffectScript: OnTimer triggered with TimerID: " + aiTimerID as String)
-    EndIf
-    If aiTimerID == lootTimerID
+    if Logger && Logger.IsEnabled()
+        Logger.LogInfo("SpaceLootEffectScript: OnTimer triggered. ID = " + aiTimerID as String)
+    endif
+
+    if aiTimerID == lootTimerID
         ExecuteLooting()
-    EndIf
+    endif
 EndEvent
 
 ;======================================================================
-; MAIN FUNCTIONS
+; FUNCTION: ExecuteLooting
 ;======================================================================
-
-;-- ExecuteLooting Function --
 Function ExecuteLooting()
-    If Logger && Logger.IsEnabled()
-        Logger.Log("LZP:Looting:SpaceLootEffectScript: ExecuteLooting called")
-    EndIf
     StartTimer(lootTimerDelay, lootTimerID)
-    
-    ; Retrieve game settings and properties
+
     Float fSearchRadius = Game.GetGameSettingFloat("fMaxShipTransferDistance")
     Bool bToggleLooting = LPSystemUtil_ToggleLooting.GetValue() == 1.0
     Bool bEnableContSpace = LPEnableCont_Space.GetValue() == 1.0
     Bool bHasPerk = Game.GetPlayer().HasPerk(ActivePerk)
-    
-    If Logger && Logger.IsEnabled()
-        Logger.Log("LZP:Looting:SpaceLootEffectScript: fSearchRadius: " + fSearchRadius as String)
-    EndIf
-    
-    ; Check if looting conditions are met
-    If fSearchRadius > 0.0 && bToggleLooting && bEnableContSpace && bHasPerk
-        If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Looting:SpaceLootEffectScript: Looting enabled and within search radius")
-        EndIf
-        ObjectReference homeShipRef = PlayerHomeShip.GetRef()
-        If homeShipRef != None
-            RemoveAllItems(homeShipRef, False, False)
-            If Logger && Logger.IsEnabled()
-                Logger.Log("LZP:Looting:SpaceLootEffectScript: Items removed and transferred to PlayerHomeShip")
-            EndIf
-        EndIf
-    EndIf
+
+    if Logger && Logger.IsEnabled()
+        Logger.LogInfo("SpaceLootEffectScript: ExecuteLooting() fired.")
+        Logger.LogInfo("Search radius: " + fSearchRadius as String)
+    endif
+
+    if !bToggleLooting
+        if Logger && Logger.IsEnabled()
+            Logger.LogWarn("Looting system is disabled. Skipping.")
+        endif
+        return
+    endif
+
+    if !bEnableContSpace
+        if Logger && Logger.IsEnabled()
+            Logger.LogWarn("Space looting is disabled by global toggle.")
+        endif
+        return
+    endif
+
+    if !bHasPerk
+        if Logger && Logger.IsEnabled()
+            Logger.LogWarn("Player does not have required perk for space looting.")
+        endif
+        return
+    endif
+
+    ObjectReference homeShipRef = PlayerHomeShip.GetRef()
+    if homeShipRef == None
+        if Logger && Logger.IsEnabled()
+            Logger.LogError("PlayerHomeShip alias is None. Cannot transfer loot.")
+        endif
+        return
+    endif
+
+    RemoveAllItems(homeShipRef, False, False)
+
+    if Logger && Logger.IsEnabled()
+        Logger.LogInfo("Items transferred to PlayerHomeShip - all items.")
+    endif
 EndFunction
