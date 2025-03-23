@@ -12,23 +12,23 @@ ScriptName LZP:Looting:LootProcessorScript Extends Quest Hidden
 ; PROPERTIES
 ;======================================================================
 Group ModuleDependencies
-    LZP:Looting:UnlockHelperScript Property UnlockHelper Auto Const
-    LZP:Looting:LootFilterScript Property LootFilter Auto Const
-    LZP:Looting:LootTransferScript Property LootTransfer Auto Const
-    LZP:Debug:LoggerScript Property Logger Auto Const
+    LZP:Looting:UnlockHelperScript Property UnlockHelper Auto Const     ; Added UnlockHelper dependency
+    LZP:Looting:LootFilterScript Property LootFilter Auto Const         ; Added LootFilter dependency
+    LZP:Looting:LootTransferScript Property LootTransfer Auto Const     ; Added LootTransfer dependency
+    LZP:Debug:LoggerScript Property Logger Auto Const                   ; Added Logger dependency
 EndGroup
 
 Group LootTypeToggles
-    Bool Property bLootDeadActor = True Auto Const
-    Bool Property bLootContainer = True Auto Const
-    Bool Property bLootActivator = True Auto Const
+    Bool Property bLootDeadActor = True Auto Const                      ; Added bLootDeadActor property
+    Bool Property bLootContainer = True Auto Const                      ; Added bLootContainer property
+    Bool Property bLootActivator = True Auto Const                      ; Added bLootActivator property
 EndGroup
 
 Group Globals
-    GlobalVariable Property LPSystemUtil_LoopCap Auto Const
-    Keyword Property LPKeyword_LootedCorpse Auto Const
-    Armor Property LP_Skin_Naked_NOTPLAYABLE Auto Const
-    Race Property HumanRace Auto Const
+    GlobalVariable Property LPSystemUtil_LoopCap Auto Const             ; Added LPSystemUtil_LoopCap property
+    Keyword Property LPKeyword_LootedCorpse Auto Const                  ; Added LPKeyword_LootedCorpse property
+    Armor Property LP_Skin_Naked_NOTPLAYABLE Auto Const                 ; Added LP_Skin_Naked_NOTPLAYABLE property
+    Race Property HumanRace Auto Const                                  ; Added HumanRace property
 EndGroup
 
 ;======================================================================
@@ -138,17 +138,17 @@ Function ProcessFormListLoot(ObjectReference lootRef, FormList activeList)
     Logger.Log("LootProcessor: Transfer Summary | Total: " + transferred + ", Skipped: " + skipped)
 EndFunction
 
-Function IsCorpse(ObjectReference ref)
+Bool Function IsCorpse(ObjectReference ref)
     Actor a = ref as Actor
     Return a != None
 EndFunction
 
-Function IsContainer(ObjectReference ref)
+Bool Function IsContainer(ObjectReference ref)
     Container c = ref.GetBaseObject() as Container
     Return c != None
 EndFunction
 
-Function IsActivator(ObjectReference ref)
+Bool Function IsActivator(ObjectReference ref)
     Activator a = ref.GetBaseObject() as Activator
     Return a != None
 EndFunction

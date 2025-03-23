@@ -58,7 +58,10 @@ EndFunction
 ; KEY UNLOCK HANDLER
 ;======================================================================
 Function TryKeyUnlock(ObjectReference theContainer)
-    Key foundKey = theContainer.GetKey() || DefaultKey
+    Key foundKey = theContainer.GetKey()
+    if foundKey == None
+        foundKey = DefaultKey
+    endif
 
     If PlayerRef.GetItemCount(foundKey as Form) > 0
         theContainer.Unlock()

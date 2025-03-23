@@ -165,7 +165,6 @@ Event OnTimer(Int aiTimerID)
 
 		; Ensure valid list is assigned
 		If ActiveLootList != None
-			LootProcessor.LootableForms = ActiveLootList
 			ObjectReference[] lootTargets = LootScanner.FindLootTargets(PlayerRef, LPSetting_Radius.GetValue(), LPSystemUtil_LoopCap.GetValueInt())
 
 			If lootTargets != None && lootTargets.Length > 0
