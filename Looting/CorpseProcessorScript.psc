@@ -92,7 +92,7 @@ EndGroup
 ; Processes looting behavior and corpse cleanup.
 Function ProcessCorpse(ObjectReference akVictim, ObjectReference akKiller)
     If Logger && Logger.IsEnabled()
-        Logger.Log("ProcessCorpse called with corpse: " + akVictim as String, 1)
+        Logger.Log("ProcessCorpse called with corpse: " + akVictim as String)
     EndIf
 
     Bool takeAll = LPSetting_ContTakeAll.GetValue() as Bool
@@ -107,7 +107,7 @@ Function ProcessCorpse(ObjectReference akVictim, ObjectReference akKiller)
         EndIf
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("Corpse is not an Actor; skipping actor-specific processing.", 2)
+            Logger.LogWarn("Corpse is not an Actor; skipping actor-specific processing.")
         EndIf
     EndIf
 
@@ -115,11 +115,11 @@ Function ProcessCorpse(ObjectReference akVictim, ObjectReference akKiller)
 
     If akKiller != None
         If Logger && Logger.IsEnabled()
-            Logger.Log("Killer: " + akKiller as String, 1)
+            Logger.Log("Killer: " + akKiller as String)
         EndIf
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("No killer detected.", 2)
+            Logger.LogWarn("No killer detected.")
         EndIf
     EndIf
 
@@ -137,17 +137,17 @@ EndFunction
 ; Handles corpse removal if enabled by settings.
 Function RemoveCorpse(ObjectReference theCorpse)
     If Logger && Logger.IsEnabled()
-        Logger.Log("RemoveCorpse called with corpse: " + theCorpse as String, 1)
+        Logger.Log("RemoveCorpse called with corpse: " + theCorpse as String)
     EndIf
 
     If LPSetting_RemoveCorpses.GetValue() as Bool
         If Logger && Logger.IsEnabled()
-            Logger.Log("Corpse removal enabled, disabling corpse", 1)
+            Logger.Log("Corpse removal enabled, disabling corpse")
         EndIf
         theCorpse.DisableNoWait(True)
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("Corpse removal disabled, leaving corpse in world", 2)
+            Logger.LogWarn("Corpse removal disabled, leaving corpse in world")
         EndIf
     EndIf
 EndFunction
@@ -158,18 +158,18 @@ EndFunction
 ; Processes items from the corpse based on configured filters.
 Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectReference akLooter)
     If Logger && Logger.IsEnabled()
-        Logger.Log("ProcessFilteredContainerItems called", 1)
+        Logger.Log("ProcessFilteredContainerItems called")
     EndIf
 
     If akContainer == None
         If Logger && Logger.IsEnabled()
-            Logger.Log("No valid container found!", 3)
+            Logger.LogError("No valid container found!")
         EndIf
         Return
     EndIf
 
     If Logger && Logger.IsEnabled()
-        Logger.Log("Processing filtered items in: " + akContainer as String, 1)
+        Logger.Log("Processing filtered items in: " + akContainer as String)
     EndIf
 
     Int listSize = LPSystem_Looting_Lists.GetSize()
@@ -183,17 +183,17 @@ Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectRefere
             Float globalValue = currentGlobal.GetValue()
             If globalValue == 1.0
                 If Logger && Logger.IsEnabled()
-                    Logger.Log("Removing items from category: " + currentList as String, 1)
+                    Logger.Log("Removing items from category: " + currentList as String)
                 EndIf
                 akContainer.RemoveItem(currentList as Form, -1, True, GetDestRef())
             Else
                 If Logger && Logger.IsEnabled()
-                    Logger.Log("Skipping list: " + currentList as String, 2)
+                    Logger.LogWarn("Skipping list: " + currentList as String)
                 EndIf
             EndIf
         Else
             If Logger && Logger.IsEnabled()
-                Logger.Log("Skipping index " + index as String + " due to missing data.", 3)
+                Logger.LogError("Skipping index " + index as String + " due to missing data.")
             EndIf
         EndIf
 
@@ -206,28 +206,28 @@ EndFunction
 ; Determines where items should be sent after looting
 ObjectReference Function GetDestRef()
     If Logger && Logger.IsEnabled()
-        Logger.Log("GetDestRef called", 1)
+        Logger.Log("GetDestRef called")
     EndIf
 
     Int destination = LPSetting_SendTo.GetValue() as Int
     If destination == 1
         If Logger && Logger.IsEnabled()
-            Logger.Log("Destination: Player", 1)
+            Logger.Log("Destination: Player")
         EndIf
         Return PlayerRef
     ElseIf destination == 2
         If Logger && Logger.IsEnabled()
-            Logger.Log("Destination: Lodge Safe", 1)
+            Logger.Log("Destination: Lodge Safe")
         EndIf
         Return LodgeSafeRef
     ElseIf destination == 3
         If Logger && Logger.IsEnabled()
-            Logger.Log("Destination: Dummy Holding", 1)
+            Logger.Log("Destination: Dummy Holding")
         EndIf
         Return LPDummyHoldingRef
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("Destination: Unknown", 3)
+            Logger.LogError("Destination: Unknown")
         EndIf
         Return None
     EndIf

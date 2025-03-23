@@ -15,6 +15,44 @@
 ScriptName LZP:SystemScript Extends ScriptObject
 
 ;======================================================================
+; DYNAMIC VERSION GLOBALS
+;======================================================================
+
+GlobalVariable Function GetGlobalVersionMajor() Global
+    return Game.GetFormFromFile(0x0000086B, "LazyPanda.esm") as GlobalVariable
+EndFunction
+
+GlobalVariable Function GetGlobalVersionMinor() Global
+    return Game.GetFormFromFile(0x0000086C, "LazyPanda.esm") as GlobalVariable
+EndFunction
+
+GlobalVariable Function GetGlobalVersionPatch() Global
+    return Game.GetFormFromFile(0x0000081A, "LazyPanda.esm") as GlobalVariable
+EndFunction
+
+;======================================================================
+; INTERNAL HELPERS
+;======================================================================
+
+LZP:Debug:LoggerScript Function GetLogger() Global
+    Return Game.GetFormFromFile(0x0000098D, "LazyPanda.esm") as LZP:Debug:LoggerScript
+EndFunction
+
+String Function GetFormattedVersion() Global
+    Float major = GetGlobalVersionMajor().GetValue()
+    Float minor = GetGlobalVersionMinor().GetValue()
+    Float patch = GetGlobalVersionPatch().GetValue()
+    Return major + "." + minor + "." + patch
+EndFunction
+
+Function LogIfEnabled(String msg, Int level = 1, String tag = "SystemScript") Global
+    LZP:Debug:LoggerScript logger = GetLogger()
+    If logger && logger.IsEnabled()
+        logger.LogAdv(msg, level, tag)
+    EndIf
+EndFunction
+
+;======================================================================
 ; GLOBAL FUNCTIONS
 ;======================================================================
 

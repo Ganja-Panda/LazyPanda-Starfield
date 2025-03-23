@@ -45,7 +45,6 @@ Group EffectSpecific_FormType
 EndGroup
 
 ;-- Settings Autofill --
-;-- Settings
 ; Global variables that define looting behavior and permissions.
 Group Settings_Autofill
     GlobalVariable Property LPSetting_Radius Auto Const          ; Global setting for loot search radius
@@ -114,7 +113,6 @@ Group NoFill
 EndGroup
 
 ;-- Logger Property --
-;-- Logger
 ; LoggerScript reference for runtime debugging.
 Group Logger
     LZP:Debug:LoggerScript Property Logger Auto Const                    ; Declared logger using the new logging system
@@ -124,6 +122,12 @@ EndGroup
 ; SCRIPT VARIABLES
 ;======================================================================
 Bool bIsLooting = False ; Flag indicating if the looting process is active
+
+;======================================================================
+; ADDED: Loop Cap & Looted Keyword
+;======================================================================
+GlobalVariable Property LPSystemUtil_LoopCap Auto Const Mandatory
+Keyword Property LPKeyword_LootedCorpse Auto Const Mandatory
 
 ;======================================================================
 ; EVENT HANDLERS
@@ -248,7 +252,7 @@ Function LocateLootByKeyword(FormList LootList)
     EndIf
     ObjectReference[] lootArray
     Int index = 0
-    While index < LootList.GetSize()
+    While index < LootList.GetSize() && index < LPSystemUtil_LoopCap.GetValueInt()
         lootArray = PlayerRef.FindAllReferencesWithKeyword(LootList.GetAt(index), GetRadius())
         ; Process loot if valid references are found and not just the player.
         If lootArray != None && lootArray.Length > 0 && !(lootArray.Length == 1 && lootArray[0] == PlayerRef)
@@ -265,7 +269,7 @@ Function ProcessLoot(ObjectReference[] theLootArray)
     EndIf
     theLooterRef = PlayerRef   ; Default looter is the player
     Int index = 0
-    While index < theLootArray.Length && IsPlayerAvailable()
+    While index < theLootArray.Length && index < LPSystemUtil_LoopCap.GetValueInt() && IsPlayerAvailable()
         ObjectReference currentLoot = theLootArray[index]
         If currentLoot != None
             If Logger && Logger.IsEnabled()
@@ -322,7 +326,6 @@ Function ProcessLoot(ObjectReference[] theLootArray)
 EndFunction
 
 ;-- ProcessCorpse Function --
-;-- ProcessCorpse Function --
 ; @param theCorpse: The corpse object to process
 ; @param theLooter: The entity performing the looting
 ; Handles looting and cleanup of a corpse.
@@ -348,10 +351,28 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference theLooter)
     Else
         ProcessFilteredContainerItems(theCorpse, theLooter)
     EndIf
+
+    ; Added line: Marking the corpse with LPKeyword_LootedCorpse after loot
+    MarkCorpseLooted(theCorpse)
+
     RemoveCorpse(theCorpse)
 EndFunction
 
-;-- RemoveCorpse Function --
+;-- MarkCorpseLooted Function --
+; Marks the corpse with the designated keyword after it has been processed.
+Function MarkCorpseLooted(ObjectReference corpse) Global
+    If corpse != None && !corpse.HasKeyword(LPKeyword_LootedCorpse)
+        corpse.AddKeyword(LPKeyword_LootedCorpse)
+        If Logger && Logger.IsEnabled()
+            Logger.Log("Corpse successfully marked as looted.", 1)
+        EndIf
+    Else
+        If Logger && Logger.IsEnabled()
+            Logger.Log("Attempted to mark a corpse that was either None or already marked.", 2)
+        EndIf
+    EndIf
+EndFunction
+
 ;-- RemoveCorpse Function --
 ; @param theCorpse: The corpse object to remove
 ; Disables the corpse if settings allow it.
@@ -364,7 +385,6 @@ Function RemoveCorpse(ObjectReference theCorpse)
     EndIf
 EndFunction
 
-;-- ProcessContainer Function --
 ;-- ProcessContainer Function --
 ; @param theContainer: The container to loot
 ; @param theLooter: The looting entity
@@ -398,7 +418,6 @@ Function ProcessContainer(ObjectReference theContainer, ObjectReference theLoote
 EndFunction
 
 ;-- ProcessFilteredContainerItems Function --
-;-- ProcessFilteredContainerItems Function --
 ; @param theContainer: The container to process
 ; @param theLooter: The looting entity
 ; Removes items based on active filters.
@@ -408,7 +427,7 @@ Function ProcessFilteredContainerItems(ObjectReference theContainer, ObjectRefer
     EndIf
     Int listSize = LPSystem_Looting_Lists.GetSize()
     Int index = 0
-    While index < listSize
+    While index < listSize && index < LPSystemUtil_LoopCap.GetValueInt()
         FormList currentList = LPSystem_Looting_Lists.GetAt(index) as FormList
         GlobalVariable currentGlobal = LPSystem_Looting_Globals.GetAt(index) as GlobalVariable
         Float globalValue = currentGlobal.GetValue()
@@ -420,7 +439,6 @@ Function ProcessFilteredContainerItems(ObjectReference theContainer, ObjectRefer
     EndWhile
 EndFunction
 
-;-- CanTakeLoot Function --
 ;-- CanTakeLoot Function --
 ; @param theLoot: The item or object to evaluate
 ; @return: True if the object can be safely looted
@@ -477,13 +495,12 @@ Bool Function CanTakeLoot(ObjectReference theLoot)
 EndFunction
 
 ;-- IsInRestrictedLocation Function --
-;-- IsInRestrictedLocation Function --
 ; @return: True if player is in a no-loot zone
 ; Checks if looting is disallowed in the current location.
 Bool Function IsInRestrictedLocation()
     FormList restrictedLocations = LPFilter_NoLootLocations
     Int index = 0
-    While index < restrictedLocations.GetSize()
+    While index < restrictedLocations.GetSize() && index < LPSystemUtil_LoopCap.GetValueInt()
         If PlayerRef.IsInLocation(restrictedLocations.GetAt(index) as Location)
             Return True
         EndIf
@@ -496,7 +513,6 @@ Bool Function IsInRestrictedLocation()
     Return False
 EndFunction
 
-;-- TakeOwnership Function --
 ;-- TakeOwnership Function --
 ; @param theLoot: The object to assume ownership of
 ; Forces ownership of loot if stealing is allowed.
@@ -512,7 +528,6 @@ Function TakeOwnership(ObjectReference theLoot)
 EndFunction
 
 ;-- CanLootShip Function --
-;-- CanLootShip Function --
 ; @return: True if ship containers can be looted
 ; Reads global setting to determine permission.
 Bool Function CanLootShip()
@@ -522,7 +537,6 @@ Bool Function CanLootShip()
     Return LPSetting_AllowLootingShip.GetValue() as Bool
 EndFunction
 
-;-- IsOwned Function --
 ;-- IsOwned Function --
 ; @param theLoot: The item to evaluate
 ; @return: True if the item is owned by another
@@ -534,7 +548,6 @@ Bool Function IsOwned(ObjectReference theLoot)
     Return (PlayerRef as Actor).WouldBeStealing(theLoot) || IsPlayerStealing(theLoot) || theLoot.HasOwner()
 EndFunction
 
-;-- TryUnlock Function --
 ;-- TryUnlock Function --
 ; @param theContainer: The container to unlock
 ; Attempts appropriate unlock strategy based on lock state.
@@ -571,7 +584,6 @@ Function TryUnlock(ObjectReference theContainer)
 EndFunction
 
 ;-- HandleInaccessibleLock Function --
-;-- HandleInaccessibleLock Function --
 ; Handles logic for containers marked as inaccessible.
 Function HandleInaccessibleLock()
     If Logger && Logger.IsEnabled()
@@ -579,7 +591,6 @@ Function HandleInaccessibleLock()
     EndIf
 EndFunction
 
-;-- HandleRequiresKey Function --
 ;-- HandleRequiresKey Function --
 ; @param theContainer: Locked container
 ; @param bIsOwned: Whether it's owned by someone
@@ -605,7 +616,6 @@ Function HandleRequiresKey(ObjectReference theContainer, Bool bIsOwned)
     EndIf
 EndFunction
 
-;-- HandleDigipickUnlock Function --
 ;-- HandleDigipickUnlock Function --
 ; @param theContainer: Locked container
 ; @param bIsOwned: Whether it's owned
@@ -641,7 +651,6 @@ Function HandleDigipickUnlock(ObjectReference theContainer, Bool bIsOwned, Bool 
 EndFunction
 
 ;-- FindDigipick Function --
-;-- FindDigipick Function --
 ; Searches known locations for digipicks and gives to player.
 Function FindDigipick()
     If Logger && Logger.IsEnabled()
@@ -651,7 +660,7 @@ Function FindDigipick()
     searchLocations[0] = LPDummyHoldingRef
     searchLocations[1] = LodgeSafeRef
     Int index = 0
-    While index < searchLocations.Length
+    While index < searchLocations.Length && index < LPSystemUtil_LoopCap.GetValueInt()
         If searchLocations[index].GetItemCount(Digipick as Form) > 0
             If Logger && Logger.IsEnabled()
                 Logger.Log("LZP:Looting:LootEffectScript: Digipick Found: In " + searchLocations[index] as String)
@@ -664,7 +673,6 @@ Function FindDigipick()
 EndFunction
 
 ;-- FindKey Function --
-;-- FindKey Function --
 ; @param theKey: The key to find
 ; Looks in known stash locations for a specific key.
 Function FindKey(Key theKey)
@@ -675,7 +683,7 @@ Function FindKey(Key theKey)
     searchLocations[0] = LPDummyHoldingRef
     searchLocations[1] = LodgeSafeRef
     Int index = 0
-    While index < searchLocations.Length
+    While index < searchLocations.Length && index < LPSystemUtil_LoopCap.GetValueInt()
         If searchLocations[index].GetItemCount(theKey as Form) > 0
             If Logger && Logger.IsEnabled()
                 Logger.Log("LZP:Looting:LootEffectScript: Key Found: In " + searchLocations[index] as String)
@@ -687,7 +695,6 @@ Function FindKey(Key theKey)
     EndWhile
 EndFunction
 
-;-- CanUnlock Function --
 ;-- CanUnlock Function --
 ; @param theContainer: The container to evaluate
 ; @return: True if the player meets perk unlock conditions
@@ -712,7 +719,7 @@ Bool Function CanUnlock(ObjectReference theContainer)
     canUnlock[3] = Perk_CND_MasterLocksCheck.IsTrue(PlayerRef, None)
     
     Int index = 0
-    While index < lockLevels.Length
+    While index < lockLevels.Length && index < LPSystemUtil_LoopCap.GetValueInt()
         If iLockLevel == lockLevels[index]
             If Logger && Logger.IsEnabled()
                 Logger.Log("LZP:Looting:LootEffectScript: Can Unlock: " + canUnlock[index] as String)
@@ -729,7 +736,6 @@ Bool Function CanUnlock(ObjectReference theContainer)
 EndFunction
 
 ;-- IsCorpse Function --
-;-- IsCorpse Function --
 ; @param theCorpse: The reference to evaluate
 ; @return: True if the reference is an actor/corpse
 ; Checks if the reference is a valid corpse.
@@ -745,7 +751,6 @@ Bool Function IsCorpse(ObjectReference theCorpse)
     Return isCorpse
 EndFunction
 
-;-- GetDestRef Function --
 ;-- GetDestRef Function --
 ; @return: The destination reference where items are sent
 ; Determines the loot destination based on user setting.
@@ -778,7 +783,6 @@ ObjectReference Function GetDestRef()
 EndFunction
 
 ;-- IsPlayerStealing Function --
-;-- IsPlayerStealing Function --
 ; @param theLoot: The item to evaluate
 ; @return: True if item would be considered stolen
 ; Checks faction ownership for theft validation.
@@ -794,7 +798,6 @@ Bool Function IsPlayerStealing(ObjectReference theLoot)
 EndFunction
 
 ;-- IsPlayerAvailable Function --
-;-- IsPlayerAvailable Function --
 ; @return: True if player can perform activation
 ; Verifies player controls are enabled.
 Bool Function IsPlayerAvailable()
@@ -804,7 +807,6 @@ Bool Function IsPlayerAvailable()
     Return Game.IsActivateControlsEnabled() || Game.IsLookingControlsEnabled()
 EndFunction
 
-;-- IsLootLoaded Function --
 ;-- IsLootLoaded Function --
 ; @param theLoot: The loot object
 ; @return: True if it's loaded and valid in-world
@@ -816,7 +818,6 @@ Bool Function IsLootLoaded(ObjectReference theLoot)
     Return theLoot.Is3DLoaded() && !theLoot.IsDisabled() && !theLoot.IsDeleted()
 EndFunction
 
-;-- GetRadius Function --
 ;-- GetRadius Function --
 ; @return: Loot scanning radius
 ; Determines the scan radius from context or setting.
