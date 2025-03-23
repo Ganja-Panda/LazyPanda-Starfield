@@ -12,60 +12,57 @@ ScriptName LZP:Looting:LootScannerScript Extends Quest Hidden
 ; PROPERTIES
 ;======================================================================
 
-;-- Logger
 Group ModuleDependencies
-	LZP:Debug:LoggerScript Property Logger Auto Const                           ; Logger module for debug tracking
+	LZP:Debug:LoggerScript Property Logger Auto Const
 EndGroup
 
-;-- Filtering Settings
 Group ScannerFilters
-	Keyword Property SQ_ShipDebrisKeyword Auto Const                            ; Keyword to detect ship debris
-	Keyword Property SpaceshipInventoryContainer Auto Const                     ; Keyword for ship inventory containers
-	Keyword Property LPKeyword_Asteroid Auto Const                              ; Keyword for asteroid targets
-	FormList Property LPFilter_NoLootLocations Auto Const                       ; List of location types to ignore
-	LocationAlias Property playerShipInterior Auto Const Mandatory              ; Player's ship interior to exclude from scanning
+	Keyword Property SQ_ShipDebrisKeyword Auto Const
+	Keyword Property SpaceshipInventoryContainer Auto Const
+	Keyword Property LPKeyword_Asteroid Auto Const
+	FormList Property LPFilter_NoLootLocations Auto Const
+	LocationAlias Property playerShipInterior Auto Const Mandatory
 EndGroup
 
 ;======================================================================
 ; FUNCTIONS
 ;======================================================================
 
-;======================================================================
-; FUNCTION: FindLootTargets
-; Purpose : Gathers all lootable ObjectReferences near the player
-; Params  : origin - starting reference (typically the player)
-;         : radius - search distance
-;         : loopCap - max targets to evaluate
-;======================================================================
 ObjectReference[] Function FindLootTargets(ObjectReference origin, Float radius, Int loopCap)
+	If Logger && Logger.IsEnabled()
+		Logger.Log("LootScanner: Entering FindLootTargets().")
+	EndIf
+
 	If origin == None
 		If Logger && Logger.IsEnabled()
-	Logger.Log("LootScanner: Entering function.")
 			Logger.Log("LootScanner: Origin reference is None.")
 		EndIf
-		Logger.Log("LootScanner: No references found.")
-	Return None
+		Return None
 	EndIf
 
 	Location playerLoc = origin.GetCurrentLocation()
-	Logger.Log("LootScanner: Scanning for references within radius: " + radius + " units.")
+	If Logger && Logger.IsEnabled()
+		Logger.Log("LootScanner: Scanning within radius: " + radius)
+	EndIf
+
 	ObjectReference[] foundRefs = origin.FindAllReferencesOfType("ObjectReference", radius)
 	ObjectReference[] validRefs = new ObjectReference[0]
 
 	If foundRefs == None || foundRefs.Length == 0
 		If Logger && Logger.IsEnabled()
-	Logger.Log("LootScanner: Entering function.")
 			Logger.Log("LootScanner: No nearby references found.")
 		EndIf
-		Logger.Log("LootScanner: Found " + validRefs.Length + " valid lootable targets.")
-	Return validRefs
+		Return validRefs
 	EndIf
 
 	Int i = 0
 	Int added = 0
 	While i < foundRefs.Length && added < loopCap
-		Logger.Log("LootScanner: Evaluating reference at index " + i + ": " + ref)
-	ObjectReference ref = foundRefs[i]
+		ObjectReference ref = foundRefs[i]
+		If Logger && Logger.IsEnabled()
+			Logger.Log("LootScanner: Evaluating reference at index " + i + ": " + ref)
+		EndIf
+
 		If ref != None && IsLootable(ref, playerLoc)
 			validRefs.Add(ref)
 			added += 1
@@ -74,41 +71,40 @@ ObjectReference[] Function FindLootTargets(ObjectReference origin, Float radius,
 	EndWhile
 
 	If Logger && Logger.IsEnabled()
-	Logger.Log("LootScanner: Entering function.")
 		Logger.Log("LootScanner: Found " + validRefs.Length + " valid lootable targets.")
 	EndIf
 
-	Logger.Log("LootScanner: Found " + validRefs.Length + " valid lootable targets.")
 	Return validRefs
 EndFunction
 
-;======================================================================
-; FUNCTION: IsLootable
-; Purpose : Checks if the reference is valid for looting
-;======================================================================
 Bool Function IsLootable(ObjectReference ref, Location playerLoc)
 	If ref == None
-	Logger.Log("LootScanner: Skipping null reference.")
+		If Logger && Logger.IsEnabled()
+			Logger.Log("LootScanner: Skipping null reference.")
+		EndIf
 		Return false
 	EndIf
 
-	; Exclude if in restricted location
 	Location loc = ref.GetCurrentLocation()
 	If loc == playerShipInterior.GetLocation() || LPFilter_NoLootLocations.HasForm(loc)
-	Logger.Log("LootScanner: Reference excluded due to restricted location.")
+		If Logger && Logger.IsEnabled()
+			Logger.Log("LootScanner: Reference excluded due to restricted location.")
+		EndIf
 		Return false
 	EndIf
 
 	Form baseForm = ref.GetBaseObject()
-
 	If baseForm == None
-	Logger.Log("LootScanner: Skipping invalid base form.")
+		If Logger && Logger.IsEnabled()
+			Logger.Log("LootScanner: Skipping invalid base form.")
+		EndIf
 		Return false
 	EndIf
 
-	; Skip if tagged as ship debris or non-lootable
 	If ref.HasKeyword(SQ_ShipDebrisKeyword) || ref.HasKeyword(SpaceshipInventoryContainer) || ref.HasKeyword(LPKeyword_Asteroid)
-	Logger.Log("LootScanner: Looting ship debris, container, or asteroid reference.")
+		If Logger && Logger.IsEnabled()
+			Logger.Log("LootScanner: Looting ship debris, container, or asteroid reference.")
+		EndIf
 		Return True
 	EndIf
 
