@@ -2,13 +2,11 @@
 ; Script Name   : LZP:System:HandHeldTerminalScript
 ; Author        : Ganja Panda
 ; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
-; Purpose       : Manages handheld terminal activation via weapon equip
-; Description   : When the player equips a specific control weapon, this
-;                 script triggers the dummy terminal reference to simulate
-;                 a terminal interface. Also gives the player a toggle
-;                 potion on alias init for enabling looting.
-; Dependencies  : LazyPanda.esm, LoggerScript, LP_TerminalDummyRef, LP_Aid_ToggleLooting
-; Usage         : Attach to a ReferenceAlias bound to the player or other actor
+; Purpose       : Triggers a dummy terminal when player equips the Hand Terminal
+; Description   : Listens for the Terminal Control Weapon to be equipped,
+;                 then automatically activates a target terminal reference
+;                 and unequips the weapon to simulate a UI interaction.
+; Dependencies  : LP_TerminalControlWeapon (Weapon), LP_TerminalDummyRef (ObjectReference)
 ;======================================================================
 
 ScriptName LZP:System:HandHeldTerminalScript Extends ReferenceAlias
@@ -17,68 +15,67 @@ ScriptName LZP:System:HandHeldTerminalScript Extends ReferenceAlias
 ; PROPERTIES
 ;======================================================================
 
-;-- Properties --
-; References and items required for the terminal functionality.
-Actor Property PlayerRef Auto Const Mandatory
-ObjectReference Property LP_TerminalDummyRef Auto Const Mandatory
-Weapon Property LP_TerminalControlWeapon Auto Const Mandatory
-Potion Property LP_Aid_ToggleLooting Auto Const Mandatory
+;-- TerminalActivation
+; Core components for detecting and simulating terminal use
+Group TerminalActivation
+    Weapon Property LP_TerminalControlWeapon Auto Const mandatory         ; Weapon used to trigger the terminal
+    ObjectReference Property LP_TerminalDummyRef Auto Const mandatory     ; In-world terminal reference to activate
+EndGroup
 
-;-- Logger Property --
+;-- Logger
+; Logging system for diagnostics and debug trace
 Group Logger
     LZP:Debug:LoggerScript Property Logger Auto Const
 EndGroup
 
 ;======================================================================
-; UTILITY FUNCTIONS
+; EVENT: OnAliasInit
+; Called when the alias is initialized in-game
 ;======================================================================
-
-;-- ValidateProperties Function --
-; Validates that all required properties are set.
-Function ValidateProperties()
-    If PlayerRef == None
-        If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:System:HandHeldTerminalScript: Error: PlayerRef is None")
-        EndIf
-    EndIf
-    If LP_TerminalDummyRef == None
-        If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:System:HandHeldTerminalScript: Error: LP_TerminalDummyRef is None")
-        EndIf
-    EndIf
-    If LP_TerminalControlWeapon == None
-        If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:System:HandHeldTerminalScript: Error: LP_TerminalControlWeapon is None")
-        EndIf
-    EndIf
-    If LP_Aid_ToggleLooting == None
-        If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:System:HandHeldTerminalScript: Error: LP_Aid_ToggleLooting is None")
-        EndIf
-    EndIf
-EndFunction
-
-;======================================================================
-; EVENT HANDLERS
-;======================================================================
-
-;-- OnAliasInit Event Handler --
-; Called when the alias is initialized. Validates properties and gives the toggle looting item to the player.
 Event OnAliasInit()
-    If Logger && Logger.IsEnabled()
-        Logger.Log("LZP:System:HandHeldTerminalScript: OnAliasInit triggered")
-    EndIf
+    if Logger && Logger.IsEnabled()
+        Logger.LogInfo("HandHeldTerminalScript: OnAliasInit triggered.")
+    endif
+
     ValidateProperties()
 EndEvent
 
-;-- OnItemEquipped Event Handler --
-; Called when an item is equipped. Activates the terminal dummy if the control weapon is equipped.
+;======================================================================
+; EVENT: OnItemEquipped
+; Called when the player equips an item in this alias
+;
+; @param akBaseObject - The item that was equipped
+; @param akReference  - The actor or object equipping it
+;======================================================================
 Event OnItemEquipped(Form akBaseObject, ObjectReference akReference)
-    If (akBaseObject == LP_TerminalControlWeapon) && (Game.IsMenuControlsEnabled() || Game.IsFavoritesControlsEnabled())
-        If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:System:HandHeldTerminalScript: Terminal control weapon equipped; activating terminal dummy")
-        EndIf
-        LP_TerminalDummyRef.Activate(PlayerRef, False)
-        PlayerRef.UnequipItem(LP_TerminalControlWeapon, False, True)
-    EndIf
+    if akBaseObject != LP_TerminalControlWeapon
+        return
+    endif
+
+    Actor player = Game.GetPlayer()
+
+    if Logger && Logger.IsEnabled()
+        Logger.LogInfo("Hand Terminal equipped. Activating terminal UI.")
+    endif
+
+    LP_TerminalDummyRef.Activate(player)
+    player.UnequipItem(LP_TerminalControlWeapon, false, true)
 EndEvent
+
+;======================================================================
+; FUNCTION: ValidateProperties
+; Verifies essential object references are set
+;======================================================================
+Function ValidateProperties()
+    if LP_TerminalDummyRef == None
+        if Logger && Logger.IsEnabled()
+            Logger.LogError("Missing LP_TerminalDummyRef reference.")
+        endif
+    endif
+
+    if LP_TerminalControlWeapon == None
+        if Logger && Logger.IsEnabled()
+            Logger.LogError("Missing LP_TerminalControlWeapon reference.")
+        endif
+    endif
+EndFunction

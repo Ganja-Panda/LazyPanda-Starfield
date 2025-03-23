@@ -9,32 +9,30 @@
 ; Usage         : Attach to a quest that starts with the game or system state
 ;======================================================================
 
-Scriptname LZP:System:DeathMonitorQuestScript extends Quest
+ScriptName LZP:System:DeathMonitorQuestScript Extends Quest
 
 ;======================================================================
 ; PROPERTIES
 ;======================================================================
 
-;-- Logger Property --
+;-- Logger
+; Logging system for initialization and exposed for fragment access
 Group Logger
-    LZP:Debug:LoggerScript Property Logger Auto Const
+    LZP:Debug:LoggerScript Property Logger Auto                         ; Accessible from fragments via (kmyQuest as DeathMonitorQuestScript).Logger
 EndGroup
 
-;-- Corpse Processor
-; Script responsible for processing corpse cleanup and looting
+;-- CorpseProcessor
+; Reserved for future death detection logic and corpse cleanup
 Group CorpseProcessor
     LZP:Looting:CorpseProcessorScript Property CorpseProcessor Auto
 EndGroup
 
 ;======================================================================
-; EVENTS
+; EVENT: OnInit
+; Called when the quest initializes
 ;======================================================================
-
-;-- OnInit Event Handler --
-; Triggered when the quest is initialized
-; Used to log that the DeathMonitor is active
 Event OnInit()
-    If Logger && Logger.IsEnabled()
-        Logger.Log("[Lazy Panda] DeathMonitorQuestScript initialized")
-    EndIf
+    if Logger && Logger.IsEnabled()
+        Logger.LogInfo("DeathMonitorQuestScript initialized.")
+    endif
 EndEvent
