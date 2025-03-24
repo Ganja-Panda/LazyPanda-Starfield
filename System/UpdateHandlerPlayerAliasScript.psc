@@ -24,16 +24,16 @@ String sUpdatesAppliedVersion = "0"
 ;======================================================================
 
 Group ReferenceData
-	Actor Property PlayerRef Auto Const Mandatory
-	FormList Property LPSystem_Script_Perks Auto Const Mandatory
+	Actor Property PlayerRef Auto Const Mandatory					; Player reference
+	FormList Property LPSystem_Script_Perks Auto Const Mandatory	; List of perks to add to player
 EndGroup
 
 Group Versioning
-	LZP:System:VersionManagerScript Property VersionManager Auto Const Mandatory
+	LZP:System:VersionManagerScript Property VersionManager Auto Const Mandatory	; Version manager script
 EndGroup
 
 Group Logger
-	LZP:Debug:LoggerScript Property LoggerScript Auto Const Mandatory
+	LZP:Debug:LoggerScript Property LoggerScript Auto Const Mandatory	; Logger script
 EndGroup
 
 ;======================================================================

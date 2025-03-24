@@ -11,23 +11,23 @@ ScriptName LZP:Looting:UnlockHelperScript Extends Quest Hidden
 ;======================================================================
 
 ;-- Settings and thresholds
-GlobalVariable Property LPSetting_AutoUnlock Auto Const
-GlobalVariable Property LPSetting_AutoUnlockSkillCheck Auto Const
-GlobalVariable Property LockLevel_RequiresKey Auto Const
-GlobalVariable Property LockLevel_Inaccessible Auto Const
+GlobalVariable Property LPSetting_AutoUnlock Auto Const             ; Enable auto unlock
+GlobalVariable Property LPSetting_AutoUnlockSkillCheck Auto Const   ; Enable skill check
+GlobalVariable Property LockLevel_RequiresKey Auto Const            ; Lock level requiring key
+GlobalVariable Property LockLevel_Inaccessible Auto Const           ; Lock level marked as inaccessible
 
 ;-- Unlock items
-Key Property DefaultKey Auto Const
-MiscObject Property Digipick Auto Const
+Key Property DefaultKey Auto Const                                  ; Default key to use
+MiscObject Property Digipick Auto Const                             ; Digipick item  
 
 ;-- Perk check conditions
-ConditionForm Property Perk_CND_AdvancedLocksCheck Auto Const
-ConditionForm Property Perk_CND_ExpertLocksCheck Auto Const
-ConditionForm Property Perk_CND_MasterLocksCheck Auto Const
+ConditionForm Property Perk_CND_AdvancedLocksCheck Auto Const       ; Perk check condition for Advanced Locks
+ConditionForm Property Perk_CND_ExpertLocksCheck Auto Const         ; Perk check condition for Expert Locks
+ConditionForm Property Perk_CND_MasterLocksCheck Auto Const         ; Perk check condition for Master Locks
 
 ;-- Core references
-Actor Property PlayerRef Auto Const
-LZP:Debug:LoggerScript Property Logger Auto Const
+Actor Property PlayerRef Auto Const                                 ; Player reference
+LZP:Debug:LoggerScript Property Logger Auto Const                   ; Debug logger
 
 ;======================================================================
 ; MAIN ENTRY POINT

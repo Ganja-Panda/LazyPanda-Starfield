@@ -14,35 +14,45 @@ ScriptName LZP:Term:Menu_UtilTransferScript Extends TerminalMenu hidden
 ; PROPERTIES
 ;======================================================================
 
-;-- Terminal Menu Base --
+;------------------------------
+; Terminal Menu Base
 ; Reference to the terminal menu this script responds to.
+;------------------------------
 Group TerminalMenuProperties
     TerminalMenu Property CurrentTerminalMenu Auto Const Mandatory
 EndGroup
 
-;-- Static Object References --
+;------------------------------
+; Static Object References
 ; Containers and actors involved in transfer logic.
+;------------------------------
 Group ObjectReferences
     ObjectReference Property LodgeSafeRef Auto Const Mandatory
     ObjectReference Property LPDummyHoldingRef Auto Const Mandatory
     ObjectReference Property PlayerRef Auto Const Mandatory
 EndGroup
 
-;-- Alias References --
+;------------------------------
+; Alias References
 ; Dynamic references resolved from alias system.
+;------------------------------
 Group Aliases
     ReferenceAlias Property PlayerHomeShip Auto Const Mandatory
 EndGroup
 
-;-- Transferable Item Lists --
+;------------------------------
+; Transferable Item Lists
 ; Used to filter what should be moved.
+;------------------------------
 Group ItemLists
     FormList Property LPSystem_Script_Resources Auto Const Mandatory
     FormList Property LPSystem_Script_Valuables Auto Const Mandatory
 EndGroup
 
-;-- Transfer Feedback Messages --
+;------------------------------
+; Transfer Feedback Messages
 ; Player-facing messages displayed after an action completes.
+;------------------------------
 Group TransferMessages
     Message Property LPAllItemsToLodgeMsg Auto Const Mandatory
     Message Property LPAllItemsToShipMsg Auto Const Mandatory
@@ -51,19 +61,38 @@ Group TransferMessages
     Message Property LPNoItemsMsg Auto Const Mandatory
 EndGroup
 
-;-- Logger Reference --
+;------------------------------
+; Logger Reference
 ; Used to route debug messages to LazyPanda.log.
+;------------------------------
 Group Logger
     LZP:Debug:LoggerScript Property Logger Auto Const
+EndGroup
+
+;------------------------------
+; Tokens
+; Transfer Message Tokens for display keys.
+; (These tokens provide a central reference for message keys,
+;  even though this script uses the message properties directly.)
+;------------------------------
+Group Tokens
+    String Property Token_AllItemsToShip   = "AllItemsToShip" Auto Const Hidden
+    String Property Token_ResourcesToShip    = "ResourcesToShip" Auto Const Hidden
+    String Property Token_ValuablesToPlayer  = "ValuablesToPlayer" Auto Const Hidden
+    String Property Token_AllItemsToLodge    = "AllItemsToLodge" Auto Const Hidden
+    String Property Token_NoItems            = "NoItems" Auto Const Hidden
 EndGroup
 
 ;======================================================================
 ; HELPER FUNCTIONS
 ;======================================================================
 
-;-- ShowMsg Function --
-; Displays a message box with no buttons.
-; @param msgToShow : Message - The message object to show.
+;----------------------------------------------------------------------
+; Function : ShowMsg
+; Purpose  : Displays a message box with no buttons.
+; Parameters:
+;    msgToShow - The message object to show.
+;----------------------------------------------------------------------
 Function ShowMsg(Message msgToShow)
     msgToShow.Show(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 EndFunction
@@ -72,37 +101,56 @@ EndFunction
 ; EVENT HANDLERS
 ;======================================================================
 
-;-- OnTerminalMenuEnter Event --
-; Called when the terminal menu is entered.
+;----------------------------------------------------------------------
+; Event : OnTerminalMenuEnter
+; Purpose: Called when the terminal menu is entered.
+;----------------------------------------------------------------------
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
-    Logger?.Log("OnTerminalMenuEnter triggered")
+    If Logger && Logger.IsEnabled()
+        Logger.Log("OnTerminalMenuEnter triggered")
+    EndIf
 EndEvent
 
-;-- OnTerminalMenuItemRun Event --
-; Called when a terminal menu option is selected.
-; @param auiMenuItemID : Int - Index of selected menu item.
+;----------------------------------------------------------------------
+; Event : OnTerminalMenuItemRun
+; Purpose: Called when a terminal menu option is selected.
+; Parameters:
+;    auiMenuItemID - Index of selected menu item.
+;----------------------------------------------------------------------
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If akTerminalBase != CurrentTerminalMenu
         Return
     EndIf
 
-    Logger?.Log("Terminal menu matches CurrentTerminalMenu")
+    If Logger && Logger.IsEnabled()
+        Logger.Log("Terminal menu matches CurrentTerminalMenu")
+    EndIf
 
     ; Route to appropriate transfer operation
     If auiMenuItemID == 0
-        Logger?.Log("Menu item 0 selected: MoveAllToShip")
+        If Logger && Logger.IsEnabled()
+            Logger.Log("Menu item 0 selected: MoveAllToShip")
+        EndIf
         MoveAllToShip()
     ElseIf auiMenuItemID == 1
-        Logger?.Log("Menu item 1 selected: MoveResourcesToShip")
+        If Logger && Logger.IsEnabled()
+            Logger.Log("Menu item 1 selected: MoveResourcesToShip")
+        EndIf
         MoveResourcesToShip()
     ElseIf auiMenuItemID == 2
-        Logger?.Log("Menu item 2 selected: MoveInventoryToLodgeSafe")
+        If Logger && Logger.IsEnabled()
+            Logger.Log("Menu item 2 selected: MoveInventoryToLodgeSafe")
+        EndIf
         MoveInventoryToLodgeSafe()
     ElseIf auiMenuItemID == 3
-        Logger?.Log("Menu item 3 selected: MoveValuablesToPlayer")
+        If Logger && Logger.IsEnabled()
+            Logger.Log("Menu item 3 selected: MoveValuablesToPlayer")
+        EndIf
         MoveValuablesToPlayer()
     Else
-        Logger?.Log("Invalid menu item selected: " + auiMenuItemID as String)
+        If Logger && Logger.IsEnabled()
+            Logger.Log("Invalid menu item selected: " + auiMenuItemID as String)
+        EndIf
     EndIf
 EndEvent
 
@@ -110,22 +158,32 @@ EndEvent
 ; MAIN TRANSFER FUNCTIONS
 ;======================================================================
 
-;-- MoveAllToShip Function --
-; Transfers all items from the dummy container to the player's home ship.
+;----------------------------------------------------------------------
+; Function : MoveAllToShip
+; Purpose  : Transfers all items from the dummy container to the player's home ship.
+;----------------------------------------------------------------------
 Function MoveAllToShip()
-    Logger?.Log("MoveAllToShip called")
+    If Logger && Logger.IsEnabled()
+        Logger.Log("MoveAllToShip called")
+    EndIf
     LPDummyHoldingRef.RemoveAllItems(PlayerHomeShip.GetRef(), False, False)
     ShowMsg(LPAllItemsToShipMsg)
 EndFunction
 
-;-- MoveResourcesToShip Function --
-; Transfers all resources from player and dummy container to the ship.
+;----------------------------------------------------------------------
+; Function : MoveResourcesToShip
+; Purpose  : Transfers all resources from player and dummy container to the ship.
+;----------------------------------------------------------------------
 Function MoveResourcesToShip()
-    Logger?.Log("MoveResourcesToShip called")
+    If Logger && Logger.IsEnabled()
+        Logger.Log("MoveResourcesToShip called")
+    EndIf
 
     ObjectReference PlayerShip = PlayerHomeShip.GetRef()
     If !PlayerShip
-        Logger?.Log("MoveResourcesToShip failed: No player ship reference")
+        If Logger && Logger.IsEnabled()
+            Logger.Log("MoveResourcesToShip failed: No player ship reference")
+        EndIf
         Return
     EndIf
 
@@ -142,14 +200,20 @@ Function MoveResourcesToShip()
     ShowMsg(LPResourcesToShipMsg)
 EndFunction
 
-;-- MoveValuablesToPlayer Function --
-; Transfers valuables from ship and dummy container to the player.
+;----------------------------------------------------------------------
+; Function : MoveValuablesToPlayer
+; Purpose  : Transfers valuables from ship and dummy container to the player.
+;----------------------------------------------------------------------
 Function MoveValuablesToPlayer()
-    Logger?.Log("MoveValuablesToPlayer called")
+    If Logger && Logger.IsEnabled()
+        Logger.Log("MoveValuablesToPlayer called")
+    EndIf
 
     ObjectReference PlayerShip = PlayerHomeShip.GetRef()
     If !PlayerShip
-        Logger?.Log("MoveValuablesToPlayer failed: No player ship reference")
+        If Logger && Logger.IsEnabled()
+            Logger.Log("MoveValuablesToPlayer failed: No player ship reference")
+        EndIf
         Return
     EndIf
 
@@ -162,17 +226,25 @@ Function MoveValuablesToPlayer()
     ShowMsg(LPValuablesToPlayerMsg)
 EndFunction
 
-;-- MoveInventoryToLodgeSafe Function --
-; Transfers all items from the dummy container to the lodge safe if any exist.
+;----------------------------------------------------------------------
+; Function : MoveInventoryToLodgeSafe
+; Purpose  : Transfers all items from the dummy container to the lodge safe if any exist.
+;----------------------------------------------------------------------
 Function MoveInventoryToLodgeSafe()
-    Logger?.Log("MoveInventoryToLodgeSafe called")
+    If Logger && Logger.IsEnabled()
+        Logger.Log("MoveInventoryToLodgeSafe called")
+    EndIf
 
     If LPDummyHoldingRef.GetItemCount(None) > 0
-        Logger?.Log("LPDummyHoldingRef has items")
+        If Logger && Logger.IsEnabled()
+            Logger.Log("LPDummyHoldingRef has items")
+        EndIf
         LPDummyHoldingRef.RemoveAllItems(LodgeSafeRef, False, False)
         ShowMsg(LPAllItemsToLodgeMsg)
     Else
-        Logger?.Log("LPDummyHoldingRef has no items")
+        If Logger && Logger.IsEnabled()
+            Logger.Log("LPDummyHoldingRef has no items")
+        EndIf
         ShowMsg(LPNoItemsMsg)
     EndIf
 EndFunction

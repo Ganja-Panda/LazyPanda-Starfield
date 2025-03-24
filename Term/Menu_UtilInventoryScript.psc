@@ -11,15 +11,16 @@
 ; Usage         : Attach to a terminal menu that maps these utilities to item IDs
 ;======================================================================
 
-
 ScriptName LZP:Term:Menu_UtilInventoryScript Extends TerminalMenu hidden
 
 ;======================================================================
 ; PROPERTIES
 ;======================================================================
 
-;-- TerminalConfig
+;------------------------------
+; TerminalConfig
 ; Primary references for inventory/activation targets
+;------------------------------
 Group Menu_UtilProperties
     TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
     ObjectReference Property LodgeSafeRef Auto Const mandatory
@@ -28,20 +29,26 @@ Group Menu_UtilProperties
     ReferenceAlias Property PlayerHomeShip Auto Const mandatory
 EndGroup
 
-;-- DebugGlobals
+;------------------------------
+; DebugGlobals
 ; GlobalVariable controlling debug toggle
+;------------------------------
 Group DebugProperties
     GlobalVariable Property LPSystemUtil_Debug Auto Const mandatory
 EndGroup
 
-;-- LootSettings
+;------------------------------
+; LootSettings
 ; GlobalVariable for system-wide toggle looting
+;------------------------------
 Group GlobalVariable_Autofill
     GlobalVariable Property LPSystemUtil_ToggleLooting Auto mandatory
 EndGroup
 
-;-- FeedbackMessages
+;------------------------------
+; FeedbackMessages
 ; Terminal message output (On/Off/Debug)
+;------------------------------
 Group Message_Autofill
     Message Property LPOffMsg Auto Const mandatory
     Message Property LPOnMsg Auto Const mandatory
@@ -49,50 +56,66 @@ Group Message_Autofill
     Message Property LPDebugOffMsg Auto Const mandatory
 EndGroup
 
-;-- Logger
+;------------------------------
+; Logger
 ; LoggerScript instance for debug output
+;------------------------------
 Group Logger
     LZP:Debug:LoggerScript Property Logger Auto Const
 EndGroup
 
+;------------------------------
+; Tokens
+; Replacement tokens for terminal display keys
+;------------------------------
+Group Tokens
+    String Property Token_Looting = "Looting" Auto Const hidden
+    String Property Token_Logging = "Logging" Auto Const hidden
+EndGroup
 
 ;======================================================================
 ; HELPER FUNCTIONS
 ;======================================================================
 
-;-- UpdateLootingDisplay Function --
-; @param akTerminalRef: Terminal reference to update
-; @param currentLootSetting: Bool value of looting enabled
-; Sets terminal label for current looting status
+;----------------------------------------------------------------------
+; Function : UpdateLootingDisplay
+; Purpose  : Sets the terminal label for current looting status.
+; Parameters:
+;    akTerminalRef        - Terminal reference to update.
+;    currentLootSetting   - Bool value of looting enabled.
+;----------------------------------------------------------------------
 Function UpdateLootingDisplay(ObjectReference akTerminalRef, Bool currentLootSetting)
     If !currentLootSetting
         If Logger && Logger.IsEnabled()
             Logger.Log("Updating display: Looting is off")
         EndIf
-        akTerminalRef.AddTextReplacementData("Looting", LPOffMsg as Form)
+        akTerminalRef.AddTextReplacementData(Token_Looting, LPOffMsg as Form)
     Else
         If Logger && Logger.IsEnabled()
             Logger.Log("Updating display: Looting is on")
         EndIf
-        akTerminalRef.AddTextReplacementData("Looting", LPOnMsg as Form)
+        akTerminalRef.AddTextReplacementData(Token_Looting, LPOnMsg as Form)
     EndIf
 EndFunction
 
-;-- UpdateDebugDisplay Function --
-; @param akTerminalRef: Terminal reference to update
-; @param currentDebugStatus: Bool value of debug enabled
-; Sets terminal label for current debug setting
+;----------------------------------------------------------------------
+; Function : UpdateDebugDisplay
+; Purpose  : Sets the terminal label for current debug setting.
+; Parameters:
+;    akTerminalRef        - Terminal reference to update.
+;    currentDebugStatus   - Bool value of debug enabled.
+;----------------------------------------------------------------------
 Function UpdateDebugDisplay(ObjectReference akTerminalRef, Bool currentDebugStatus)
     If currentDebugStatus
         If Logger && Logger.IsEnabled()
             Logger.Log("Updating display: Debugging is on")
         EndIf
-        akTerminalRef.AddTextReplacementData("Logging", LPDebugOnMsg as Form)
+        akTerminalRef.AddTextReplacementData(Token_Logging, LPDebugOnMsg as Form)
     Else
         If Logger && Logger.IsEnabled()
             Logger.Log("Updating display: Debugging is off")
         EndIf
-        akTerminalRef.AddTextReplacementData("Logging", LPDebugOffMsg as Form)
+        akTerminalRef.AddTextReplacementData(Token_Logging, LPDebugOffMsg as Form)
     EndIf
 EndFunction
 
@@ -100,38 +123,47 @@ EndFunction
 ; EVENT HANDLERS
 ;======================================================================
 
-;-- OnTerminalMenuEnter Event Handler --
-; @param akTerminalBase: Terminal menu base
-; @param akTerminalRef: Terminal instance the player entered
-; Initializes display values for loot and debug toggles
+;----------------------------------------------------------------------
+; Event : OnTerminalMenuEnter
+; Purpose: Initializes display values for loot and debug toggles.
+; Parameters:
+;    akTerminalBase  - Terminal menu base.
+;    akTerminalRef   - Terminal instance the player entered.
+;----------------------------------------------------------------------
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
         Logger.Log("OnTerminalMenuEnter triggered")
     EndIf
     
-    ; Get current settings
+    ; Get current settings.
     Bool currentLootSetting = LPSystemUtil_ToggleLooting.GetValue() as Bool
     Bool currentDebugStatus = LPSystemUtil_Debug.GetValue() as Bool
     
-    ; Log current settings
+    ; Log current settings.
     If Logger && Logger.IsEnabled()
-        Logger.Log("Current loot setting: " + currentLootSetting as String)
-        Logger.Log("Current debug status: " + currentDebugStatus as String)
+        Logger.Log("Current loot setting:")
+        Logger.Log(currentLootSetting as String)
+        Logger.Log("Current debug status:")
+        Logger.Log(currentDebugStatus as String)
     EndIf
     
-    ; Update displays
+    ; Update displays.
     UpdateLootingDisplay(akTerminalRef, currentLootSetting)
     UpdateDebugDisplay(akTerminalRef, currentDebugStatus)
 EndEvent
 
-;-- OnTerminalMenuItemRun Event Handler --
-; @param auiMenuItemID: Selected terminal menu item index
-; @param akTerminalBase: Base terminal definition
-; @param akTerminalRef: Terminal instance being interacted with
-; Executes action based on selected menu item index
+;----------------------------------------------------------------------
+; Event : OnTerminalMenuItemRun
+; Purpose: Executes action based on selected menu item index.
+; Parameters:
+;    auiMenuItemID   - Selected terminal menu item index.
+;    akTerminalBase  - Base terminal definition.
+;    akTerminalRef   - Terminal instance being interacted with.
+;----------------------------------------------------------------------
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
-        Logger.Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
+        Logger.Log("OnTerminalMenuItemRun triggered with auiMenuItemID:")
+        Logger.Log(auiMenuItemID as String)
     EndIf
     If akTerminalBase == CurrentTerminalMenu
         If Logger && Logger.IsEnabled()
@@ -145,7 +177,8 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             EndIf
             Bool currentLootSetting = LPSystemUtil_ToggleLooting.GetValue() as Bool
             If Logger && Logger.IsEnabled()
-                Logger.Log("Current loot setting: " + currentLootSetting as String)
+                Logger.Log("Current loot setting:")
+                Logger.Log(currentLootSetting as String)
             EndIf
             If !currentLootSetting
                 If Logger && Logger.IsEnabled()
@@ -193,7 +226,8 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             EndIf
             Bool currentDebugStatus = LPSystemUtil_Debug.GetValue() as Bool
             If Logger && Logger.IsEnabled()
-                Logger.Log("Current debug status: " + currentDebugStatus as String)
+                Logger.Log("Current debug status:")
+                Logger.Log(currentDebugStatus as String)
             EndIf
             If !currentDebugStatus
                 If Logger && Logger.IsEnabled()

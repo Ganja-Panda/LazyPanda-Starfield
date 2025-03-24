@@ -19,26 +19,26 @@ ScriptName LZP:Potion:AidLootToggleScript Extends ActiveMagicEffect Hidden
 ;-- ToggleControl
 ; Controls global state of looting system (1 = ON, 0 = OFF)
 Group ToggleControl
-    GlobalVariable Property LPSystemUtil_ToggleLooting Auto
+    GlobalVariable Property LPSystemUtil_ToggleLooting Auto ; 1 = ON, 0 = OFF
 EndGroup
 
 ;-- MessageFeedback
 ; UI messages shown to the player when looting is toggled
 Group MessageFeedback
-    Message Property LPLootingEnabledMsg Auto
-    Message Property LPLootingDisabledMsg Auto
+    Message Property LPLootingEnabledMsg Auto   ; Message shown when looting is enabled
+    Message Property LPLootingDisabledMsg Auto  ; Message shown when looting is disabled
 EndGroup
 
 ;-- PotionReference
 ; The toggle potion used by the player (added back after use)
 Group PotionReference
-    Potion Property LP_Aid_ToggleLooting Auto
+    Potion Property LP_Aid_ToggleLooting Auto   ; Reference to the toggle potion
 EndGroup
 
 ;-- Logger
 ; Logging interface for debug messages
 Group Logger
-    LZP:Debug:LoggerScript Property Logger Auto Const
+    LZP:Debug:LoggerScript Property Logger Auto Const   ; Logger script reference
 EndGroup
 
 ;======================================================================

@@ -4,9 +4,8 @@
 ; Mod           : Lazy Panda - A Scav's Auto Loot for Starfield
 ; Purpose       : Centralized toggleable logging system for Lazy Panda
 ; Description   : Routes trace messages to LazyPanda.log using Debug.TraceUser().
-;                 Controlled by the LPSystemUtil_Debug GlobalVariable. Supports
-;                 verbosity levels with potential expansion via the severity arg:
-;                   1 = Info, 2 = Warning, 3 = Error
+;                 Controlled by the LPSystemUtil_Debug GlobalVariable.
+;                 Logs all messages (including verbose) when enabled.
 ; Dependencies  : LazyPanda.esm
 ; Usage         : Call Logger.Log("message") or use Toggle() to enable/disable
 ;======================================================================
@@ -20,14 +19,14 @@ ScriptName LZP:Debug:LoggerScript Extends Quest
 ;-- Debug Controls
 ; Controls whether debug logging is enabled at runtime.
 Group DebugControls
-	GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory
+	GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory ; 1 = ON, 0 = OFF
 EndGroup
 
 ;-- Debug Messages
 ; Messages displayed when toggling debug on or off.
 Group DebugMessages
-	Message Property LPDebugOnMsg  Auto Const Mandatory
-	Message Property LPDebugOffMsg Auto Const Mandatory
+	Message Property LPDebugOnMsg  Auto Const Mandatory ; Message shown when debug is enabled
+	Message Property LPDebugOffMsg Auto Const Mandatory ; Message shown when debug is disabled
 EndGroup
 
 ;======================================================================
@@ -43,7 +42,7 @@ Bool bPollingStarted = False  ; Prevents duplicate polling threads
 ;======================================================================
 
 Event OnInit()
-	StartPolling()
+	PollDebugStateAsync()
 EndEvent
 
 ;======================================================================
@@ -57,6 +56,12 @@ Function InitializeLog()
 		Debug.OpenUserLog("LazyPanda")
 		bLogInitialized = True
 	EndIf
+EndFunction
+
+;-- IsEnabled Function --
+; Checks the current debug toggle state
+Bool Function IsEnabled()
+	Return LPSystemUtil_Debug.GetValue() == 1.0
 EndFunction
 
 ;-- Async Polling Function (non-blocking)
@@ -74,7 +79,8 @@ Function PollDebugStateAsync()
 		bLastKnownState = currentState
 	EndIf
 
-	If bPollingStarted
+	If !bPollingStarted
+		bPollingStarted = True
 		Utility.Wait(5.0)
 		PollDebugStateAsync()
 	EndIf
@@ -84,122 +90,38 @@ EndFunction
 ; PUBLIC FUNCTIONS
 ;======================================================================
 
-;-- Determines if debug mode is currently enabled
-Bool Function IsEnabled()
-	Return (LPSystemUtil_Debug.GetValueInt() > 0)
-EndFunction
-
-;-- Starts the polling thread if not already started
-Function StartPolling()
-	If !bPollingStarted
-		bPollingStarted = True
-		PollDebugStateAsync()
-	EndIf
-EndFunction
-
-;-- Stops polling safely
-Function StopPolling()
-	bPollingStarted = False
-EndFunction
-
-;-- Toggles the debug variable between on and off
-Function Toggle()
+;----------------------------------------------------------------------
+; Function : Log
+; Purpose  : Primary logging function for basic output
+; Params   : msg - The message to log
+;----------------------------------------------------------------------
+Function Log(String msg)
 	If IsEnabled()
-		LPSystemUtil_Debug.SetValueInt(0)
-	Else
-		LPSystemUtil_Debug.SetValueInt(1)
+		InitializeLog()
+		Debug.TraceUser("Lazy Panda", "[LOG] " + msg)
 	EndIf
 EndFunction
 
-;-- Logs a message with optional severity: 1=Info (default), 2=Warning, 3=Error
-Function Log(String msg, Int severity = 1)
-	If !IsEnabled()
-		Return
+;----------------------------------------------------------------------
+; Function : LogAdv
+; Purpose  : Advanced logging with severity and optional source tag
+; Params   : msg     - The message to log
+;            severity - 0 (Verbose), 1 (Info), 2 (Warn), 3 (Error)
+;            source   - Optional identifier for log origin
+;----------------------------------------------------------------------
+Function LogAdv(String msg, Int severity = 1, String source = "LazyPanda")
+	If IsEnabled()
+		InitializeLog()
+
+		String prefix = "[INFO] "
+		If severity == 2
+			prefix = "[WARN] "
+		ElseIf severity == 3
+			prefix = "[ERROR] "
+		ElseIf severity == 0
+			prefix = "[VERBOSE] "
+		EndIf
+
+		Debug.TraceUser(source, prefix + msg)
 	EndIf
-	InitializeLog()
-	String prefix = "[INFO] "
-	If severity == 2
-		prefix = "[WARN] "
-	ElseIf severity == 3
-		prefix = "[ERROR] "
-	EndIf
-	Debug.TraceUser("Lazy Panda", prefix + msg)
-EndFunction
-
-;-- Convenience wrapper for warning-level log
-Function LogWarn(String msg)
-	Log(msg, 2)
-EndFunction
-
-;-- Convenience wrapper for error-level log
-Function LogError(String msg)
-	Log(msg, 3)
-EndFunction
-
-;======================================================================
-; ADVANCED LOGGING UTILITIES
-;======================================================================
-
-;-- Global Log Level (0 = Debug, 1 = Info, 2 = Warn, 3 = Error)
-Group LogLevelControl
-	GlobalVariable Property LPSystem_LogLevel Auto Const
-EndGroup
-
-;-- Internal: Gets severity prefix
-String Function GetSeverityPrefix(Int severity)
-	If severity == 2
-		Return "[WARN] "
-	ElseIf severity == 3
-		Return "[ERROR] "
-	EndIf
-	Return "[INFO] "
-EndFunction
-
-;-- Internal: Gets current timestamp (seconds since game launch)
-String Function GetTimestamp()
-	Float now = Utility.GetCurrentRealTime()
-	Int seconds = now as Int
-	Int mins = seconds / 60
-	Int hrs = mins / 60
-	Int remMins = mins % 60
-	Int remSecs = seconds % 60
-	Return "[Uptime " + hrs + "h " + remMins + "m " + remSecs + "s]"
-EndFunction
-
-;-- Advanced Log with timestamp, tag, and log level filtering
-Function LogAdv(String msg, Int severity = 1, String tag = "")
-	If !IsEnabled()
-		Return
-	EndIf
-	If LPSystem_LogLevel && severity < LPSystem_LogLevel.GetValueInt()
-		Return
-	EndIf
-
-	InitializeLog()
-
-	String prefix = GetSeverityPrefix(severity)
-	String timestamp = GetTimestamp()
-	String category = ""
-	If tag != ""
-		category = "[" + tag + "] "
-	EndIf
-
-	Debug.TraceUser("Lazy Panda", timestamp + category + prefix + msg)
-EndFunction
-
-;-- Shortcut Wrappers
-Function LogDebug(String msg, String tag = "")
-	LogAdv(msg, 0, tag)
-EndFunction
-
-Function LogInfo(String msg, String tag = "")
-	LogAdv(msg, 1, tag)
-EndFunction
-
-Function LogWarnTagged(String msg, String tag = "")
-	LogAdv(msg, 2, tag)
-EndFunction
-
-Function LogErrorTagged(String msg, String tag = "")
-	LogAdv(msg, 3, tag)
 EndFunction

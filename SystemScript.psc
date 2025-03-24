@@ -313,3 +313,15 @@ Function ToggleLogging() Global
         LPDebugOffMsg.Show()
     EndIf
 EndFunction
+
+
+;----------------------------------------------------------------------
+; Version: Get build number from global variable (e.g., 20100 = v2.1.0)
+;----------------------------------------------------------------------
+GlobalVariable Function GetGlobalVersionBuild() Global
+    return Game.GetFormFromFile(0x0863, "LazyPanda.esm") as GlobalVariable
+EndFunction
+
+Int Function GetBuildVersion() Global
+    return GetGlobalVersionBuild().GetValueInt()
+EndFunction

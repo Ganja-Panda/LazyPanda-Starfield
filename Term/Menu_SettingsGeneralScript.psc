@@ -10,20 +10,23 @@
 ; Usage         : Attach to a terminal menu; configure menu items by index
 ;======================================================================
 
-
 ScriptName LZP:Term:Menu_SettingsGeneralScript Extends TerminalMenu hidden
 
 ;======================================================================
 ; PROPERTY GROUPS
 ;======================================================================
 
-;-- GlobalVariable Autofill --
+;------------------------------
+; GlobalVariable Autofill
+;------------------------------
 Group GlobalVariable_Autofill
   GlobalVariable Property LPSetting_Radius Auto mandatory
   GlobalVariable Property LPSetting_SendTo Auto mandatory
 EndGroup
 
-;-- Message Autofill --
+;------------------------------
+; Message Autofill
+;------------------------------
 Group Message_Autofill
   Message Property LPDestLodgeSafeMsg Auto Const mandatory
   Message Property LPDestPlayerMsg Auto Const mandatory
@@ -32,58 +35,74 @@ Group Message_Autofill
   Message Property LPOnMsg Auto Const mandatory
 EndGroup
 
-;-- Miscellaneous Properties --
+;------------------------------
+; Miscellaneous Properties
+;------------------------------
 Group Misc
   Float[] Property RadiusChoices Auto Const mandatory
   TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
 EndGroup
 
-;-- Logger Property --
+;------------------------------
+; Logger
+;------------------------------
 Group Logger
     LZP:Debug:LoggerScript Property Logger Auto Const
+EndGroup
+
+;------------------------------
+; Tokens
+; Replacement tokens for terminal display keys
+;------------------------------
+Group Tokens
+    String Property Token_CurrentRadius = "currentRadius" Auto Const hidden
+    String Property Token_Destination   = "Destination" Auto Const hidden
 EndGroup
 
 ;======================================================================
 ; HELPER FUNCTIONS
 ;======================================================================
 
-;-- UpdateDestinationDisplay Function --
-; Updates the terminal display for the destination setting based on its value.
+;----------------------------------------------------------------------
+; Function : UpdateDestinationDisplay
+; Purpose  : Updates the terminal display for the destination setting 
+;            based on its value.
+;----------------------------------------------------------------------
 Function UpdateDestinationDisplay(ObjectReference akTerminalRef, Int dest)
     If dest == 1
-        akTerminalRef.AddTextReplacementData("Destination", LPDestPlayerMsg as Form)
+        akTerminalRef.AddTextReplacementData(Token_Destination, LPDestPlayerMsg as Form)
         If Logger && Logger.IsEnabled()
             Logger.Log("Setting Destination to LPDestPlayerMsg")
         EndIf
     ElseIf dest == 2
-        akTerminalRef.AddTextReplacementData("Destination", LPDestLodgeSafeMsg as Form)
+        akTerminalRef.AddTextReplacementData(Token_Destination, LPDestLodgeSafeMsg as Form)
         If Logger && Logger.IsEnabled()
             Logger.Log("Setting Destination to LPDestLodgeSafeMsg")
         EndIf
     ElseIf dest == 3
-        akTerminalRef.AddTextReplacementData("Destination", LPDestDummyMsg as Form)
+        akTerminalRef.AddTextReplacementData(Token_Destination, LPDestDummyMsg as Form)
         If Logger && Logger.IsEnabled()
             Logger.Log("Setting Destination to LPDestDummyMsg")
         EndIf
     EndIf
 EndFunction
 
-;-- CycleRadius Function --
-; Cycles the current radius setting through the RadiusChoices array.
+;----------------------------------------------------------------------
+; Function : CycleRadius
+; Purpose  : Cycles the current radius setting through the RadiusChoices array.
+;----------------------------------------------------------------------
 Function CycleRadius(ObjectReference akTerminalRef)
     Float currentRadius = LPSetting_Radius.GetValue()
-    ; Find the current radius index in the array.
     Int currentRadiusIndex = RadiusChoices.find(currentRadius, 0)
     Int newRadiusIndex = currentRadiusIndex + 1
 
-    ; If at the end of the array, wrap around to the first element.
-    If currentRadiusIndex == RadiusChoices.Length - 1
+    ; Wrap around to the first element if at the end.
+    If newRadiusIndex >= RadiusChoices.Length
         newRadiusIndex = 0
     EndIf
 
-    ; Set the new radius value and update the display.
     LPSetting_Radius.SetValue(RadiusChoices[newRadiusIndex])
-    akTerminalRef.AddTextReplacementValue("currentRadius", RadiusChoices[newRadiusIndex])
+    akTerminalRef.AddTextReplacementValue(Token_CurrentRadius, RadiusChoices[newRadiusIndex])
     If Logger && Logger.IsEnabled()
         Logger.Log("Cycled radius to " + RadiusChoices[newRadiusIndex] as String)
     EndIf
@@ -93,21 +112,22 @@ EndFunction
 ; EVENT HANDLERS
 ;======================================================================
 
-;-- OnTerminalMenuEnter Event Handler --
-; Called when the terminal menu is opened.
+;----------------------------------------------------------------------
+; Event : OnTerminalMenuEnter
+; Purpose: Called when the terminal menu is opened. Updates current radius 
+;          and destination displays.
+;----------------------------------------------------------------------
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
         Logger.Log("OnTerminalMenuEnter triggered")
     EndIf
 
-    ; Retrieve and display the current radius.
     Float currentRadius = LPSetting_Radius.GetValue()
-    akTerminalRef.AddTextReplacementValue("currentRadius", currentRadius)
+    akTerminalRef.AddTextReplacementValue(Token_CurrentRadius, currentRadius)
     If Logger && Logger.IsEnabled()
         Logger.Log("Current radius: " + currentRadius as String)
     EndIf
   
-    ; Retrieve and display the current destination.
     Int currentDest = LPSetting_SendTo.GetValue() as Int
     UpdateDestinationDisplay(akTerminalRef, currentDest)
     If Logger && Logger.IsEnabled()
@@ -115,8 +135,11 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
     EndIf
 EndEvent
 
-;-- OnTerminalMenuItemRun Event Handler --
-; Called when a menu item is selected.
+;----------------------------------------------------------------------
+; Event : OnTerminalMenuItemRun
+; Purpose: Called when a menu item is selected. Handles cycling radius 
+;          or destination setting.
+;----------------------------------------------------------------------
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
         Logger.Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
@@ -140,22 +163,15 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
                 Logger.Log("Cycling destination")
             EndIf
             Int currentDest = LPSetting_SendTo.GetValue() as Int
-
-            ; Cycle destination: 3 -> 1, 1 -> 2, 2 -> 3.
-            If currentDest == 3
-                LPSetting_SendTo.SetValue(1.0)
-                currentDest = 1
-            ElseIf currentDest == 1
-                LPSetting_SendTo.SetValue(2.0)
-                currentDest = 2
-            ElseIf currentDest == 2
-                LPSetting_SendTo.SetValue(3.0)
-                currentDest = 3
+            ; Cycle destination by incrementing, wrapping after 3.
+            Int newDest = currentDest + 1
+            If newDest > 3
+                newDest = 1
             EndIf
-
-            UpdateDestinationDisplay(akTerminalRef, currentDest)
+            LPSetting_SendTo.SetValue(newDest as Float)
+            UpdateDestinationDisplay(akTerminalRef, newDest)
             If Logger && Logger.IsEnabled()
-                Logger.Log("New destination: " + currentDest as String)
+                Logger.Log("New destination: " + newDest as String)
             EndIf
         EndIf
     EndIf

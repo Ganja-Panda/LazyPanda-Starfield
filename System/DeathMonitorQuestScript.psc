@@ -24,7 +24,7 @@ EndGroup
 ;-- CorpseProcessor
 ; Reserved for future death detection logic and corpse cleanup
 Group CorpseProcessor
-    LZP:Looting:CorpseProcessorScript Property CorpseProcessor Auto
+    LZP:Looting:CorpseProcessorScript Property CorpseProcessor Auto    ; Accessible from fragments via (kmyQuest as DeathMonitorQuestScript).CorpseProcessor
 EndGroup
 
 ;======================================================================

@@ -18,62 +18,74 @@ ScriptName LZP:Term:Menu_FilterScript Extends TerminalMenu hidden
 ; PROPERTIES
 ;======================================================================
 
-;-- Autofill Properties --
-; Messages displayed to the player when toggling settings.
-;-- Autofill
+;------------------------------
+; Autofill
 ; Messages displayed to the player when toggling settings
+;------------------------------
 Group Autofill
     Message Property LPOffMsg Auto Const mandatory
-    Message Property LPOnMsg Auto Const mandatory
+    Message Property LPOnMsg  Auto Const mandatory
 EndGroup
 
-;-- Menu-Specific Properties --
-; Form lists and other properties specific to the menu.
-;-- MenuSpecific
+;------------------------------
+; MenuSpecific
 ; Form lists and properties used for menu configuration
+;------------------------------
 Group MenuSpecific
     FormList Property SettingsGlobals Auto Const mandatory
 EndGroup
 
-;-- Terminal Properties --
-; References to the current terminal menu.
-;-- Terminal
+;------------------------------
+; Terminal
 ; Terminal menu instance that this script controls
+;------------------------------
 Group Terminal
     TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
 EndGroup
 
-;-- Logger Property --
-;-- Logger
+;------------------------------
+; Logger
 ; LoggerScript instance for tracking debug output
+;------------------------------
 Group Logger
     LZP:Debug:LoggerScript Property Logger Auto Const
+EndGroup
+
+;------------------------------
+; Tokens
+; Dynamic replacement tokens used in the terminal menu
+;------------------------------
+Group Tokens
+    String Property Token_StatePrefix = "State" Auto Const hidden
 EndGroup
 
 ;======================================================================
 ; HELPER FUNCTIONS
 ;======================================================================
 
-;-- UpdateSetting Function --
-; @param index: Index of the GlobalVariable to update
-; @param newValue: New float value to set
-; @param newMsg: Message form to display after update
-; @param akTerminalRef: Terminal reference used to apply replacement
-; Updates a single setting and sends trace output
+;----------------------------------------------------------------------
+; Function : UpdateSetting
+; Purpose  : Updates a single setting and sends trace output
+; Params   : index         - Index of the GlobalVariable to update
+;            newValue      - New float value to set
+;            newMsg        - Message form to display after update
+;            akTerminalRef - Terminal reference used to apply replacement
+;----------------------------------------------------------------------
 Function UpdateSetting(Int index, Float newValue, Message newMsg, ObjectReference akTerminalRef)
     GlobalVariable setting = SettingsGlobals.GetAt(index) as GlobalVariable
     If setting
         setting.SetValue(newValue)
-        akTerminalRef.AddTextReplacementData("State" + index as String, newMsg as Form)
-        
+        akTerminalRef.AddTextReplacementData(Token_StatePrefix + index as String, newMsg as Form)
+
         String stateStr = ""
         If newValue == 1.0
             stateStr = "LPOnMsg"
         Else
             stateStr = "LPOffMsg"
         EndIf
+
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Term:Menu_FilterScript: Setting State" + index as String + " updated to " + stateStr)
+            Logger.Log("LZP:Term:Menu_FilterScript: Setting " + Token_StatePrefix + index as String + " updated to " + stateStr)
         EndIf
     Else
         If Logger && Logger.IsEnabled()
@@ -86,14 +98,15 @@ EndFunction
 ; EVENTS
 ;======================================================================
 
-;-- OnTerminalMenuEnter Event Handler --
-; @param akTerminalBase: Terminal menu object base
-; @param akTerminalRef: Instance reference of the terminal
-; Called when terminal menu is entered. Updates toggle display text.
+;----------------------------------------------------------------------
+; Event : OnTerminalMenuEnter
+; Purpose: Called when terminal menu is entered. Updates toggle display text.
+;----------------------------------------------------------------------
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Term:Menu_FilterScript: OnTerminalMenuEnter triggered")
     EndIf
+
     Int count = SettingsGlobals.GetSize()
     Int index = 0
     While index < count
@@ -102,6 +115,7 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
             Float value = setting.GetValue()
             Message replacementMsg
             String stateStr = ""
+
             If value == 1.0
                 replacementMsg = LPOnMsg
                 stateStr = "LPOnMsg"
@@ -109,9 +123,11 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
                 replacementMsg = LPOffMsg
                 stateStr = "LPOffMsg"
             EndIf
-            akTerminalRef.AddTextReplacementData("State" + index as String, replacementMsg as Form)
+
+            akTerminalRef.AddTextReplacementData(Token_StatePrefix + index as String, replacementMsg as Form)
+
             If Logger && Logger.IsEnabled()
-                Logger.Log("LZP:Term:Menu_FilterScript: Setting State" + index as String + " to " + stateStr)
+                Logger.Log("LZP:Term:Menu_FilterScript: Setting " + Token_StatePrefix + index as String + " to " + stateStr)
             EndIf
         Else
             If Logger && Logger.IsEnabled()
@@ -122,15 +138,15 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
     EndWhile
 EndEvent
 
-;-- OnTerminalMenuItemRun Event Handler --
-; @param auiMenuItemID: Selected menu item index
-; @param akTerminalBase: Terminal menu base object
-; @param akTerminalRef: Reference of the terminal being interacted with
-; Handles toggling logic for selected item or all settings.
+;----------------------------------------------------------------------
+; Event : OnTerminalMenuItemRun
+; Purpose: Handles toggling logic for selected item or all settings.
+;----------------------------------------------------------------------
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
         Logger.Log("LZP:Term:Menu_FilterScript: OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
     EndIf
+
     If akTerminalBase != CurrentTerminalMenu
         Return
     EndIf
@@ -139,8 +155,10 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
         If Logger && Logger.IsEnabled()
             Logger.Log("LZP:Term:Menu_FilterScript: Menu item 0 selected: Toggle all settings")
         EndIf
+
         GlobalVariable allToggle = SettingsGlobals.GetAt(0) as GlobalVariable
-        Float newValue = 0.0
+
+        Float newValue
         If allToggle.GetValue() == 1.0
             newValue = 0.0
         Else
@@ -164,9 +182,10 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
         If Logger && Logger.IsEnabled()
             Logger.Log("LZP:Term:Menu_FilterScript: Menu item " + auiMenuItemID as String + " selected: Toggle specific setting")
         EndIf
+
         GlobalVariable setting = SettingsGlobals.GetAt(auiMenuItemID) as GlobalVariable
         If setting
-            Float newValue = 0.0
+            Float newValue
             If setting.GetValue() == 1.0
                 newValue = 0.0
             Else

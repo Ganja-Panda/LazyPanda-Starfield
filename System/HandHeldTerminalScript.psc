@@ -25,7 +25,7 @@ EndGroup
 ;-- Logger
 ; Logging system for diagnostics and debug trace
 Group Logger
-    LZP:Debug:LoggerScript Property Logger Auto Const
+    LZP:Debug:LoggerScript Property Logger Auto Const  ; LoggerScript reference for output and diagnostics
 EndGroup
 
 ;======================================================================

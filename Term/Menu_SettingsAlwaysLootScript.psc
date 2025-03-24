@@ -10,46 +10,62 @@
 ; Usage         : Attach to a TerminalMenu that lists Always Loot options
 ;======================================================================
 
-
 ScriptName LZP:Term:Menu_SettingsAlwaysLootScript Extends TerminalMenu hidden
 
 ;======================================================================
 ; PROPERTIES
 ;======================================================================
 
-;-- TerminalMenuConfig
+;------------------------------
+; TerminalMenuConfig
 ; Terminal menu instance and all associated message/setting data
+;------------------------------
 Group TerminalMenuConfig
     TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
     Form[] Property SettingsGlobals Auto Const mandatory
     Message Property LPOffMsg Auto Const mandatory
-    Message Property LPOnMsg Auto Const mandatory
+    Message Property LPOnMsg  Auto Const mandatory
 EndGroup
 
-;-- Logger Property --
+;------------------------------
+; Logger
+; LoggerScript instance for logging
+;------------------------------
 Group Logger
     LZP:Debug:LoggerScript Property Logger Auto Const
+EndGroup
+
+;------------------------------
+; Tokens
+; Replacement token prefix for toggle display
+;------------------------------
+Group Tokens
+    String Property Token_StatePrefix = "State" Auto Const hidden
 EndGroup
 
 ;======================================================================
 ; HELPER FUNCTIONS
 ;======================================================================
 
-;-- UpdateSettingDisplay Function --
-; @param index: Index of the GlobalVariable to check
-; @param akTerminalRef: Reference of the terminal menu object
-; Updates replacement message text based on toggle state
+;----------------------------------------------------------------------
+; Function : UpdateSettingDisplay
+; Purpose  : Updates replacement message text based on toggle state
+; Params   : index          - Index of the GlobalVariable to check
+;            akTerminalRef  - Terminal reference to update
+;----------------------------------------------------------------------
 Function UpdateSettingDisplay(Int index, ObjectReference akTerminalRef)
     GlobalVariable setting = SettingsGlobals[index] as GlobalVariable
     If setting
         Float value = setting.GetValue()
         Message replacementMsg
+
         If value == 1.0
             replacementMsg = LPOnMsg
         Else
             replacementMsg = LPOffMsg
         EndIf
-        akTerminalRef.AddTextReplacementData("State" + index as String, replacementMsg as Form)
+
+        akTerminalRef.AddTextReplacementData(Token_StatePrefix + index as String, replacementMsg as Form)
     Else
         If Logger && Logger.IsEnabled()
             Logger.Log("LZP:Term:Menu_SettingsAlwaysLootScript: UpdateSettingDisplay: Setting at index " + index as String + " not found")
@@ -61,10 +77,10 @@ EndFunction
 ; EVENTS
 ;======================================================================
 
-;-- OnTerminalMenuEnter Event Handler --
-; @param akTerminalBase: Terminal menu base object
-; @param akTerminalRef: The instance reference of the terminal menu
-; Called when the terminal menu is entered. Updates the display for all settings.
+;----------------------------------------------------------------------
+; Event : OnTerminalMenuEnter
+; Purpose: Called when the terminal menu is entered. Updates display for all settings.
+;----------------------------------------------------------------------
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     Int index = 0
     While index < SettingsGlobals.Length
@@ -73,22 +89,27 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
     EndWhile
 EndEvent
 
-;-- OnTerminalMenuItemRun Event Handler --
-; @param auiMenuItemID: Index of the selected menu item
-; @param akTerminalBase: Terminal menu definition
-; @param akTerminalRef: Terminal menu instance
-; Toggles setting and updates replacement text
+;----------------------------------------------------------------------
+; Event : OnTerminalMenuItemRun
+; Purpose: Toggles setting and updates replacement text
+;----------------------------------------------------------------------
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If akTerminalBase == CurrentTerminalMenu
         GlobalVariable setting = SettingsGlobals[auiMenuItemID] as GlobalVariable
         If setting
             Float value = setting.GetValue()
+            Float newValue
             If value == 1.0
-                setting.SetValue(0.0)
+                newValue = 0.0
             Else
-                setting.SetValue(1.0)
+                newValue = 1.0
             EndIf
+            setting.SetValue(newValue)
             UpdateSettingDisplay(auiMenuItemID, akTerminalRef)
+
+            If Logger && Logger.IsEnabled()
+                Logger.Log("LZP:Term:Menu_SettingsAlwaysLootScript: Setting " + Token_StatePrefix + auiMenuItemID as String + " toggled to " + newValue as String)
+            EndIf
         Else
             If Logger && Logger.IsEnabled()
                 Logger.Log("LZP:Term:Menu_SettingsAlwaysLootScript: OnTerminalMenuItemRun: Setting at index " + auiMenuItemID as String + " not found")
