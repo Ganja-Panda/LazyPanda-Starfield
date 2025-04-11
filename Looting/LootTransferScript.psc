@@ -25,27 +25,27 @@ ObjectReference Function GetDestination()
     Int mode = LPSetting_SendTo.GetValueInt()
 
     If mode == 1
-        Log("Routing to [Player]", 1)
+        Logger.LogAdv("Routing to [Player]", 1, "LootTransferScript")
         Return PlayerRef
     ElseIf mode == 2
-        Log("Routing to [Lodge Safe]", 1)
+        Logger.LogAdv("Routing to [Lodge Safe]", 1, "LootTransferScript")
         Return LodgeSafeRef
     ElseIf mode == 3
-        Log("Routing to [Dummy Holding]", 1)
+        Logger.LogAdv("Routing to [Dummy Holding]", 1, "LootTransferScript")
         Return LPDummyHoldingRef
     ElseIf mode == 4
         ObjectReference shipRef = PlayerHomeShip.GetRef()
         If shipRef
-            Log("Routing to [Player Ship]", 1)
+            Logger.LogAdv("Routing to [Player Ship]", 1, "LootTransferScript")
             Return shipRef
         Else
-            Log("Ship reference is None. Cannot route to ship.", 2)
+            Logger.LogAdv("Ship reference is None. Cannot route to ship.", 2, "LootTransferScript")
         EndIf
     Else
-        Log("Unknown routing mode.", 2)
+        Logger.LogAdv("Unknown routing mode.", 2, "LootTransferScript")
     EndIf
 
-    Log("Routing failed: No valid destination available. Defaulting to [Player]", 2)
+    Logger.LogAdv("Routing failed: No valid destination available. Defaulting to [Player]", 2, "LootTransferScript")
     Return PlayerRef
 EndFunction
 
@@ -56,17 +56,17 @@ Function TransferItem(Form itemForm, Int count, ObjectReference source)
     ObjectReference destination = GetDestination()
 
     If destination == None
-        Log("Transfer failed: No destination resolved.", 3)
+        Logger.LogAdv("Transfer failed: No destination resolved.", 3, "LootTransferScript")
         Return
     EndIf
 
     If itemForm == None
-        Log("Transfer failed: itemForm is None.", 3)
+        Logger.LogAdv("Transfer failed: itemForm is None.", 3, "LootTransferScript")
         Return
     EndIf
 
     If source == None
-        Log("Transfer failed: source is None.", 3)
+        Logger.LogAdv("Transfer failed: source is None.", 3, "LootTransferScript")
         Return
     EndIf
 
@@ -81,20 +81,5 @@ Function TransferItem(Form itemForm, Int count, ObjectReference source)
 
     String destName = destination as String
 
-    Log("Transferred: " + (itemForm as String) + " " + qtyString + " → " + destName, 1)
-EndFunction
-
-;======================================================================
-; INTERNAL LOGGING WRAPPER WITH SEVERITY SUPPORT
-;======================================================================
-Function Log(String msg, Int severity = 1)
-    If Logger && Logger.IsEnabled()
-        String prefix = "[INFO] "
-        If severity == 2
-            prefix = "[WARN] "
-        ElseIf severity == 3
-            prefix = "[ERROR] "
-        EndIf
-        Logger.Log("LootTransfer: " + prefix + msg)
-    EndIf
+    Logger.LogAdv("Transferred: " + (itemForm as String) + " " + qtyString + " → " + destName, 1, "LootTransferScript")
 EndFunction

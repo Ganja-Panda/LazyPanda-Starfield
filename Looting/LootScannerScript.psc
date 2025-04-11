@@ -41,80 +41,80 @@ EndGroup
 ; @return         - Array of valid, filtered ObjectReferences
 ;======================================================================
 ObjectReference[] Function FindLootTargets(ObjectReference origin, Float radius, Int loopCap)
-    if Logger && Logger.IsEnabled()
-        Logger.LogInfo("LootScanner: Entering FindLootTargets().")
-    endif
+    If Logger && Logger.IsEnabled()
+        Logger.LogAdv("LootScanner: Entering FindLootTargets().", 1, "LootScannerScript")
+    EndIf
 
-    if origin == None
-        if Logger && Logger.IsEnabled()
-            Logger.LogError("LootScanner: Origin is None. Aborting scan.")
-        endif
-        return None
-    endif
+    If origin == None
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("LootScanner: Origin is None. Aborting scan.", 3, "LootScannerScript")
+        EndIf
+        Return None
+    EndIf
 
     ObjectReference[] foundRefs = new ObjectReference[0]
     ObjectReference[] validRefs = new ObjectReference[0]
 
-    if Logger && Logger.IsEnabled()
-        Logger.LogInfo("LootScanner: Beginning scan at radius " + (radius as String))
-    endif
+    If Logger && Logger.IsEnabled()
+        Logger.LogAdv("LootScanner: Beginning scan at radius " + (radius as String), 1, "LootScannerScript")
+    EndIf
 
-    int count = ActiveLootList.GetSize()
-    int i = 0
-    while i < count
+    Int count = ActiveLootList.GetSize()
+    Int i = 0
+    While i < count
         Form currentForm = ActiveLootList.GetAt(i)
         ObjectReference[] localRefs = origin.FindAllReferencesOfType(currentForm, radius)
 
-        if localRefs != None
-            int j = 0
-            while j < localRefs.Length
+        If localRefs != None
+            Int j = 0
+            While j < localRefs.Length
                 foundRefs.Add(localRefs[j])
                 j += 1
-            endwhile
-            if Logger && Logger.IsEnabled()
-                int foundCount = localRefs.Length
-                Logger.LogInfo("LootScanner: Found " + (foundCount as String) + " refs for type index " + (i as String))
-            endif
-        endif
+            EndWhile
+            If Logger && Logger.IsEnabled()
+                Int foundCount = localRefs.Length
+                Logger.LogAdv("LootScanner: Found " + (foundCount as String) + " refs for type index " + (i as String), 1, "LootScannerScript")
+            EndIf
+        EndIf
         i += 1
-    endwhile
+    EndWhile
 
-    if Logger && Logger.IsEnabled()
-        int totalCount = foundRefs.Length
-        Logger.LogInfo("LootScanner: Total found before filtering: " + (totalCount as String))
-    endif
+    If Logger && Logger.IsEnabled()
+        Int totalCount = foundRefs.Length
+        Logger.LogAdv("LootScanner: Total found before filtering: " + (totalCount as String), 1, "LootScannerScript")
+    EndIf
 
-    if foundRefs == None || foundRefs.Length == 0
-        if Logger && Logger.IsEnabled()
-            Logger.LogInfo("LootScanner: No references detected in radius.")
-        endif
-        return validRefs
-    endif
+    If foundRefs == None || foundRefs.Length == 0
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("LootScanner: No references detected in radius.", 2, "LootScannerScript")
+        EndIf
+        Return validRefs
+    EndIf
 
     Location playerLoc = origin.GetCurrentLocation()
-    int added = 0
-    int index = 0
+    Int added = 0
+    Int index = 0
 
-    while index < foundRefs.Length && added < loopCap
+    While index < foundRefs.Length && added < loopCap
         ObjectReference ref = foundRefs[index]
 
-        if Logger && Logger.IsEnabled()
-            Logger.LogInfo("LootScanner: Evaluating reference index " + (index as String) + ": " + ref)
-        endif
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("LootScanner: Evaluating reference index " + (index as String) + ": " + ref, 1, "LootScannerScript")
+        EndIf
 
-        if ref != None && IsLootable(ref, playerLoc)
+        If ref != None && IsLootable(ref, playerLoc)
             validRefs.Add(ref)
             added += 1
-        endif
+        EndIf
 
         index += 1
-    endwhile
+    EndWhile
 
-    if Logger && Logger.IsEnabled()
-        Logger.LogInfo("LootScanner: Final valid target count: " + (validRefs.Length as String))
-    endif
+    If Logger && Logger.IsEnabled()
+        Logger.LogAdv("LootScanner: Final valid target count: " + (validRefs.Length as String), 1, "LootScannerScript")
+    EndIf
 
-    return validRefs
+    Return validRefs
 EndFunction
 
 ;======================================================================
@@ -126,35 +126,35 @@ EndFunction
 ; @return           - True if lootable, False if filtered
 ;======================================================================
 Bool Function IsLootable(ObjectReference ref, Location playerLoc)
-    if ref == None
-        if Logger && Logger.IsEnabled()
-            Logger.LogInfo("LootScanner: Skipping None reference.")
-        endif
-        return false
-    endif
+    If ref == None
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("LootScanner: Skipping None reference.", 2, "LootScannerScript")
+        EndIf
+        Return False
+    EndIf
 
     Location loc = ref.GetCurrentLocation()
-    if loc == playerShipInterior.GetLocation() || LPFilter_NoLootLocations.HasForm(loc)
-        if Logger && Logger.IsEnabled()
-            Logger.LogInfo("LootScanner: Excluded due to ship interior or restricted location.")
-        endif
-        return false
-    endif
+    If loc == playerShipInterior.GetLocation() || LPFilter_NoLootLocations.HasForm(loc)
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("LootScanner: Excluded due to ship interior or restricted location.", 2, "LootScannerScript")
+        EndIf
+        Return False
+    EndIf
 
     Form baseForm = ref.GetBaseObject()
-    if baseForm == None
-        if Logger && Logger.IsEnabled()
-            Logger.LogInfo("LootScanner: Skipping reference with invalid base form.")
-        endif
-        return false
-    endif
+    If baseForm == None
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("LootScanner: Skipping reference with invalid base form.", 2, "LootScannerScript")
+        EndIf
+        Return False
+    EndIf
 
-    if ref.HasKeyword(SQ_ShipDebrisKeyword) || ref.HasKeyword(SpaceshipInventoryContainer) || ref.HasKeyword(LPKeyword_Asteroid)
-        if Logger && Logger.IsEnabled()
-            Logger.LogInfo("LootScanner: Reference accepted via special keyword.")
-        endif
-        return true
-    endif
+    If ref.HasKeyword(SQ_ShipDebrisKeyword) || ref.HasKeyword(SpaceshipInventoryContainer) || ref.HasKeyword(LPKeyword_Asteroid)
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("LootScanner: Reference accepted via special keyword.", 1, "LootScannerScript")
+        EndIf
+        Return True
+    EndIf
 
-    return true
+    Return True
 EndFunction

@@ -58,7 +58,7 @@ String Property ScriptTag = "ZoologyLootEffectScript" Auto Const                
 ;----------------------------------------------------------------------
 Event OnEffectStart(ObjectReference akTarget, Actor akCaster, MagicEffect akBaseEffect, Float afMagnitude, Float afDuration)
     If Logger && Logger.IsEnabled()
-        Logger.Log(ScriptTag + ": OnEffectStart triggered")
+        Logger.LogAdv(ScriptTag + ": OnEffectStart triggered", 1, ScriptTag)
     EndIf
     StartTimer(lootTimerDelay, lootTimerID)
 EndEvent
@@ -69,22 +69,22 @@ EndEvent
 ;----------------------------------------------------------------------
 Event OnTimer(Int aiTimerID)
     If Logger && Logger.IsEnabled()
-        Logger.Log(ScriptTag + ": OnTimer triggered with aiTimerID: " + aiTimerID as String)
+        Logger.LogAdv(ScriptTag + ": OnTimer triggered with aiTimerID: " + aiTimerID as String, 1, ScriptTag)
     EndIf
 
     If aiTimerID == lootTimerID
         If Logger && Logger.IsEnabled()
-            Logger.Log(ScriptTag + ": lootTimerID matched")
+            Logger.LogAdv(ScriptTag + ": lootTimerID matched", 1, ScriptTag)
         EndIf
 
         If Game.GetPlayer().HasPerk(ActivePerk)
             If Logger && Logger.IsEnabled()
-                Logger.Log(ScriptTag + ": Player has ActivePerk")
+                Logger.LogAdv(ScriptTag + ": Player has ActivePerk", 1, ScriptTag)
             EndIf
             ExecuteLooting()
         Else
             If Logger && Logger.IsEnabled()
-                Logger.Log(ScriptTag + ": Player does not have ActivePerk")
+                Logger.LogAdv(ScriptTag + ": Player does not have ActivePerk", 2, ScriptTag)
             EndIf
         EndIf
 
@@ -102,7 +102,7 @@ EndEvent
 ;----------------------------------------------------------------------
 Function ExecuteLooting()
     If Logger && Logger.IsEnabled()
-        Logger.Log(ScriptTag + ": ExecuteLooting called")
+        Logger.LogAdv(ScriptTag + ": ExecuteLooting called", 1, ScriptTag)
     EndIf
     LocateLoot(ActiveLootList)
 EndFunction
@@ -114,24 +114,22 @@ EndFunction
 ; Returns       : None
 ;----------------------------------------------------------------------
 Function LocateLoot(FormList LootList)
-    ; Cache size of FormList to reduce redundant VM calls
     Int listSize = LootList.GetSize()
     If listSize == 0
         If Logger && Logger.IsEnabled()
-            Logger.Log(ScriptTag + ": ActiveLootList is empty")
+            Logger.LogAdv(ScriptTag + ": ActiveLootList is empty", 2, ScriptTag)
         EndIf
         Return
     EndIf
 
     If Logger && Logger.IsEnabled()
-        Logger.Log(ScriptTag + ": LocateLoot called with LootList: " + LootList as String)
+        Logger.LogAdv(ScriptTag + ": LocateLoot called with LootList: " + LootList as String, 1, ScriptTag)
     EndIf
 
-    ; NOTE: Only using the first keyword from the FormList
     ObjectReference[] lootArray = PlayerRef.FindAllReferencesWithKeyword(LootList.GetAt(0) as Keyword, GetRadius())
 
     If Logger && Logger.IsEnabled()
-        Logger.Log(ScriptTag + ": Found " + lootArray.Length as String + " loot items")
+        Logger.LogAdv(ScriptTag + ": Found " + lootArray.Length as String + " loot items", 1, ScriptTag)
     EndIf
 
     If lootArray.Length > 0
@@ -147,38 +145,38 @@ EndFunction
 ;----------------------------------------------------------------------
 Function ProcessLoot(ObjectReference[] theLootArray)
     If Logger && Logger.IsEnabled()
-        Logger.Log(ScriptTag + ": ProcessLoot called with " + theLootArray.Length as String + " items")
+        Logger.LogAdv(ScriptTag + ": ProcessLoot called with " + theLootArray.Length as String + " items", 1, ScriptTag)
     EndIf
 
     Int index = 0
     Int loopCap = LPSystemUtil_LoopCap.GetValueInt()
     Int loopCount = 0
-    Actor playerActor = PlayerRef as Actor ; Cache cast to reduce VM cost
+    Actor playerActor = PlayerRef as Actor
 
     While index < theLootArray.Length && Game.IsActivateControlsEnabled() && loopCount < loopCap
         ObjectReference currentLoot = theLootArray[index]
 
         If Logger && Logger.IsEnabled()
-            Logger.Log(ScriptTag + ": Processing loot at index: " + index as String)
+            Logger.LogAdv(ScriptTag + ": Processing loot at index: " + index as String, 1, ScriptTag)
         EndIf
 
         If currentLoot != None && IsLootLoaded(currentLoot)
             If Perk_CND_Zoology_NonLethalHarvest_Target.IsTrue(currentLoot, PlayerRef)
                 If Logger && Logger.IsEnabled()
-                    Logger.Log(ScriptTag + ": Condition is true for loot")
+                    Logger.LogAdv(ScriptTag + ": Condition is true for loot", 1, ScriptTag)
                 EndIf
 
                 If playerActor && ActiveLootSpell != None
                     ActiveLootSpell.RemoteCast(PlayerRef, playerActor, currentLoot)
                     currentLoot.Activate(PlayerRef, False)
                 ElseIf Logger && Logger.IsEnabled()
-                    Logger.Log(ScriptTag + ": PlayerRef is not an Actor or ActiveLootSpell is None")
+                    Logger.LogAdv(ScriptTag + ": PlayerRef is not an Actor or ActiveLootSpell is None", 2, ScriptTag)
                 EndIf
             ElseIf Logger && Logger.IsEnabled()
-                Logger.Log(ScriptTag + ": Condition is false for loot")
+                Logger.LogAdv(ScriptTag + ": Condition is false for loot", 2, ScriptTag)
             EndIf
         ElseIf Logger && Logger.IsEnabled()
-            Logger.Log(ScriptTag + ": Loot is not loaded or invalid")
+            Logger.LogAdv(ScriptTag + ": Loot is not loaded or invalid", 2, ScriptTag)
         EndIf
 
         index += 1
@@ -186,11 +184,11 @@ Function ProcessLoot(ObjectReference[] theLootArray)
     EndWhile
 
     If loopCount >= loopCap && Logger && Logger.IsEnabled()
-        Logger.LogWarn(ScriptTag + ": Loop cap reached at " + loopCap as String)
+        Logger.LogAdv(ScriptTag + ": Loop cap reached at " + loopCap as String, 2, ScriptTag)
     EndIf
 
     If Logger && Logger.IsEnabled()
-        Logger.LogInfo(ScriptTag + ": Loop processed " + loopCount as String + " of " + theLootArray.Length as String + " items")
+        Logger.LogAdv(ScriptTag + ": Loop processed " + loopCount as String + " of " + theLootArray.Length as String + " items", 1, ScriptTag)
     EndIf
 EndFunction
 
@@ -203,7 +201,7 @@ EndFunction
 Bool Function IsLootLoaded(ObjectReference theLoot)
     Bool isLoaded = theLoot.Is3DLoaded() && !theLoot.IsDisabled() && !theLoot.IsDeleted()
     If Logger && Logger.IsEnabled()
-        Logger.Log(ScriptTag + ": IsLootLoaded called for " + theLoot as String + ": " + isLoaded as String)
+        Logger.LogAdv(ScriptTag + ": IsLootLoaded called for " + theLoot as String + ": " + isLoaded as String, 1, ScriptTag)
     EndIf
     Return isLoaded
 EndFunction
@@ -216,7 +214,7 @@ EndFunction
 Float Function GetRadius()
     Float radius = LPSetting_Radius.GetValue()
     If Logger && Logger.IsEnabled()
-        Logger.Log(ScriptTag + ": GetRadius called: " + radius as String)
+        Logger.LogAdv(ScriptTag + ": GetRadius called: " + radius as String, 1, ScriptTag)
     EndIf
     Return radius
 EndFunction

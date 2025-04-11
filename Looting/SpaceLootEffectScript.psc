@@ -47,9 +47,9 @@ EndGroup
 ; EVENT: OnLoad
 ;======================================================================
 Event OnLoad()
-    if Logger && Logger.IsEnabled()
-        Logger.LogInfo("SpaceLootEffectScript: OnLoad triggered")
-    endif
+    If Logger && Logger.IsEnabled()
+        Logger.LogAdv("SpaceLootEffectScript: OnLoad triggered", 1, "SpaceLootEffectScript")
+    EndIf
     StartTimer(lootTimerDelay, lootTimerID)
 EndEvent
 
@@ -57,13 +57,13 @@ EndEvent
 ; EVENT: OnTimer
 ;======================================================================
 Event OnTimer(Int aiTimerID)
-    if Logger && Logger.IsEnabled()
-        Logger.LogInfo("SpaceLootEffectScript: OnTimer triggered. ID = " + aiTimerID as String)
-    endif
+    If Logger && Logger.IsEnabled()
+        Logger.LogAdv("SpaceLootEffectScript: OnTimer triggered. ID = " + aiTimerID as String, 1, "SpaceLootEffectScript")
+    EndIf
 
-    if aiTimerID == lootTimerID
+    If aiTimerID == lootTimerID
         ExecuteLooting()
-    endif
+    EndIf
 EndEvent
 
 ;======================================================================
@@ -77,43 +77,43 @@ Function ExecuteLooting()
     Bool bEnableContSpace = LPEnableCont_Space.GetValue() == 1.0
     Bool bHasPerk = Game.GetPlayer().HasPerk(ActivePerk)
 
-    if Logger && Logger.IsEnabled()
-        Logger.LogInfo("SpaceLootEffectScript: ExecuteLooting() fired.")
-        Logger.LogInfo("Search radius: " + fSearchRadius as String)
-    endif
+    If Logger && Logger.IsEnabled()
+        Logger.LogAdv("SpaceLootEffectScript: ExecuteLooting() fired.", 1, "SpaceLootEffectScript")
+        Logger.LogAdv("Search radius: " + fSearchRadius as String, 1, "SpaceLootEffectScript")
+    EndIf
 
-    if !bToggleLooting
-        if Logger && Logger.IsEnabled()
-            Logger.LogWarn("Looting system is disabled. Skipping.")
-        endif
-        return
-    endif
+    If !bToggleLooting
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("Looting system is disabled. Skipping.", 2, "SpaceLootEffectScript")
+        EndIf
+        Return
+    EndIf
 
-    if !bEnableContSpace
-        if Logger && Logger.IsEnabled()
-            Logger.LogWarn("Space looting is disabled by global toggle.")
-        endif
-        return
-    endif
+    If !bEnableContSpace
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("Space looting is disabled by global toggle.", 2, "SpaceLootEffectScript")
+        EndIf
+        Return
+    EndIf
 
-    if !bHasPerk
-        if Logger && Logger.IsEnabled()
-            Logger.LogWarn("Player does not have required perk for space looting.")
-        endif
-        return
-    endif
+    If !bHasPerk
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("Player does not have required perk for space looting.", 2, "SpaceLootEffectScript")
+        EndIf
+        Return
+    EndIf
 
     ObjectReference homeShipRef = PlayerHomeShip.GetRef()
-    if homeShipRef == None
-        if Logger && Logger.IsEnabled()
-            Logger.LogError("PlayerHomeShip alias is None. Cannot transfer loot.")
-        endif
-        return
-    endif
+    If homeShipRef == None
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("PlayerHomeShip alias is None. Cannot transfer loot.", 3, "SpaceLootEffectScript")
+        EndIf
+        Return
+    EndIf
 
     RemoveAllItems(homeShipRef, False, False)
 
-    if Logger && Logger.IsEnabled()
-        Logger.LogInfo("Items transferred to PlayerHomeShip - all items.")
-    endif
+    If Logger && Logger.IsEnabled()
+        Logger.LogAdv("Items transferred to PlayerHomeShip - all items.", 1, "SpaceLootEffectScript")
+    EndIf
 EndFunction

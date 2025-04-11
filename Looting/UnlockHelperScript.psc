@@ -34,7 +34,7 @@ LZP:Debug:LoggerScript Property Logger Auto Const                   ; Debug logg
 ;======================================================================
 Function TryUnlock(ObjectReference theContainer)
     If !LPSetting_AutoUnlock.GetValue()
-        Log("Auto unlock disabled. Skipping.", 1)
+        Logger.LogAdv("Auto unlock disabled. Skipping.", 2, "UnlockHelperScript")
         Return
     EndIf
 
@@ -42,10 +42,10 @@ Function TryUnlock(ObjectReference theContainer)
     Int requiresKey = LockLevel_RequiresKey.GetValueInt()
     Int inaccessible = LockLevel_Inaccessible.GetValueInt()
 
-    Log("Attempting unlock | LockLevel: " + lockLevel, 1)
+    Logger.LogAdv("Attempting unlock | LockLevel: " + lockLevel, 1, "UnlockHelperScript")
 
     If lockLevel == inaccessible
-        Log("Container is marked as inaccessible. Skipping.", 2)
+        Logger.LogAdv("Container is marked as inaccessible. Skipping.", 2, "UnlockHelperScript")
         Return
     ElseIf lockLevel == requiresKey
         TryKeyUnlock(theContainer)
@@ -65,9 +65,9 @@ Function TryKeyUnlock(ObjectReference theContainer)
 
     If PlayerRef.GetItemCount(foundKey as Form) > 0
         theContainer.Unlock()
-        Log("Unlocked with key: " + foundKey, 1)
+        Logger.LogAdv("Unlocked with key: " + foundKey, 1, "UnlockHelperScript")
     Else
-        Log("Key required but not found: " + foundKey, 2)
+        Logger.LogAdv("Key required but not found: " + foundKey, 2, "UnlockHelperScript")
     EndIf
 EndFunction
 
@@ -78,7 +78,7 @@ Function TryDigipickUnlock(ObjectReference theContainer, Int lockLevel)
     Bool skillCheck = LPSetting_AutoUnlockSkillCheck.GetValue() as Bool
 
     If PlayerRef.GetItemCount(Digipick as Form) == 0
-        Log("No digipicks available to attempt unlock.", 2)
+        Logger.LogAdv("No digipicks available to attempt unlock.", 2, "UnlockHelperScript")
         Return
     EndIf
 
@@ -86,9 +86,9 @@ Function TryDigipickUnlock(ObjectReference theContainer, Int lockLevel)
         theContainer.Unlock()
         PlayerRef.RemoveItem(Digipick as Form, 1)
         Game.RewardPlayerXP(10, False)
-        Log("Unlocked with digipick at LockLevel: " + lockLevel, 1)
+        Logger.LogAdv("Unlocked with digipick at LockLevel: " + lockLevel, 1, "UnlockHelperScript")
     Else
-        Log("Unlock failed - skill check not passed at LockLevel: " + lockLevel, 3)
+        Logger.LogAdv("Unlock failed - skill check not passed at LockLevel: " + lockLevel, 3, "UnlockHelperScript")
     EndIf
 EndFunction
 
@@ -100,18 +100,18 @@ Bool Function CanUnlockByPerk(Int lockLevel)
         Return True
     ElseIf lockLevel <= 25
         Bool hasPerk = Perk_CND_AdvancedLocksCheck.IsTrue(PlayerRef, None)
-        Log("Checking AdvancedLocksCheck | Has Perk: " + hasPerk, 1)
+        Logger.LogAdv("Checking AdvancedLocksCheck | Has Perk: " + hasPerk, 1, "UnlockHelperScript")
         Return hasPerk
     ElseIf lockLevel <= 50
         Bool hasPerk = Perk_CND_ExpertLocksCheck.IsTrue(PlayerRef, None)
-        Log("Checking ExpertLocksCheck | Has Perk: " + hasPerk, 1)
+        Logger.LogAdv("Checking ExpertLocksCheck | Has Perk: " + hasPerk, 1, "UnlockHelperScript")
         Return hasPerk
     ElseIf lockLevel <= 75
         Bool hasPerk = Perk_CND_MasterLocksCheck.IsTrue(PlayerRef, None)
-        Log("Checking MasterLocksCheck | Has Perk: " + hasPerk, 1)
+        Logger.LogAdv("Checking MasterLocksCheck | Has Perk: " + hasPerk, 1, "UnlockHelperScript")
         Return hasPerk
     EndIf
-    Log("Unknown or unsupported lock level: " + lockLevel, 3)
+    Logger.LogAdv("Unknown or unsupported lock level: " + lockLevel, 3, "UnlockHelperScript")
     Return False
 EndFunction
 
