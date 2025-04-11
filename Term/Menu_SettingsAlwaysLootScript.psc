@@ -61,14 +61,25 @@ Function UpdateSettingDisplay(Int index, ObjectReference akTerminalRef)
 
         If value == 1.0
             replacementMsg = LPOnMsg
+            If Logger && Logger.IsEnabled()
+                Logger.LogAdv("LZP:Term:Menu_SettingsAlwaysLootScript: UpdateSettingDisplay: Setting at index", 1, "Menu_SettingsAlwaysLootScript")
+                Logger.LogAdv(index as String, 1, "Menu_SettingsAlwaysLootScript")
+                Logger.LogAdv("set to LPOnMsg", 1, "Menu_SettingsAlwaysLootScript")
+            EndIf
         Else
             replacementMsg = LPOffMsg
+            If Logger && Logger.IsEnabled()
+                Logger.LogAdv("LZP:Term:Menu_SettingsAlwaysLootScript: UpdateSettingDisplay: Setting at index", 1, "Menu_SettingsAlwaysLootScript")
+                Logger.LogAdv(index as String, 1, "Menu_SettingsAlwaysLootScript")
+                Logger.LogAdv("set to LPOffMsg", 1, "Menu_SettingsAlwaysLootScript")
+            EndIf
         EndIf
 
         akTerminalRef.AddTextReplacementData(Token_StatePrefix + index as String, replacementMsg as Form)
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Term:Menu_SettingsAlwaysLootScript: UpdateSettingDisplay: Setting at index " + index as String + " not found")
+            Logger.LogAdv("LZP:Term:Menu_SettingsAlwaysLootScript: UpdateSettingDisplay: Setting at index not found", 2, "Menu_SettingsAlwaysLootScript")
+            Logger.LogAdv(index as String, 2, "Menu_SettingsAlwaysLootScript")
         EndIf
     EndIf
 EndFunction
@@ -101,18 +112,25 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             Float newValue
             If value == 1.0
                 newValue = 0.0
+                If Logger && Logger.IsEnabled()
+                    Logger.LogAdv("LZP:Term:Menu_SettingsAlwaysLootScript: OnTerminalMenuItemRun: Setting at index", 1, "Menu_SettingsAlwaysLootScript")
+                    Logger.LogAdv(auiMenuItemID as String, 1, "Menu_SettingsAlwaysLootScript")
+                    Logger.LogAdv("toggled to 0.0", 1, "Menu_SettingsAlwaysLootScript")
+                EndIf
             Else
                 newValue = 1.0
+                If Logger && Logger.IsEnabled()
+                    Logger.LogAdv("LZP:Term:Menu_SettingsAlwaysLootScript: OnTerminalMenuItemRun: Setting at index", 1, "Menu_SettingsAlwaysLootScript")
+                    Logger.LogAdv(auiMenuItemID as String, 1, "Menu_SettingsAlwaysLootScript")
+                    Logger.LogAdv("toggled to 1.0", 1, "Menu_SettingsAlwaysLootScript")
+                EndIf
             EndIf
             setting.SetValue(newValue)
             UpdateSettingDisplay(auiMenuItemID, akTerminalRef)
-
-            If Logger && Logger.IsEnabled()
-                Logger.Log("LZP:Term:Menu_SettingsAlwaysLootScript: Setting " + Token_StatePrefix + auiMenuItemID as String + " toggled to " + newValue as String)
-            EndIf
         Else
             If Logger && Logger.IsEnabled()
-                Logger.Log("LZP:Term:Menu_SettingsAlwaysLootScript: OnTerminalMenuItemRun: Setting at index " + auiMenuItemID as String + " not found")
+                Logger.LogAdv("LZP:Term:Menu_SettingsAlwaysLootScript: OnTerminalMenuItemRun: Setting at index not found", 2, "Menu_SettingsAlwaysLootScript")
+                Logger.LogAdv(auiMenuItemID as String, 2, "Menu_SettingsAlwaysLootScript")
             EndIf
         EndIf
     EndIf
