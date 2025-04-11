@@ -34,7 +34,7 @@ EndGroup
 ;======================================================================
 Event OnAliasInit()
     if Logger && Logger.IsEnabled()
-        Logger.LogInfo("HandHeldTerminalScript: OnAliasInit triggered.")
+        Logger.LogAdv("HandHeldTerminalScript: OnAliasInit triggered.", 1, "HandHeldTerminalScript")
     endif
 
     ValidateProperties()
@@ -55,7 +55,7 @@ Event OnItemEquipped(Form akBaseObject, ObjectReference akReference)
     Actor player = Game.GetPlayer()
 
     if Logger && Logger.IsEnabled()
-        Logger.LogInfo("Hand Terminal equipped. Activating terminal UI.")
+        Logger.LogAdv("HandHeldTerminalScript: Hand Terminal equipped. Activating terminal UI.", 1, "HandHeldTerminalScript")
     endif
 
     LP_TerminalDummyRef.Activate(player)
@@ -69,13 +69,13 @@ EndEvent
 Function ValidateProperties()
     if LP_TerminalDummyRef == None
         if Logger && Logger.IsEnabled()
-            Logger.LogError("Missing LP_TerminalDummyRef reference.")
+            Logger.LogAdv("HandHeldTerminalScript: Missing LP_TerminalDummyRef reference.", 3, "HandHeldTerminalScript")
         endif
     endif
 
     if LP_TerminalControlWeapon == None
         if Logger && Logger.IsEnabled()
-            Logger.LogError("Missing LP_TerminalControlWeapon reference.")
+            Logger.LogAdv("HandHeldTerminalScript: Missing LP_TerminalControlWeapon reference.", 3, "HandHeldTerminalScript")
         endif
     endif
 EndFunction
