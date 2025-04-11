@@ -53,7 +53,7 @@ EndGroup
 ;-- Settings Autofill --
 Group Settings_Autofill
 	GlobalVariable Property LPSetting_Radius Auto Const                              ; Search radius for lootable objects
-GlobalVariable Property LPSystemUtil_LoopCap Auto Const                          ; Loop limiter for safe iteration
+	GlobalVariable Property LPSystemUtil_LoopCap Auto Const                          ; Loop limiter for safe iteration
 	GlobalVariable Property LPSetting_AllowStealing Auto Const                         ; Global toggle to allow looting of owned items
 	GlobalVariable Property LPSetting_StealingIsHostile Auto Const                     ; Determines if stealing triggers hostility
 	GlobalVariable Property LPSetting_RemoveCorpses Auto Const                         ; Toggle corpse cleanup after looting
@@ -134,9 +134,9 @@ Bool bIsLooting = False
 ; Purpose : Logs initialization when script loads
 ;======================================================================
 Event OnInit()
-	If Logger && Logger.IsEnabled()
-		Logger.Log("LootEffectScript: OnInit triggered.")
-	EndIf
+    If Logger && Logger.IsEnabled()
+        Logger.LogAdv("LootEffectScript: OnInit triggered.", 1, "LootEffectScript")
+    EndIf
 EndEvent
 
 ;======================================================================
@@ -144,10 +144,10 @@ EndEvent
 ; Purpose : Triggered by the magic effect; starts loot scan timer
 ;======================================================================
 Event OnEffectStart(ObjectReference akTarget, Actor akCaster, MagicEffect akBaseEffect, Float afMagnitude, Float afDuration)
-	If Logger && Logger.IsEnabled()
-		Logger.Log("LootEffectScript: OnEffectStart triggered.")
-	EndIf
-	StartTimer(lootTimerDelay, lootTimerID)
+    If Logger && Logger.IsEnabled()
+        Logger.LogAdv("LootEffectScript: OnEffectStart triggered.", 1, "LootEffectScript")
+    EndIf
+    StartTimer(lootTimerDelay, lootTimerID)
 EndEvent
 
 ;======================================================================
@@ -156,35 +156,35 @@ EndEvent
 ;           passes them and the active loot list to the processor.
 ;======================================================================
 Event OnTimer(Int aiTimerID)
-	If aiTimerID == lootTimerID && !bIsLooting
-		bIsLooting = True
+    If aiTimerID == lootTimerID && !bIsLooting
+        bIsLooting = True
 
-		If Logger && Logger.IsEnabled()
-			Logger.Log("LootEffectScript: Timer triggered. Beginning scan.")
-		EndIf
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("LootEffectScript: Timer triggered. Beginning scan.", 1, "LootEffectScript")
+        EndIf
 
-		; Ensure valid list is assigned
-		If ActiveLootList != None
-			ObjectReference[] lootTargets = LootScanner.FindLootTargets(PlayerRef, LPSetting_Radius.GetValue(), LPSystemUtil_LoopCap.GetValueInt())
+        ; Ensure valid list is assigned
+        If ActiveLootList != None
+            ObjectReference[] lootTargets = LootScanner.FindLootTargets(PlayerRef, LPSetting_Radius.GetValue(), LPSystemUtil_LoopCap.GetValueInt())
 
-			If lootTargets != None && lootTargets.Length > 0
-				If Logger && Logger.IsEnabled()
-					Logger.Log("LootEffectScript: Loot targets found. Processing.")
-				EndIf
-				LootProcessor.ProcessTargets(lootTargets, PlayerRef, ActiveLootList)
-			Else
-				If Logger && Logger.IsEnabled()
-					Logger.Log("LootEffectScript: No loot targets found.")
-				EndIf
-			EndIf
-		Else
-			If Logger && Logger.IsEnabled()
-				Logger.Log("LootEffectScript: ActiveLootList is None. Aborting.")
-			EndIf
-		EndIf
+            If lootTargets != None && lootTargets.Length > 0
+                If Logger && Logger.IsEnabled()
+                    Logger.LogAdv("LootEffectScript: Loot targets found. Processing.", 1, "LootEffectScript")
+                EndIf
+                LootProcessor.ProcessTargets(lootTargets, PlayerRef, ActiveLootList)
+            Else
+                If Logger && Logger.IsEnabled()
+                    Logger.LogAdv("LootEffectScript: No loot targets found.", 2, "LootEffectScript")
+                EndIf
+            EndIf
+        Else
+            If Logger && Logger.IsEnabled()
+                Logger.LogAdv("LootEffectScript: ActiveLootList is None. Aborting.", 3, "LootEffectScript")
+            EndIf
+        EndIf
 
-		bIsLooting = False
-	EndIf
+        bIsLooting = False
+    EndIf
 
-	StartTimer(lootTimerDelay, lootTimerID)
+    StartTimer(lootTimerDelay, lootTimerID)
 EndEvent
