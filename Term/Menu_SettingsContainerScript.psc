@@ -79,12 +79,16 @@ Function UpdateSettingDisplay(GlobalVariable setting, String label, ObjectRefere
     If setting.GetValue() == 1.0
         akTerminalRef.AddTextReplacementData(label, LPOnMsg as Form)
         If Logger && Logger.IsEnabled()
-            Logger.Log("Setting " + label + " to LPOnMsg")
+            Logger.LogAdv("UpdateSettingDisplay: Setting", 1, "Menu_SettingsContainerScript")
+            Logger.LogAdv(label, 1, "Menu_SettingsContainerScript")
+            Logger.LogAdv("set to LPOnMsg", 1, "Menu_SettingsContainerScript")
         EndIf
     Else
         akTerminalRef.AddTextReplacementData(label, LPOffMsg as Form)
         If Logger && Logger.IsEnabled()
-            Logger.Log("Setting " + label + " to LPOffMsg")
+            Logger.LogAdv("UpdateSettingDisplay: Setting", 1, "Menu_SettingsContainerScript")
+            Logger.LogAdv(label, 1, "Menu_SettingsContainerScript")
+            Logger.LogAdv("set to LPOffMsg", 1, "Menu_SettingsContainerScript")
         EndIf
     EndIf
 EndFunction
@@ -99,8 +103,18 @@ EndFunction
 Function ToggleSetting(GlobalVariable setting, String label, ObjectReference akTerminalRef)
     If setting.GetValue() == 1.0
         setting.SetValue(0.0)
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("ToggleSetting: Setting", 1, "Menu_SettingsContainerScript")
+            Logger.LogAdv(label, 1, "Menu_SettingsContainerScript")
+            Logger.LogAdv("toggled to 0.0", 1, "Menu_SettingsContainerScript")
+        EndIf
     Else
         setting.SetValue(1.0)
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("ToggleSetting: Setting", 1, "Menu_SettingsContainerScript")
+            Logger.LogAdv(label, 1, "Menu_SettingsContainerScript")
+            Logger.LogAdv("toggled to 1.0", 1, "Menu_SettingsContainerScript")
+        EndIf
     EndIf
     UpdateSettingDisplay(setting, label, akTerminalRef)
 EndFunction
@@ -115,16 +129,19 @@ EndFunction
 ;----------------------------------------------------------------------
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
-        Logger.Log("OnTerminalMenuEnter triggered")
+        Logger.LogAdv("OnTerminalMenuEnter triggered", 1, "Menu_SettingsContainerScript")
     EndIf
 
     ; Log current settings for debugging purposes.
-    Bool currentRemoveCorpsesSetting = LPSetting_RemoveCorpses.GetValue() == 1.0
-    Bool currentTakeAllSetting = LPSetting_ContTakeAll.GetValue() == 1.0
-    Bool currentAutoUnlockSetting = LPSetting_AutoUnlock.GetValue() == 1.0
-    Bool currentAutoUnlockSkillCheckSetting = LPSetting_AutoUnlockSkillCheck.GetValue() == 1.0
     If Logger && Logger.IsEnabled()
-        Logger.Log("Current settings - RemoveCorpses: " + currentRemoveCorpsesSetting + ", TakeAll: " + currentTakeAllSetting + ", AutoUnlock: " + currentAutoUnlockSetting + ", AutoUnlockSkillCheck: " + currentAutoUnlockSkillCheckSetting)
+        Logger.LogAdv("Current settings - RemoveCorpses:", 1, "Menu_SettingsContainerScript")
+        Logger.LogAdv(LPSetting_RemoveCorpses.GetValue() as String, 1, "Menu_SettingsContainerScript")
+        Logger.LogAdv("TakeAll:", 1, "Menu_SettingsContainerScript")
+        Logger.LogAdv(LPSetting_ContTakeAll.GetValue() as String, 1, "Menu_SettingsContainerScript")
+        Logger.LogAdv("AutoUnlock:", 1, "Menu_SettingsContainerScript")
+        Logger.LogAdv(LPSetting_AutoUnlock.GetValue() as String, 1, "Menu_SettingsContainerScript")
+        Logger.LogAdv("AutoUnlockSkillCheck:", 1, "Menu_SettingsContainerScript")
+        Logger.LogAdv(LPSetting_AutoUnlockSkillCheck.GetValue() as String, 1, "Menu_SettingsContainerScript")
     EndIf
 
     ; Update display for each setting.
@@ -140,32 +157,34 @@ EndEvent
 ;----------------------------------------------------------------------
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
-        Logger.Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
+        Logger.LogAdv("OnTerminalMenuItemRun triggered with auiMenuItemID", 1, "Menu_SettingsContainerScript")
+        Logger.LogAdv(auiMenuItemID as String, 1, "Menu_SettingsContainerScript")
     EndIf
+
     If akTerminalBase == CurrentTerminalMenu
         If Logger && Logger.IsEnabled()
-            Logger.Log("Terminal menu matches CurrentTerminalMenu")
+            Logger.LogAdv("Terminal menu matches CurrentTerminalMenu", 1, "Menu_SettingsContainerScript")
         EndIf
 
         ; Toggle the appropriate setting based on the menu item ID.
         If auiMenuItemID == 0
             If Logger && Logger.IsEnabled()
-                Logger.Log("Toggling AutoUnlock")
+                Logger.LogAdv("Toggling AutoUnlock", 1, "Menu_SettingsContainerScript")
             EndIf
             ToggleSetting(LPSetting_AutoUnlock, Token_AutoUnlock, akTerminalRef)
         ElseIf auiMenuItemID == 1
             If Logger && Logger.IsEnabled()
-                Logger.Log("Toggling AutoUnlockSkillCheck")
+                Logger.LogAdv("Toggling AutoUnlockSkillCheck", 1, "Menu_SettingsContainerScript")
             EndIf
             ToggleSetting(LPSetting_AutoUnlockSkillCheck, Token_AutoUnlockSkillCheck, akTerminalRef)
         ElseIf auiMenuItemID == 2
             If Logger && Logger.IsEnabled()
-                Logger.Log("Toggling Corpses")
+                Logger.LogAdv("Toggling Corpses", 1, "Menu_SettingsContainerScript")
             EndIf
             ToggleSetting(LPSetting_RemoveCorpses, Token_Corpses, akTerminalRef)
         ElseIf auiMenuItemID == 3
             If Logger && Logger.IsEnabled()
-                Logger.Log("Toggling TakeAll")
+                Logger.LogAdv("Toggling TakeAll", 1, "Menu_SettingsContainerScript")
             EndIf
             ToggleSetting(LPSetting_ContTakeAll, Token_TakeAll, akTerminalRef)
         EndIf
