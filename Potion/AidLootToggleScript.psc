@@ -58,21 +58,21 @@ Event OnEffectStart(ObjectReference akTarget, Actor akCaster, MagicEffect akBase
 
     if LPSystemUtil_ToggleLooting == None
         if Logger && Logger.IsEnabled()
-            Logger.LogError("LPSystemUtil_ToggleLooting is not set.")
+            Logger.LogAdv("LPSystemUtil_ToggleLooting is not set.", 3, "AidLootToggleScript")
         endif
         return
     endif
 
     if LPLootingEnabledMsg == None || LPLootingDisabledMsg == None
         if Logger && Logger.IsEnabled()
-            Logger.LogError("Feedback messages not assigned.")
+            Logger.LogAdv("Feedback messages not assigned.", 3, "AidLootToggleScript")
         endif
         return
     endif
 
     if LP_Aid_ToggleLooting == None
         if Logger && Logger.IsEnabled()
-            Logger.LogError("LP_Aid_ToggleLooting property is not set.")
+            Logger.LogAdv("LP_Aid_ToggleLooting property is not set.", 3, "AidLootToggleScript")
         endif
         return
     endif
@@ -83,13 +83,13 @@ Event OnEffectStart(ObjectReference akTarget, Actor akCaster, MagicEffect akBase
         LPSystemUtil_ToggleLooting.SetValue(0.0)
         LPLootingDisabledMsg.Show()
         if Logger && Logger.IsEnabled()
-            Logger.LogInfo("Looting disabled by toggle item.")
+            Logger.LogAdv("Looting disabled by toggle item.", 1, "AidLootToggleScript")
         endif
     else
         LPSystemUtil_ToggleLooting.SetValue(1.0)
         LPLootingEnabledMsg.Show()
         if Logger && Logger.IsEnabled()
-            Logger.LogInfo("Looting enabled by toggle item.")
+            Logger.LogAdv("Looting enabled by toggle item.", 1, "AidLootToggleScript")
         endif
     endif
 

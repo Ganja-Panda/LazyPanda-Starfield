@@ -33,6 +33,6 @@ EndGroup
 ;======================================================================
 Event OnInit()
     if Logger && Logger.IsEnabled()
-        Logger.LogInfo("DeathMonitorQuestScript initialized.")
+        Logger.LogAdv("DeathMonitorQuestScript initialized.", 1, "DeathMonitorQuestScript")
     endif
 EndEvent
