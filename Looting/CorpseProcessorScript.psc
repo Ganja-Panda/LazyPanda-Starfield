@@ -82,7 +82,7 @@ LZP:Debug:LoggerScript Property Logger Auto Const                   ; Debug logg
 ;======================================================================
 Function ProcessCorpse(ObjectReference theCorpse, ObjectReference killerRef)
     if Logger && Logger.IsEnabled()
-        Logger.Log("ProcessCorpse() called", 1)
+        Logger.LogAdv("ProcessCorpse() called", 1, "CorpseProcessorScript")
     endif
 
     Actor corpse = theCorpse as Actor
@@ -90,12 +90,12 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference killerRef)
     ;-- Verify actor reference is valid and currently dead
     if corpse == None
         if Logger && Logger.IsEnabled()
-            Logger.LogError("Corpse reference is None. Skipping processing.")
+            Logger.LogAdv("Corpse reference is None. Skipping processing.", 3, "CorpseProcessorScript")
         endif
         return
     elseif !corpse.IsDead()
         if Logger && Logger.IsEnabled()
-            Logger.LogWarn("Corpse reference is not dead. Skipping processing.")
+            Logger.LogAdv("Corpse reference is not dead. Skipping processing.", 2, "CorpseProcessorScript")
         endif
         return
     endif
@@ -103,7 +103,7 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference killerRef)
     ;-- Skip if this corpse has already been processed
     if corpse.HasKeyword(LPKeyword_LootedCorpse)
         if Logger && Logger.IsEnabled()
-            Logger.LogWarn("Corpse already marked as looted. Skipping.")
+            Logger.LogAdv("Corpse already marked as looted. Skipping.", 2, "CorpseProcessorScript")
         endif
         return
     endif
@@ -111,7 +111,7 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference killerRef)
     ;-- Mark this corpse to prevent double-processing
     corpse.AddKeyword(LPKeyword_LootedCorpse)
     if Logger && Logger.IsEnabled()
-        Logger.Log("Corpse keyword LPKeyword_LootedCorpse applied.", 1)
+        Logger.LogAdv("Corpse keyword LPKeyword_LootedCorpse applied.", 1, "CorpseProcessorScript")
     endif
 
     ;-- Only perform loot logic if enabled
@@ -123,7 +123,7 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference killerRef)
     if LPSetting_RemoveCorpses.GetValue() == 1.0
         corpse.DisableNoWait(True)
         if Logger && Logger.IsEnabled()
-            Logger.Log("Corpse disabled (removed from world).", 1)
+            Logger.LogAdv("Corpse disabled (removed from world).", 1, "CorpseProcessorScript")
         endif
     endif
 EndFunction
@@ -139,19 +139,19 @@ EndFunction
 Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectReference akLooter)
     if akContainer == None
         if Logger && Logger.IsEnabled()
-            Logger.LogError("Container reference is None. Aborting loot processing.")
+            Logger.LogAdv("Container reference is None. Aborting loot processing.", 3, "CorpseProcessorScript")
         endif
         return
     endif
 
     if Logger && Logger.IsEnabled()
-        Logger.Log("ProcessFilteredContainerItems() called", 1)
+        Logger.LogAdv("ProcessFilteredContainerItems() called", 1, "CorpseProcessorScript")
     endif
 
     int listSize = LPSystem_Looting_Lists.GetSize()
     if listSize <= 0
         if Logger && Logger.IsEnabled()
-            Logger.LogWarn("No filter lists defined. Skipping container processing.")
+            Logger.LogAdv("No filter lists defined. Skipping container processing.", 2, "CorpseProcessorScript")
         endif
         return
     endif
@@ -167,14 +167,13 @@ Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectRefere
         if currentList != None && currentGlobal != None
             if currentGlobal.GetValue() == 1.0
                 if Logger && Logger.IsEnabled()
-                    Logger.Log("Removing items using filter list at index " + index as String, 1)
+                    Logger.LogAdv("Removing items using filter list at index " + index as String, 1, "CorpseProcessorScript")
                 endif
-            akContainer.RemoveItem(currentList as Form, -1, True, destination)
-        endif
-
-                else
+                akContainer.RemoveItem(currentList as Form, -1, True, destination)
+            endif
+        else
             if Logger && Logger.IsEnabled()
-                Logger.LogWarn("Skipping index " + index as String + ": invalid list or global.")
+                Logger.LogAdv("Skipping index " + index as String + ": invalid list or global.", 2, "CorpseProcessorScript")
             endif
         endif
         index += 1
