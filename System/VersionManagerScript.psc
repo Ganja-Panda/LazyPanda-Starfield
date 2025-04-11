@@ -21,12 +21,12 @@ Float Property CurrentMinor = 1.0 Auto Const ; Current minor version
 Float Property CurrentPatch = 0.0 Auto Const ; Current patch version
 Float Property CurrentBuildVersion = 20100.0 Auto Const ; Composite build version (e.g. 2.1.0 = 20100)
 
-GlobalVariable Property LPVersion_Major Auto Const Mandatory ; Saved major version value
-GlobalVariable Property LPVersion_Minor Auto Const Mandatory ; Saved minor version value
-GlobalVariable Property LPVersion_Patch Auto Const Mandatory ; Saved patch version value
-GlobalVariable Property LPVersion_Build Auto Const Mandatory ; Saved build version value
-GlobalVariable Property LPVersion_ForceUpdate Auto Const Mandatory ; Set to 1.0 to force version update
-GlobalVariable Property GLOB_LZP_Version_Timestamp Auto Const Mandatory ; Timestamp recorded at last version update
+GlobalVariable Property LZP_Version_Major Auto Const Mandatory ; Saved major version value
+GlobalVariable Property LZP_Version_Minor Auto Const Mandatory ; Saved minor version value
+GlobalVariable Property LZP_Version_Patch Auto Const Mandatory ; Saved patch version value
+GlobalVariable Property LZP_Version_Build Auto Const Mandatory ; Saved build version value
+GlobalVariable Property LZP_Version_ForceUpdate Auto Const Mandatory ; Set to 1.0 to force version update
+GlobalVariable Property LZP_Version_TimeStamp Auto Const Mandatory ; Timestamp recorded at last version update
 
 LZP:Debug:LoggerScript Property LoggerScript Auto Const Mandatory ; Logger script reference
 ReferenceAlias Property PlayerAlias Auto Const Mandatory ; Player alias reference
@@ -60,11 +60,11 @@ EndEvent
 ; Purpose  : Compares saved version against current. If mismatch, resets systems.
 ;----------------------------------------------------------------------
 Function CheckModVersion()
-	Float savedMajor = LPVersion_Major.GetValue()
-	Float savedMinor = LPVersion_Minor.GetValue()
-	Float savedPatch = LPVersion_Patch.GetValue()
-	Float savedBuild = LPVersion_Build.GetValue()
-	Bool bForceVersionUpdate = (LPVersion_ForceUpdate.GetValue() == 1.0)
+	Float savedMajor = LZP_Version_Major.GetValue()
+	Float savedMinor = LZP_Version_Minor.GetValue()
+	Float savedPatch = LZP_Version_Patch.GetValue()
+	Float savedBuild = LZP_Version_Build.GetValue()
+	Bool bForceVersionUpdate = (LZP_Version_ForceUpdate.GetValue() == 1.0)
 
 	If LoggerScript
 		LoggerScript.LogAdv("Save version: " + savedMajor + "." + savedMinor + "." + savedPatch + " (" + savedBuild + ")", 1, "VersionManager")
@@ -87,15 +87,15 @@ Function CheckModVersion()
 			EndIf
 		EndIf
 
-		LPVersion_Major.SetValue(CurrentMajor)
-		LPVersion_Minor.SetValue(CurrentMinor)
-		LPVersion_Patch.SetValue(CurrentPatch)
-		LPVersion_Build.SetValue(CurrentBuildVersion)
-		GLOB_LZP_Version_Timestamp.SetValue(Utility.GetCurrentRealTime())
-		LPVersion_ForceUpdate.SetValue(0.0)
+		LZP_Version_Major.SetValue(CurrentMajor)
+		LZP_Version_Minor.SetValue(CurrentMinor)
+		LZP_Version_Patch.SetValue(CurrentPatch)
+		LZP_Version_Build.SetValue(CurrentBuildVersion)
+		LZP_Version_TimeStamp.SetValue(Utility.GetCurrentRealTime())
+		LZP_Version_ForceUpdate.SetValue(0.0)
 
 		If LoggerScript
-			LoggerScript.LogAdv("Timestamp set to: " + GLOB_LZP_Version_Timestamp.GetValue() as String, 0, "VersionManager")
+			LoggerScript.LogAdv("Timestamp set to: " + LZP_Version_TimeStamp.GetValue() as String, 0, "VersionManager")
 		EndIf
 	ElseIf LoggerScript
 		LoggerScript.LogAdv("No version change detected. Skipping update.", 0, "VersionManager")
@@ -111,7 +111,7 @@ EndFunction
 ; @return  : Current saved major version
 ;----------------------------------------------------------------------
 Float Function GetMajor()
-	return LPVersion_Major.GetValue()
+	return LZP_Version_Major.GetValue()
 EndFunction
 
 ;----------------------------------------------------------------------
@@ -119,7 +119,7 @@ EndFunction
 ; @return  : Current saved minor version
 ;----------------------------------------------------------------------
 Float Function GetMinor()
-	return LPVersion_Minor.GetValue()
+	return LZP_Version_Minor.GetValue()
 EndFunction
 
 ;----------------------------------------------------------------------
@@ -127,7 +127,7 @@ EndFunction
 ; @return  : Current saved patch version
 ;----------------------------------------------------------------------
 Float Function GetPatch()
-	return LPVersion_Patch.GetValue()
+	return LZP_Version_Patch.GetValue()
 EndFunction
 
 ;----------------------------------------------------------------------
@@ -135,5 +135,5 @@ EndFunction
 ; @return  : Current saved build version
 ;----------------------------------------------------------------------
 Float Function GetBuild()
-	return LPVersion_Build.GetValue()
+	return LZP_Version_Build.GetValue()
 EndFunction

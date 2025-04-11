@@ -85,11 +85,11 @@ Function UpdateSetting(Int index, Float newValue, Message newMsg, ObjectReferenc
         EndIf
 
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Term:Menu_FilterScript: Setting " + Token_StatePrefix + index as String + " updated to " + stateStr)
+            Logger.LogAdv("Menu_FilterScript: Setting " + Token_StatePrefix + index as String + " updated to " + stateStr, 1, "Menu_FilterScript")
         EndIf
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Term:Menu_FilterScript: No setting found at index: " + index as String)
+            Logger.LogAdv("Menu_FilterScript: No setting found at index: " + index as String, 2, "Menu_FilterScript")
         EndIf
     EndIf
 EndFunction
@@ -104,7 +104,7 @@ EndFunction
 ;----------------------------------------------------------------------
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
-        Logger.Log("LZP:Term:Menu_FilterScript: OnTerminalMenuEnter triggered")
+        Logger.LogAdv("Menu_FilterScript: OnTerminalMenuEnter triggered", 1, "Menu_FilterScript")
     EndIf
 
     Int count = SettingsGlobals.GetSize()
@@ -127,11 +127,11 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
             akTerminalRef.AddTextReplacementData(Token_StatePrefix + index as String, replacementMsg as Form)
 
             If Logger && Logger.IsEnabled()
-                Logger.Log("LZP:Term:Menu_FilterScript: Setting " + Token_StatePrefix + index as String + " to " + stateStr)
+                Logger.LogAdv("Menu_FilterScript: Setting " + Token_StatePrefix + index as String + " to " + stateStr, 1, "Menu_FilterScript")
             EndIf
         Else
             If Logger && Logger.IsEnabled()
-                Logger.Log("LZP:Term:Menu_FilterScript: No setting found at index: " + index as String)
+                Logger.LogAdv("Menu_FilterScript: No setting found at index: " + index as String, 2, "Menu_FilterScript")
             EndIf
         EndIf
         index += 1
@@ -144,7 +144,7 @@ EndEvent
 ;----------------------------------------------------------------------
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
-        Logger.Log("LZP:Term:Menu_FilterScript: OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
+        Logger.LogAdv("Menu_FilterScript: OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String, 1, "Menu_FilterScript")
     EndIf
 
     If akTerminalBase != CurrentTerminalMenu
@@ -153,7 +153,7 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
 
     If auiMenuItemID == 0
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Term:Menu_FilterScript: Menu item 0 selected: Toggle all settings")
+            Logger.LogAdv("Menu_FilterScript: Menu item 0 selected: Toggle all settings", 1, "Menu_FilterScript")
         EndIf
 
         GlobalVariable allToggle = SettingsGlobals.GetAt(0) as GlobalVariable
@@ -180,7 +180,7 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
         EndWhile
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("LZP:Term:Menu_FilterScript: Menu item " + auiMenuItemID as String + " selected: Toggle specific setting")
+            Logger.LogAdv("Menu_FilterScript: Menu item " + auiMenuItemID as String + " selected: Toggle specific setting", 1, "Menu_FilterScript")
         EndIf
 
         GlobalVariable setting = SettingsGlobals.GetAt(auiMenuItemID) as GlobalVariable
@@ -202,7 +202,7 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             UpdateSetting(auiMenuItemID, newValue, newMsg, akTerminalRef)
         Else
             If Logger && Logger.IsEnabled()
-                Logger.Log("LZP:Term:Menu_FilterScript: No setting found for menu item " + auiMenuItemID as String)
+                Logger.LogAdv("Menu_FilterScript: No setting found for menu item " + auiMenuItemID as String, 2, "Menu_FilterScript")
             EndIf
         EndIf
     EndIf
