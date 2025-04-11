@@ -64,16 +64,16 @@ EndFunction
 Function OpenHoldingInventory() Global
     LZP:Debug:LoggerScript LoggerScript = Game.GetFormFromFile(0x098D, "LazyPanda.esm") as LZP:Debug:LoggerScript
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Entering OpenHoldingInventory", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Entering OpenHoldingInventory", 0, "SystemScript")
     EndIf
     ObjectReference LPDummyHoldingRef = Game.GetFormFromFile(0x09C1, "LazyPanda.esm") as ObjectReference
     If LPDummyHoldingRef
         (LPDummyHoldingRef as Actor).OpenInventory(True, None, False)
     ElseIf LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: ERROR - LPDummyHoldingRef not found", 3)
+        LoggerScript.LogAdv("LZP:SystemScript: ERROR - LPDummyHoldingRef not found", 3, "SystemScript")
     EndIf
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Exiting OpenHoldingInventory", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Exiting OpenHoldingInventory", 0, "SystemScript")
     EndIf
 EndFunction
 
@@ -84,16 +84,16 @@ EndFunction
 Function OpenLodgeSafe() Global
     LZP:Debug:LoggerScript LoggerScript = Game.GetFormFromFile(0x098D, "LazyPanda.esm") as LZP:Debug:LoggerScript
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Entering OpenLodgeSafe", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Entering OpenLodgeSafe", 0, "SystemScript")
     EndIf
     ObjectReference LodgeSafeRef = Game.GetForm(0x266E81) as ObjectReference
     If LodgeSafeRef
         LodgeSafeRef.Activate(Game.GetPlayer() as ObjectReference, False)
     ElseIf LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: ERROR - LodgeSafeRef not found", 3)
+        LoggerScript.LogAdv("LZP:SystemScript: ERROR - LodgeSafeRef not found", 3, "SystemScript")
     EndIf
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Exiting OpenLodgeSafe", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Exiting OpenLodgeSafe", 0, "SystemScript")
     EndIf
 EndFunction
 
@@ -104,7 +104,7 @@ EndFunction
 Function OpenShipCargo() Global
     LZP:Debug:LoggerScript LoggerScript = Game.GetFormFromFile(0x098D, "LazyPanda.esm") as LZP:Debug:LoggerScript
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Entering OpenShipCargo", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Entering OpenShipCargo", 0, "SystemScript")
     EndIf
     Quest SQ_PlayerShip = Game.GetFormFromFile(0x174A2, "LazyPanda.esm") as Quest
     ReferenceAlias PlayerHomeShip = SQ_PlayerShip.GetAlias(16) as ReferenceAlias
@@ -112,10 +112,10 @@ Function OpenShipCargo() Global
     If PlayerShip
         PlayerShip.OpenInventory()
     ElseIf LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: ERROR - PlayerShip reference not found", 3)
+        LoggerScript.LogAdv("LZP:SystemScript: ERROR - PlayerShip reference not found", 3, "SystemScript")
     EndIf
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Exiting OpenShipCargo", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Exiting OpenShipCargo", 0, "SystemScript")
     EndIf
 EndFunction
 
@@ -126,7 +126,7 @@ EndFunction
 Function MoveAllToShip() Global
     LZP:Debug:LoggerScript LoggerScript = Game.GetFormFromFile(0x098D, "LazyPanda.esm") as LZP:Debug:LoggerScript
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Entering MoveAllToShip", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Entering MoveAllToShip", 0, "SystemScript")
     EndIf
     Message LPAllItemsToShipMsg = Game.GetFormFromFile(0x091D, "LazyPanda.esm") as Message
     ObjectReference LPDummyHoldingRef = Game.GetFormFromFile(0x09C1, "LazyPanda.esm") as ObjectReference
@@ -137,10 +137,10 @@ Function MoveAllToShip() Global
         LPDummyHoldingRef.RemoveAllItems(PlayerShip, False, False)
         LPAllItemsToShipMsg.Show()
     ElseIf LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: ERROR - LPDummyHoldingRef or PlayerShip not found", 3)
+        LoggerScript.LogAdv("LZP:SystemScript: ERROR - LPDummyHoldingRef or PlayerShip not found", 3, "SystemScript")
     EndIf
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Exiting MoveAllToShip", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Exiting MoveAllToShip", 0, "SystemScript")
     EndIf
 EndFunction
 
@@ -152,7 +152,7 @@ EndFunction
 Function MoveResourcesToShip() Global
     LZP:Debug:LoggerScript LoggerScript = Game.GetFormFromFile(0x098D, "LazyPanda.esm") as LZP:Debug:LoggerScript
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Entering MoveResourcesToShip", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Entering MoveResourcesToShip", 0, "SystemScript")
     EndIf
     Message LPResourcesToShipMsg = Game.GetFormFromFile(0x091E, "LazyPanda.esm") as Message
     FormList LPSystem_Script_Resources = Game.GetFormFromFile(0x08C9, "LazyPanda.esm") as FormList
@@ -165,10 +165,10 @@ Function MoveResourcesToShip() Global
         Game.GetPlayer().RemoveItem(LPSystem_Script_Resources as Form, -1, True, PlayerShip)
         LPResourcesToShipMsg.Show()
     ElseIf LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: ERROR - PlayerShip or LPDummyHoldingRef not found", 3)
+        LoggerScript.LogAdv("LZP:SystemScript: ERROR - PlayerShip or LPDummyHoldingRef not found", 3, "SystemScript")
     EndIf
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Exiting MoveResourcesToShip", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Exiting MoveResourcesToShip", 0, "SystemScript")
     EndIf
 EndFunction
 
@@ -179,7 +179,7 @@ EndFunction
 Function MoveValuablesToPlayer() Global
     LZP:Debug:LoggerScript LoggerScript = Game.GetFormFromFile(0x098D, "LazyPanda.esm") as LZP:Debug:LoggerScript
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Entering MoveValuablesToPlayer", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Entering MoveValuablesToPlayer", 0, "SystemScript")
     EndIf
     Message LPValuablesToPlayerMsg = Game.GetFormFromFile(0x091F, "LazyPanda.esm") as Message
     FormList LPSystem_Script_Valuables = Game.GetFormFromFile(0x08CA, "LazyPanda.esm") as FormList
@@ -190,16 +190,16 @@ Function MoveValuablesToPlayer() Global
     If PlayerShip
         PlayerShip.RemoveItem(LPSystem_Script_Valuables as Form, -1, True, Game.GetPlayer())
     ElseIf LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: WARNING - PlayerShip not found", 2)
+        LoggerScript.LogAdv("LZP:SystemScript: WARNING - PlayerShip not found", 2, "SystemScript")
     EndIf
     If LPDummyHoldingRef
         LPDummyHoldingRef.RemoveItem(LPSystem_Script_Valuables as Form, -1, True, Game.GetPlayer())
     ElseIf LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: WARNING - LPDummyHoldingRef not found", 2)
+        LoggerScript.LogAdv("LZP:SystemScript: WARNING - LPDummyHoldingRef not found", 2, "SystemScript")
     EndIf
     LPValuablesToPlayerMsg.Show()
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Exiting MoveValuablesToPlayer", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Exiting MoveValuablesToPlayer", 0, "SystemScript")
     EndIf
 EndFunction
 
@@ -211,29 +211,29 @@ EndFunction
 Function MoveInventoryToLodgeSafe() Global
     LZP:Debug:LoggerScript LoggerScript = Game.GetFormFromFile(0x098D, "LazyPanda.esm") as LZP:Debug:LoggerScript
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Entering MoveInventoryToLodgeSafe", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Entering MoveInventoryToLodgeSafe", 0, "SystemScript")
     EndIf
     Message LPAllItemsToLodgeMsg = Game.GetFormFromFile(0x092C, "LazyPanda.esm") as Message
     Message LPNoItemsMsg = Game.GetFormFromFile(0x0920, "LazyPanda.esm") as Message
     ObjectReference LPDummyHoldingRef = Game.GetFormFromFile(0x09C1, "LazyPanda.esm") as ObjectReference
     ObjectReference LodgeSafeRef = Game.GetFormFromFile(0x266E81, "LazyPanda.esm") as ObjectReference
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Checking item count in dummy holding container", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Checking item count in dummy holding container", 0, "SystemScript")
     EndIf
     If LPDummyHoldingRef.GetItemCount(None) > 0
         If LoggerScript && LoggerScript.IsEnabled()
-            LoggerScript.Log("LZP:SystemScript: Items found in dummy holding container. Transferring items to Lodge Safe", 1)
+            LoggerScript.LogAdv("LZP:SystemScript: Items found in dummy holding container. Transferring items to Lodge Safe", 1, "SystemScript")
         EndIf
         LPDummyHoldingRef.RemoveAllItems(LodgeSafeRef, False, False)
         LPAllItemsToLodgeMsg.Show()
     Else
         If LoggerScript && LoggerScript.IsEnabled()
-            LoggerScript.Log("LZP:SystemScript: No items found in dummy holding container. Displaying LPNoItemsMsg", 1)
+            LoggerScript.LogAdv("LZP:SystemScript: No items found in dummy holding container. Displaying LPNoItemsMsg", 1, "SystemScript")
         EndIf
         LPNoItemsMsg.Show()
     EndIf
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Exiting MoveInventoryToLodgeSafe", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Exiting MoveInventoryToLodgeSafe", 0, "SystemScript")
     EndIf
 EndFunction
 
@@ -244,19 +244,19 @@ EndFunction
 Function OpenTerminal() Global
     LZP:Debug:LoggerScript LoggerScript = Game.GetFormFromFile(0x098D, "LazyPanda.esm") as LZP:Debug:LoggerScript
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Entering OpenTerminal", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Entering OpenTerminal", 0, "SystemScript")
     EndIf
     ObjectReference TerminalRef = Game.GetFormFromFile(0x08CD, "LazyPanda.esm") as ObjectReference
     If TerminalRef
         If LoggerScript && LoggerScript.IsEnabled()
-            LoggerScript.Log("LZP:SystemScript: Activating terminal object", 1)
+            LoggerScript.LogAdv("LZP:SystemScript: Activating terminal object", 1, "SystemScript")
         EndIf
         TerminalRef.Activate(Game.GetPlayer(), False)
     ElseIf LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: ERROR - TerminalRef not found", 3)
+        LoggerScript.LogAdv("LZP:SystemScript: ERROR - TerminalRef not found", 3, "SystemScript")
     EndIf
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Exiting OpenTerminal", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Exiting OpenTerminal", 0, "SystemScript")
     EndIf
 EndFunction
 
@@ -268,30 +268,30 @@ EndFunction
 Function ToggleLooting() Global
     LZP:Debug:LoggerScript LoggerScript = Game.GetFormFromFile(0x098D, "LazyPanda.esm") as LZP:Debug:LoggerScript
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Entering ToggleLooting", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Entering ToggleLooting", 0, "SystemScript")
     EndIf
     Message LPLootingEnabledMsg = Game.GetFormFromFile(0x097E, "LazyPanda.esm") as Message
     Message LPLootingDisabledMsg = Game.GetFormFromFile(0x097F, "LazyPanda.esm") as Message
     GlobalVariable LPUtil_ToggleLooting = Game.GetFormFromFile(0x086A, "LazyPanda.esm") as GlobalVariable
     Int currentToggle = LPUtil_ToggleLooting.GetValue() as Int
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Current looting toggle value = " + currentToggle, 1)
+        LoggerScript.LogAdv("LZP:SystemScript: Current looting toggle value = " + currentToggle, 1, "SystemScript")
     EndIf
     If currentToggle == 0
         LPUtil_ToggleLooting.SetValue(1.0)
         LPLootingEnabledMsg.Show()
         If LoggerScript && LoggerScript.IsEnabled()
-            LoggerScript.Log("LZP:SystemScript: Looting enabled", 1)
+            LoggerScript.LogAdv("LZP:SystemScript: Looting enabled", 1, "SystemScript")
         EndIf
     ElseIf currentToggle == 1
         LPUtil_ToggleLooting.SetValue(0.0)
         LPLootingDisabledMsg.Show()
         If LoggerScript && LoggerScript.IsEnabled()
-            LoggerScript.Log("LZP:SystemScript: Looting disabled", 1)
+            LoggerScript.LogAdv("LZP:SystemScript: Looting disabled", 1, "SystemScript")
         EndIf
     EndIf
     If LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.Log("LZP:SystemScript: Exiting ToggleLooting", 0)
+        LoggerScript.LogAdv("LZP:SystemScript: Exiting ToggleLooting", 0, "SystemScript")
     EndIf
 EndFunction
 
