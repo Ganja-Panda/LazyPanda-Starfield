@@ -32,22 +32,23 @@ Bool Function ShouldLoot(Form targetForm)
         If itemList && flag
             Float enabled = flag.GetValue()
             If enabled == 1.0 && itemList.HasForm(targetForm)
-                Log("Filter: Loot allowed for form: " + targetForm)
+                LogAdv("Filter: Loot allowed for form: " + targetForm, 1)
                 Return True
             EndIf
         EndIf
         index += 1
     EndWhile
 
-    Log("Filter: Loot denied for form: " + targetForm)
+    LogAdv("Filter: Loot denied for form: " + targetForm, 2)
     Return False
 EndFunction
 
 ;======================================================================
-; FUNCTION: Log
+; FUNCTION: LogAdv
+; Purpose : Logs messages with severity and tagging
 ;======================================================================
-Function Log(String msg)
+Function LogAdv(String msg, Int severity = 1)
     If Logger && Logger.IsEnabled()
-        Logger.Log("LootFilter: " + msg)
+        Logger.LogAdv(msg, severity, "LootFilterScript")
     EndIf
 EndFunction
