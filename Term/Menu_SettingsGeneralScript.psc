@@ -72,17 +72,17 @@ Function UpdateDestinationDisplay(ObjectReference akTerminalRef, Int dest)
     If dest == 1
         akTerminalRef.AddTextReplacementData(Token_Destination, LPDestPlayerMsg as Form)
         If Logger && Logger.IsEnabled()
-            Logger.Log("Setting Destination to LPDestPlayerMsg")
+            Logger.LogAdv("UpdateDestinationDisplay: Setting Destination to LPDestPlayerMsg", 1, "Menu_SettingsGeneralScript")
         EndIf
     ElseIf dest == 2
         akTerminalRef.AddTextReplacementData(Token_Destination, LPDestLodgeSafeMsg as Form)
         If Logger && Logger.IsEnabled()
-            Logger.Log("Setting Destination to LPDestLodgeSafeMsg")
+            Logger.LogAdv("UpdateDestinationDisplay: Setting Destination to LPDestLodgeSafeMsg", 1, "Menu_SettingsGeneralScript")
         EndIf
     ElseIf dest == 3
         akTerminalRef.AddTextReplacementData(Token_Destination, LPDestDummyMsg as Form)
         If Logger && Logger.IsEnabled()
-            Logger.Log("Setting Destination to LPDestDummyMsg")
+            Logger.LogAdv("UpdateDestinationDisplay: Setting Destination to LPDestDummyMsg", 1, "Menu_SettingsGeneralScript")
         EndIf
     EndIf
 EndFunction
@@ -104,7 +104,8 @@ Function CycleRadius(ObjectReference akTerminalRef)
     LPSetting_Radius.SetValue(RadiusChoices[newRadiusIndex])
     akTerminalRef.AddTextReplacementValue(Token_CurrentRadius, RadiusChoices[newRadiusIndex])
     If Logger && Logger.IsEnabled()
-        Logger.Log("Cycled radius to " + RadiusChoices[newRadiusIndex] as String)
+        Logger.LogAdv("CycleRadius: Cycled radius to new value", 1, "Menu_SettingsGeneralScript")
+        Logger.LogAdv(RadiusChoices[newRadiusIndex] as String, 1, "Menu_SettingsGeneralScript")
     EndIf
 EndFunction
 
@@ -119,19 +120,21 @@ EndFunction
 ;----------------------------------------------------------------------
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
-        Logger.Log("OnTerminalMenuEnter triggered")
+        Logger.LogAdv("OnTerminalMenuEnter: Triggered", 1, "Menu_SettingsGeneralScript")
     EndIf
 
     Float currentRadius = LPSetting_Radius.GetValue()
     akTerminalRef.AddTextReplacementValue(Token_CurrentRadius, currentRadius)
     If Logger && Logger.IsEnabled()
-        Logger.Log("Current radius: " + currentRadius as String)
+        Logger.LogAdv("OnTerminalMenuEnter: Current radius value", 1, "Menu_SettingsGeneralScript")
+        Logger.LogAdv(currentRadius as String, 1, "Menu_SettingsGeneralScript")
     EndIf
   
     Int currentDest = LPSetting_SendTo.GetValue() as Int
     UpdateDestinationDisplay(akTerminalRef, currentDest)
     If Logger && Logger.IsEnabled()
-        Logger.Log("Current destination: " + currentDest as String)
+        Logger.LogAdv("OnTerminalMenuEnter: Current destination value", 1, "Menu_SettingsGeneralScript")
+        Logger.LogAdv(currentDest as String, 1, "Menu_SettingsGeneralScript")
     EndIf
 EndEvent
 
@@ -142,25 +145,26 @@ EndEvent
 ;----------------------------------------------------------------------
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
-        Logger.Log("OnTerminalMenuItemRun triggered with auiMenuItemID: " + auiMenuItemID as String)
+        Logger.LogAdv("OnTerminalMenuItemRun: Triggered with menu item ID", 1, "Menu_SettingsGeneralScript")
+        Logger.LogAdv(auiMenuItemID as String, 1, "Menu_SettingsGeneralScript")
     EndIf
 
     If akTerminalBase == CurrentTerminalMenu
         If Logger && Logger.IsEnabled()
-            Logger.Log("Terminal menu matches CurrentTerminalMenu")
+            Logger.LogAdv("OnTerminalMenuItemRun: Terminal menu matches CurrentTerminalMenu", 1, "Menu_SettingsGeneralScript")
         EndIf
 
         ; Menu item 0: Cycle the radius value.
         If auiMenuItemID == 0
             If Logger && Logger.IsEnabled()
-                Logger.Log("Cycling radius")
+                Logger.LogAdv("OnTerminalMenuItemRun: Cycling radius", 1, "Menu_SettingsGeneralScript")
             EndIf
             CycleRadius(akTerminalRef)
 
         ; Menu item 1: Cycle the destination setting.
         ElseIf auiMenuItemID == 1
             If Logger && Logger.IsEnabled()
-                Logger.Log("Cycling destination")
+                Logger.LogAdv("OnTerminalMenuItemRun: Cycling destination", 1, "Menu_SettingsGeneralScript")
             EndIf
             Int currentDest = LPSetting_SendTo.GetValue() as Int
             ; Cycle destination by incrementing, wrapping after 3.
@@ -171,7 +175,8 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             LPSetting_SendTo.SetValue(newDest as Float)
             UpdateDestinationDisplay(akTerminalRef, newDest)
             If Logger && Logger.IsEnabled()
-                Logger.Log("New destination: " + newDest as String)
+                Logger.LogAdv("OnTerminalMenuItemRun: New destination value", 1, "Menu_SettingsGeneralScript")
+                Logger.LogAdv(newDest as String, 1, "Menu_SettingsGeneralScript")
             EndIf
         EndIf
     EndIf
