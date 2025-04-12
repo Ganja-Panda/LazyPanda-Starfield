@@ -80,9 +80,9 @@ Function UpdateStealingSetting(ObjectReference akTerminalRef, Bool isEnabled)
     
     If Logger && Logger.IsEnabled()
         If isEnabled
-            Logger.Log("Updated Stealing to True")
+            Logger.LogAdv("UpdateStealingSetting: Stealing set to True", 1, "Menu_SettingsStealScript")
         Else
-            Logger.Log("Updated Stealing to False")
+            Logger.LogAdv("UpdateStealingSetting: Stealing set to False", 1, "Menu_SettingsStealScript")
         EndIf
     EndIf
 EndFunction
@@ -103,9 +103,9 @@ Function UpdateHostileSetting(ObjectReference akTerminalRef, Bool isEnabled)
     
     If Logger && Logger.IsEnabled()
         If isEnabled
-            Logger.Log("Updated Hostile to True")
+            Logger.LogAdv("UpdateHostileSetting: Hostile set to True", 1, "Menu_SettingsStealScript")
         Else
-            Logger.Log("Updated Hostile to False")
+            Logger.LogAdv("UpdateHostileSetting: Hostile set to False", 1, "Menu_SettingsStealScript")
         EndIf
     EndIf
 EndFunction
@@ -123,7 +123,7 @@ EndFunction
 ;----------------------------------------------------------------------
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
-        Logger.Log("OnTerminalMenuEnter triggered")
+        Logger.LogAdv("OnTerminalMenuEnter: Triggered", 1, "Menu_SettingsStealScript")
     EndIf
 
     Bool allowStealing = LPSetting_AllowStealing.GetValue() as Bool
@@ -143,13 +143,13 @@ EndEvent
 ;----------------------------------------------------------------------
 Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
-        Logger.Log("OnTerminalMenuItemRun triggered: MenuItemID = ")
-        Logger.Log(auiMenuItemID as String)
+        Logger.LogAdv("OnTerminalMenuItemRun: Triggered with MenuItemID", 1, "Menu_SettingsStealScript")
+        Logger.LogAdv(auiMenuItemID as String, 1, "Menu_SettingsStealScript")
     EndIf
 
     If akTerminalBase != CurrentTerminalMenu
         If Logger && Logger.IsEnabled()
-            Logger.Log("Terminal menu does not match. Exiting event.")
+            Logger.LogAdv("OnTerminalMenuItemRun: Terminal menu does not match. Exiting event.", 2, "Menu_SettingsStealScript")
         EndIf
         Return
     EndIf
@@ -164,9 +164,19 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             UpdateHostileSetting(akTerminalRef, False)
         EndIf
 
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("OnTerminalMenuItemRun: Stealing toggled to", 1, "Menu_SettingsStealScript")
+            Logger.LogAdv(newStealState as String, 1, "Menu_SettingsStealScript")
+        EndIf
+
     ElseIf auiMenuItemID == 1
         Bool newHostileState = !(LPSetting_StealingIsHostile.GetValue() as Bool)
         LPSetting_StealingIsHostile.SetValue(newHostileState as Float)
         UpdateHostileSetting(akTerminalRef, newHostileState)
+
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("OnTerminalMenuItemRun: Hostile toggled to", 1, "Menu_SettingsStealScript")
+            Logger.LogAdv(newHostileState as String, 1, "Menu_SettingsStealScript")
+        EndIf
     EndIf
 EndEvent
