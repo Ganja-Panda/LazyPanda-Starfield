@@ -107,7 +107,7 @@ EndFunction
 ;----------------------------------------------------------------------
 Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTerminalRef)
     If Logger && Logger.IsEnabled()
-        Logger.Log("OnTerminalMenuEnter triggered")
+        Logger.LogAdv("OnTerminalMenuEnter: Triggered", 1, "Menu_UtilTransferScript")
     EndIf
 EndEvent
 
@@ -123,33 +123,34 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
     EndIf
 
     If Logger && Logger.IsEnabled()
-        Logger.Log("Terminal menu matches CurrentTerminalMenu")
+        Logger.LogAdv("OnTerminalMenuItemRun: Terminal menu matches CurrentTerminalMenu", 1, "Menu_UtilTransferScript")
     EndIf
 
     ; Route to appropriate transfer operation
     If auiMenuItemID == 0
         If Logger && Logger.IsEnabled()
-            Logger.Log("Menu item 0 selected: MoveAllToShip")
+            Logger.LogAdv("OnTerminalMenuItemRun: Menu item 0 selected: MoveAllToShip", 1, "Menu_UtilTransferScript")
         EndIf
         MoveAllToShip()
     ElseIf auiMenuItemID == 1
         If Logger && Logger.IsEnabled()
-            Logger.Log("Menu item 1 selected: MoveResourcesToShip")
+            Logger.LogAdv("OnTerminalMenuItemRun: Menu item 1 selected: MoveResourcesToShip", 1, "Menu_UtilTransferScript")
         EndIf
         MoveResourcesToShip()
     ElseIf auiMenuItemID == 2
         If Logger && Logger.IsEnabled()
-            Logger.Log("Menu item 2 selected: MoveInventoryToLodgeSafe")
+            Logger.LogAdv("OnTerminalMenuItemRun: Menu item 2 selected: MoveInventoryToLodgeSafe", 1, "Menu_UtilTransferScript")
         EndIf
         MoveInventoryToLodgeSafe()
     ElseIf auiMenuItemID == 3
         If Logger && Logger.IsEnabled()
-            Logger.Log("Menu item 3 selected: MoveValuablesToPlayer")
+            Logger.LogAdv("OnTerminalMenuItemRun: Menu item 3 selected: MoveValuablesToPlayer", 1, "Menu_UtilTransferScript")
         EndIf
         MoveValuablesToPlayer()
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("Invalid menu item selected: " + auiMenuItemID as String)
+            Logger.LogAdv("OnTerminalMenuItemRun: Invalid menu item selected", 2, "Menu_UtilTransferScript")
+            Logger.LogAdv(auiMenuItemID as String, 2, "Menu_UtilTransferScript")
         EndIf
     EndIf
 EndEvent
@@ -164,7 +165,7 @@ EndEvent
 ;----------------------------------------------------------------------
 Function MoveAllToShip()
     If Logger && Logger.IsEnabled()
-        Logger.Log("MoveAllToShip called")
+        Logger.LogAdv("MoveAllToShip: Called", 1, "Menu_UtilTransferScript")
     EndIf
     LPDummyHoldingRef.RemoveAllItems(PlayerHomeShip.GetRef(), False, False)
     ShowMsg(LPAllItemsToShipMsg)
@@ -176,13 +177,13 @@ EndFunction
 ;----------------------------------------------------------------------
 Function MoveResourcesToShip()
     If Logger && Logger.IsEnabled()
-        Logger.Log("MoveResourcesToShip called")
+        Logger.LogAdv("MoveResourcesToShip: Called", 1, "Menu_UtilTransferScript")
     EndIf
 
     ObjectReference PlayerShip = PlayerHomeShip.GetRef()
     If !PlayerShip
         If Logger && Logger.IsEnabled()
-            Logger.Log("MoveResourcesToShip failed: No player ship reference")
+            Logger.LogAdv("MoveResourcesToShip: Failed - No player ship reference", 2, "Menu_UtilTransferScript")
         EndIf
         Return
     EndIf
@@ -206,13 +207,13 @@ EndFunction
 ;----------------------------------------------------------------------
 Function MoveValuablesToPlayer()
     If Logger && Logger.IsEnabled()
-        Logger.Log("MoveValuablesToPlayer called")
+        Logger.LogAdv("MoveValuablesToPlayer: Called", 1, "Menu_UtilTransferScript")
     EndIf
 
     ObjectReference PlayerShip = PlayerHomeShip.GetRef()
     If !PlayerShip
         If Logger && Logger.IsEnabled()
-            Logger.Log("MoveValuablesToPlayer failed: No player ship reference")
+            Logger.LogAdv("MoveValuablesToPlayer: Failed - No player ship reference", 2, "Menu_UtilTransferScript")
         EndIf
         Return
     EndIf
@@ -232,18 +233,18 @@ EndFunction
 ;----------------------------------------------------------------------
 Function MoveInventoryToLodgeSafe()
     If Logger && Logger.IsEnabled()
-        Logger.Log("MoveInventoryToLodgeSafe called")
+        Logger.LogAdv("MoveInventoryToLodgeSafe: Called", 1, "Menu_UtilTransferScript")
     EndIf
 
     If LPDummyHoldingRef.GetItemCount(None) > 0
         If Logger && Logger.IsEnabled()
-            Logger.Log("LPDummyHoldingRef has items")
+            Logger.LogAdv("MoveInventoryToLodgeSafe: LPDummyHoldingRef has items", 1, "Menu_UtilTransferScript")
         EndIf
         LPDummyHoldingRef.RemoveAllItems(LodgeSafeRef, False, False)
         ShowMsg(LPAllItemsToLodgeMsg)
     Else
         If Logger && Logger.IsEnabled()
-            Logger.Log("LPDummyHoldingRef has no items")
+            Logger.LogAdv("MoveInventoryToLodgeSafe: LPDummyHoldingRef has no items", 1, "Menu_UtilTransferScript")
         EndIf
         ShowMsg(LPNoItemsMsg)
     EndIf
