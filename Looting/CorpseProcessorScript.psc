@@ -36,22 +36,22 @@ EndGroup
 
 ;-- Global Settings (Autofilled)
 Group Settings_Autofill
-    GlobalVariable Property LPSetting_Radius Auto Const             ; Loot radius (future expansion)
-    GlobalVariable Property LPSetting_RemoveCorpses Auto Const      ; Toggle corpse disabling
-    GlobalVariable Property LPSetting_SendTo Auto Const             ; Target ref to send loot to
-    GlobalVariable Property LPSetting_ContTakeAll Auto Const        ; Global flag to take all from containers
-    GlobalVariable Property LPSetting_AllowLootingShip Auto Const   ; Ship loot toggle (not used here)
+    GlobalVariable Property LZP_Setting_Radius Auto Const             ; Loot radius (future expansion)
+    GlobalVariable Property LZP_Setting_RemoveCorpses Auto Const      ; Toggle corpse disabling
+    GlobalVariable Property LZP_Setting_SendTo Auto Const             ; Target ref to send loot to
+    GlobalVariable Property LZP_Setting_TakeAll_Containers Auto Const        ; Global flag to take all from containers
+    GlobalVariable Property LZP_Setting_AllowLootingShip Auto Const   ; Ship loot toggle (not used here)
 EndGroup
 
 ;-- Filter Logic Lists
 Group List_Autofill
-    FormList Property LPSystem_Looting_Globals Auto Const           ; List of global flags for each filter list
-    FormList Property LPSystem_Looting_Lists Auto Const             ; List of FormLists to match/filter items
+    FormList Property LZP_System_Looting_Globals Auto Const           ; List of global flags for each filter list
+    FormList Property LZP_System_Looting_Lists Auto Const             ; List of FormLists to match/filter items
 EndGroup
 
 ;-- Misc Corpse Data
 Group Misc
-    Armor Property LP_Skin_Naked_NOTPLAYABLE Auto Const mandatory   ; Naked armor filter for unequip logic
+    Armor Property LZP_Armor_Naked_NOTPLAYABLE Auto Const mandatory   ; Naked armor filter for unequip logic
     Race Property HumanRace Auto Const mandatory                    ; Fallback race validation for humanoid actors
 EndGroup
 
@@ -59,7 +59,7 @@ EndGroup
 Group DestinationLocations
     ObjectReference Property PlayerRef Auto Const                   ; Player inventory
     ObjectReference Property LodgeSafeRef Auto Const                ; Lodge safe (default stash)
-    ObjectReference Property LPDummyHoldingRef Auto Const           ; Dummy holding container (blackhole)
+    ObjectReference Property LZP_Cont_StorageRef Auto Const           ; Dummy holding container (blackhole)
     ReferenceAlias Property PlayerHomeShip Auto Const mandatory     ; Player's current home ship alias
 EndGroup
 
@@ -69,7 +69,7 @@ Group NoFill
 EndGroup
 
 ;-- Keyword Dependencies
-Keyword Property LPKeyword_LootedCorpse Auto Const                  ; Keyword to prevent double-processing
+Keyword Property LZP_KYWD_LootedCorpse Auto Const                  ; Keyword to prevent double-processing
 LZP:Debug:LoggerScript Property Logger Auto Const                   ; Debug logging utility
 
 ;======================================================================
@@ -101,7 +101,7 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference killerRef)
     endif
 
     ;-- Skip if this corpse has already been processed
-    if corpse.HasKeyword(LPKeyword_LootedCorpse)
+    if corpse.HasKeyword(LZP_KYWD_LootedCorpse)
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("Corpse already marked as looted. Skipping.", 2, "CorpseProcessorScript")
         endif
@@ -109,9 +109,9 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference killerRef)
     endif
 
     ;-- Mark this corpse to prevent double-processing
-    corpse.AddKeyword(LPKeyword_LootedCorpse)
+    corpse.AddKeyword(LZP_KYWD_LootedCorpse)
     if Logger && Logger.IsEnabled()
-        Logger.LogAdv("Corpse keyword LPKeyword_LootedCorpse applied.", 1, "CorpseProcessorScript")
+        Logger.LogAdv("Corpse keyword LZP_KYWD_LootedCorpse applied.", 1, "CorpseProcessorScript")
     endif
 
     ;-- Only perform loot logic if enabled
@@ -120,7 +120,7 @@ Function ProcessCorpse(ObjectReference theCorpse, ObjectReference killerRef)
     endif
 
     ;-- Optionally remove (disable) the corpse after looting
-    if LPSetting_RemoveCorpses.GetValue() == 1.0
+    if LZP_Setting_RemoveCorpses.GetValue() == 1.0
         corpse.DisableNoWait(True)
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("Corpse disabled (removed from world).", 1, "CorpseProcessorScript")
@@ -148,7 +148,7 @@ Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectRefere
         Logger.LogAdv("ProcessFilteredContainerItems() called", 1, "CorpseProcessorScript")
     endif
 
-    int listSize = LPSystem_Looting_Lists.GetSize()
+    int listSize = LZP_System_Looting_Lists.GetSize()
     if listSize <= 0
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("No filter lists defined. Skipping container processing.", 2, "CorpseProcessorScript")
@@ -161,8 +161,8 @@ Function ProcessFilteredContainerItems(ObjectReference akContainer, ObjectRefere
 
     ;-- Loop through filter list pairs and remove matching items
     while index < listSize
-        FormList currentList = LPSystem_Looting_Lists.GetAt(index) as FormList
-        GlobalVariable currentGlobal = LPSystem_Looting_Globals.GetAt(index) as GlobalVariable
+        FormList currentList = LZP_System_Looting_Lists.GetAt(index) as FormList
+        GlobalVariable currentGlobal = LZP_System_Looting_Globals.GetAt(index) as GlobalVariable
 
         if currentList != None && currentGlobal != None
             if currentGlobal.GetValue() == 1.0
@@ -189,14 +189,14 @@ EndFunction
 ; @return ObjectReference - The destination container or None if invalid
 ;======================================================================
 ObjectReference Function GetDestRef()
-    int destination = LPSetting_SendTo.GetValue() as Int
+    int destination = LZP_Setting_SendTo.GetValue() as Int
 
     if destination == 1
         return PlayerRef
     elseif destination == 2
         return LodgeSafeRef
     elseif destination == 3
-        return LPDummyHoldingRef
+        return LZP_Cont_StorageRef
     endif
 
     return None

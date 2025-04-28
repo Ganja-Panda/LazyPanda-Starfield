@@ -25,7 +25,7 @@ String sUpdatesAppliedVersion = "0"
 
 Group ReferenceData
 	Actor Property PlayerRef Auto Const Mandatory					; Player reference
-	FormList Property LPSystem_Script_Perks Auto Const Mandatory	; List of perks to add to player
+	FormList Property LZP_System_Script_Perks Auto Const Mandatory	; List of perks to add to player
 EndGroup
 
 Group Versioning
@@ -104,14 +104,14 @@ EndFunction
 Function AddPerks()
     Log("AddPerks called", 1)
 
-    If !LPSystem_Script_Perks
+    If !LZP_System_Script_Perks
         Log("ERROR: LPSystem_Script_Perks FormList not found!", 3)
         Return
     EndIf
 
     Int index = 0
-    While index < LPSystem_Script_Perks.GetSize()
-        Perk currentPerk = LPSystem_Script_Perks.GetAt(index) as Perk
+    While index < LZP_System_Script_Perks.GetSize()
+        Perk currentPerk = LZP_System_Script_Perks.GetAt(index) as Perk
         Log("Checking perk: " + currentPerk as String, 1)
 
         If !PlayerRef.HasPerk(currentPerk)

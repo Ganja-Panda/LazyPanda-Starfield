@@ -20,8 +20,8 @@ ScriptName LZP:Looting:SpaceLootEffectScript Extends ObjectReference
 ; Controls whether looting is active and gated by player perk
 Group EffectSpecific_Mandatory
     Perk Property ActivePerk Auto Const mandatory           ; Required perk to allow looting
-    GlobalVariable Property LPEnableCont_Space Auto Const mandatory  ; Global toggle for continuous space looting
-    GlobalVariable Property LPSystemUtil_ToggleLooting Auto Const mandatory ; Master toggle for all looting systems
+    GlobalVariable Property LZP_Toggle_Container_Space Auto Const mandatory  ; Global toggle for continuous space looting
+    GlobalVariable Property LZP_System_ToggleLooting Auto Const mandatory ; Master toggle for all looting systems
 EndGroup
 
 ;-- DestinationLocations
@@ -73,8 +73,8 @@ Function ExecuteLooting()
     StartTimer(lootTimerDelay, lootTimerID)
 
     Float fSearchRadius = Game.GetGameSettingFloat("fMaxShipTransferDistance")
-    Bool bToggleLooting = LPSystemUtil_ToggleLooting.GetValue() == 1.0
-    Bool bEnableContSpace = LPEnableCont_Space.GetValue() == 1.0
+    Bool bToggleLooting = LZP_System_ToggleLooting.GetValue() == 1.0
+    Bool bEnableContSpace = LZP_Toggle_Container_Space.GetValue() == 1.0
     Bool bHasPerk = Game.GetPlayer().HasPerk(ActivePerk)
 
     If Logger && Logger.IsEnabled()

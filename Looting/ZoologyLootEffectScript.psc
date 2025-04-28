@@ -31,8 +31,8 @@ EndGroup
 ;-- Settings_Autofill
 ; Automatically set global scan control values
 Group Settings_Autofill
-    GlobalVariable Property LPSetting_Radius Auto Const                         ; Global controlling loot scan radius
-    GlobalVariable Property LPSystemUtil_LoopCap Auto Const                     ; Safety cap for max iterations per scan
+    GlobalVariable Property LZP_Setting_Radius Auto Const                         ; Global controlling loot scan radius
+    GlobalVariable Property LZP_System_LoopCap Auto Const                     ; Safety cap for max iterations per scan
 EndGroup
 
 ;-- NoFill
@@ -149,7 +149,7 @@ Function ProcessLoot(ObjectReference[] theLootArray)
     EndIf
 
     Int index = 0
-    Int loopCap = LPSystemUtil_LoopCap.GetValueInt()
+    Int loopCap = LZP_System_LoopCap.GetValueInt()
     Int loopCount = 0
     Actor playerActor = PlayerRef as Actor
 
@@ -212,7 +212,7 @@ EndFunction
 ; Returns       : Float - radius in game units
 ;----------------------------------------------------------------------
 Float Function GetRadius()
-    Float radius = LPSetting_Radius.GetValue()
+    Float radius = LZP_Setting_Radius.GetValue()
     If Logger && Logger.IsEnabled()
         Logger.LogAdv(ScriptTag + ": GetRadius called: " + radius as String, 1, ScriptTag)
     EndIf

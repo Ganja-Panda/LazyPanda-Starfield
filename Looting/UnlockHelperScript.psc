@@ -11,8 +11,8 @@ ScriptName LZP:Looting:UnlockHelperScript Extends Quest Hidden
 ;======================================================================
 
 ;-- Settings and thresholds
-GlobalVariable Property LPSetting_AutoUnlock Auto Const             ; Enable auto unlock
-GlobalVariable Property LPSetting_AutoUnlockSkillCheck Auto Const   ; Enable skill check
+GlobalVariable Property LZP_Setting_Unlock_Auto Auto Const             ; Enable auto unlock
+GlobalVariable Property LZP_Setting_Unlock_SkillCheck Auto Const   ; Enable skill check
 GlobalVariable Property LockLevel_RequiresKey Auto Const            ; Lock level requiring key
 GlobalVariable Property LockLevel_Inaccessible Auto Const           ; Lock level marked as inaccessible
 
@@ -33,7 +33,7 @@ LZP:Debug:LoggerScript Property Logger Auto Const                   ; Debug logg
 ; MAIN ENTRY POINT
 ;======================================================================
 Function TryUnlock(ObjectReference theContainer)
-    If !LPSetting_AutoUnlock.GetValue()
+    If !LZP_Setting_Unlock_Auto.GetValue()
         Logger.LogAdv("Auto unlock disabled. Skipping.", 2, "UnlockHelperScript")
         Return
     EndIf
@@ -75,7 +75,7 @@ EndFunction
 ; DIGIPICK UNLOCK HANDLER
 ;======================================================================
 Function TryDigipickUnlock(ObjectReference theContainer, Int lockLevel)
-    Bool skillCheck = LPSetting_AutoUnlockSkillCheck.GetValue() as Bool
+    Bool skillCheck = LZP_Setting_Unlock_SkillCheck.GetValue() as Bool
 
     If PlayerRef.GetItemCount(Digipick as Form) == 0
         Logger.LogAdv("No digipicks available to attempt unlock.", 2, "UnlockHelperScript")

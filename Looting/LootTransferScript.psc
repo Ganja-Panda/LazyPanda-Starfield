@@ -11,10 +11,10 @@ ScriptName LZP:Looting:LootTransferScript Extends Quest Hidden
 ; PROPERTIES
 ;======================================================================
 
-GlobalVariable Property LPSetting_SendTo Auto Const Mandatory       ; 1 = Player, 2 = Lodge Safe, 3 = Dummy, 4 = Ship
+GlobalVariable Property LZP_Setting_SendTo Auto Const Mandatory       ; 1 = Player, 2 = Lodge Safe, 3 = Dummy, 4 = Ship
 ObjectReference Property PlayerRef Auto Const Mandatory             ; Player reference
 ObjectReference Property LodgeSafeRef Auto Const                    ; Lodge safe reference
-ObjectReference Property LPDummyHoldingRef Auto Const               ; Dummy holding reference
+ObjectReference Property LZP_Cont_StorageRef Auto Const               ; Dummy holding reference
 ReferenceAlias Property PlayerHomeShip Auto Const                   ; Player home ship reference
 LZP:Debug:LoggerScript Property Logger Auto Const                   ; Debug logger
 
@@ -22,7 +22,7 @@ LZP:Debug:LoggerScript Property Logger Auto Const                   ; Debug logg
 ; GET DESTINATION LOGIC
 ;======================================================================
 ObjectReference Function GetDestination()
-    Int mode = LPSetting_SendTo.GetValueInt()
+    Int mode = LZP_Setting_SendTo.GetValueInt()
 
     If mode == 1
         Logger.LogAdv("Routing to [Player]", 1, "LootTransferScript")
@@ -32,7 +32,7 @@ ObjectReference Function GetDestination()
         Return LodgeSafeRef
     ElseIf mode == 3
         Logger.LogAdv("Routing to [Dummy Holding]", 1, "LootTransferScript")
-        Return LPDummyHoldingRef
+        Return LZP_Cont_StorageRef
     ElseIf mode == 4
         ObjectReference shipRef = PlayerHomeShip.GetRef()
         If shipRef

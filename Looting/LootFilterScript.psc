@@ -10,9 +10,9 @@ ScriptName LZP:Looting:LootFilterScript Extends Quest Hidden
 ;======================================================================
 ; PROPERTIES
 ;======================================================================
-FormList Property LPSystem_Looting_Lists Auto Const Mandatory       ; Each list contains lootable items
-FormList Property LPSystem_Looting_Globals Auto Const Mandatory     ; Each Global (1.0 = enabled) matches list index
-GlobalVariable Property LPSystemUtil_LoopCap Auto Const Mandatory   ; Maximum number of lists to check
+FormList Property LZP_System_Looting_Lists Auto Const Mandatory       ; Each list contains lootable items
+FormList Property LZP_System_Looting_Globals Auto Const Mandatory     ; Each Global (1.0 = enabled) matches list index
+GlobalVariable Property LZP_System_LoopCap Auto Const Mandatory   ; Maximum number of lists to check
 LZP:Debug:LoggerScript Property Logger Auto Const                   ; Debug logger
 
 ;======================================================================
@@ -21,13 +21,13 @@ LZP:Debug:LoggerScript Property Logger Auto Const                   ; Debug logg
 ; @return           : True if the item should be taken
 ;======================================================================
 Bool Function ShouldLoot(Form targetForm)
-    Int cap = LPSystemUtil_LoopCap.GetValueInt()
-    Int listSize = LPSystem_Looting_Lists.GetSize()
+    Int cap = LZP_System_LoopCap.GetValueInt()
+    Int listSize = LZP_System_Looting_Lists.GetSize()
     Int index = 0
 
     While index < listSize && index < cap
-        FormList itemList = LPSystem_Looting_Lists.GetAt(index) as FormList
-        GlobalVariable flag = LPSystem_Looting_Globals.GetAt(index) as GlobalVariable
+        FormList itemList = LZP_System_Looting_Lists.GetAt(index) as FormList
+        GlobalVariable flag = LZP_System_Looting_Globals.GetAt(index) as GlobalVariable
 
         If itemList && flag
             Float enabled = flag.GetValue()

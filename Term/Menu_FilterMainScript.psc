@@ -21,8 +21,8 @@ ScriptName LZP:Term:Menu_FilterMainScript Extends TerminalMenu hidden
 ; Messages displayed to the player when toggling settings
 ;------------------------------
 Group Autofill
-    Message Property LPOffMsg Auto Const mandatory
-    Message Property LPOnMsg  Auto Const mandatory
+    Message Property LZP_MESG_Status_Disable Auto Const mandatory
+    Message Property LZP_MESG_Status_Enable Auto Const mandatory
 EndGroup
 
 ;------------------------------
@@ -87,12 +87,12 @@ EndFunction
 ;----------------------------------------------------------------------
 Function UpdateAllToggleDisplay(ObjectReference akTerminalRef, float currentValue)
     If currentValue == 1.0
-        akTerminalRef.AddTextReplacementData(Token_AllToggle, LPOnMsg as Form)
+        akTerminalRef.AddTextReplacementData(Token_AllToggle, LZP_MESG_Status_Enable as Form)
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("Menu_FilterMainScript: Setting " + Token_AllToggle + " to LPOnMsg", 1, "Menu_FilterMainScript")
         EndIf
     ElseIf currentValue == 0.0
-        akTerminalRef.AddTextReplacementData(Token_AllToggle, LPOffMsg as Form)
+        akTerminalRef.AddTextReplacementData(Token_AllToggle, LZP_MESG_Status_Disable as Form)
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("Menu_FilterMainScript: Setting " + Token_AllToggle + " to LPOffMsg", 1, "Menu_FilterMainScript")
         EndIf

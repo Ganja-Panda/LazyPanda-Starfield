@@ -52,20 +52,20 @@ EndGroup
 
 ;-- Settings Autofill --
 Group Settings_Autofill
-	GlobalVariable Property LPSetting_Radius Auto Const                              ; Search radius for lootable objects
-	GlobalVariable Property LPSystemUtil_LoopCap Auto Const                          ; Loop limiter for safe iteration
-	GlobalVariable Property LPSetting_AllowStealing Auto Const                         ; Global toggle to allow looting of owned items
-	GlobalVariable Property LPSetting_StealingIsHostile Auto Const                     ; Determines if stealing triggers hostility
-	GlobalVariable Property LPSetting_RemoveCorpses Auto Const                         ; Toggle corpse cleanup after looting
-	GlobalVariable Property LPSetting_SendTo Auto Const                                ; Global destination mode for looted items
-	GlobalVariable Property LPSetting_ContTakeAll Auto Const                           ; Loot all container items regardless of filter
-	GlobalVariable Property LPSetting_AllowLootingShip Auto Const                      ; Allow looting from ship-related containers
+	GlobalVariable Property LZP_Setting_Radius Auto Const                              ; Search radius for lootable objects
+	GlobalVariable Property LZP_System_LoopCap Auto Const                          ; Loop limiter for safe iteration
+	GlobalVariable Property LZP_Setting_AllowStealing Auto Const                         ; Global toggle to allow looting of owned items
+	GlobalVariable Property LZP_Setting_StealingIsHostile Auto Const                     ; Determines if stealing triggers hostility
+	GlobalVariable Property LZP_Setting_RemoveCorpses Auto Const                         ; Toggle corpse cleanup after looting
+	GlobalVariable Property LZP_Setting_SendTo Auto Const                                ; Global destination mode for looted items
+	GlobalVariable Property LZP_Setting_TakeAll_Containers Auto Const                           ; Loot all container items regardless of filter
+	GlobalVariable Property LZP_Setting_AllowLootingShip Auto Const                      ; Allow looting from ship-related containers
 EndGroup
 
 ;-- Auto Unlock Autofill --
 Group AutoUnlock_Autofill
-	GlobalVariable Property LPSetting_AutoUnlock Auto Const                            ; Toggle automatic unlocking of locked containers
-	GlobalVariable Property LPSetting_AutoUnlockSkillCheck Auto Const                  ; Requires perk checks for unlock to proceed
+	GlobalVariable Property LPSetting_Unlock_Auto Auto Const                            ; Toggle automatic unlocking of locked containers
+	GlobalVariable Property LPSetting_Unlock_SkillCheck Auto Const                  ; Requires perk checks for unlock to proceed
 	GlobalVariable Property LockLevel_Advanced Auto Const                              ; Lock level threshold: Advanced
 	GlobalVariable Property LockLevel_Expert Auto Const                                ; Lock level threshold: Expert
 	GlobalVariable Property LockLevel_Inaccessible Auto Const                          ; Lock level: Inaccessible (never unlock)
@@ -81,17 +81,17 @@ EndGroup
 
 ;-- List Autofill --
 Group List_Autofill
-	FormList Property LPSystem_Looting_Globals Auto Const                              ; Central config list for looting rules
-	FormList Property LPSystem_Looting_Lists Auto Const                                ; List of filterable loot categories
+	FormList Property LZP_System_Looting_Globals Auto Const                              ; Central config list for looting rules
+	FormList Property LZP_System_Looting_Lists Auto Const                                ; List of filterable loot categories
 EndGroup
 
 ;-- Miscellaneous Properties --
 Group Misc
 	Keyword Property SpaceshipInventoryContainer Auto Const                            ; Keyword identifying ship inventory containers
 	Keyword Property SQ_ShipDebrisKeyword Auto Const                                   ; Keyword for identifying debris-based loot targets
-	Keyword Property LPKeyword_Asteroid Auto Const                                     ; Keyword for asteroid-related loot references
-	Armor Property LP_Skin_Naked_NOTPLAYABLE Auto Const Mandatory
-	Keyword Property LPKeyword_LootedCorpse Auto Const
+	Keyword Property LZP_KYWD_Asteroid Auto Const
+	Keyword Property LZP_KYWD_LootedCorpse Auto Const                                     ; Keyword for asteroid-related loot references
+	Armor Property LZP_Armor_Naked_NOTPLAYABLE Auto Const Mandatory
 	Race Property HumanRace Auto Const Mandatory
 EndGroup
 
@@ -99,13 +99,13 @@ EndGroup
 Group DestinationLocations
 	ObjectReference Property PlayerRef Auto Const                                      ; Reference to the player actor
 	ObjectReference Property LodgeSafeRef Auto Const                                   ; Optional storage safe (e.g., Lodge)
-	ObjectReference Property LPDummyHoldingRef Auto Const                              ; Dummy holding container used for staging transfers
+	ObjectReference Property LZP_Cont_StorageRef Auto Const                              ; Dummy holding container used for staging transfers
 	ReferenceAlias Property PlayerHomeShip Auto Const Mandatory                        ; Reference to the player's home ship alias
 EndGroup
 
 ;-- No Loot Locations --
 Group NoLootLocations
-	FormList Property LPFilter_NoLootLocations Auto Const                              ; Locations where looting is explicitly disallowed
+	FormList Property LZP_Filter_NoLootLocations Auto Const                              ; Locations where looting is explicitly disallowed
 	LocationAlias Property playerShipInterior Auto Const Mandatory                     ; Alias for the player ship interior space
 EndGroup
 
@@ -165,7 +165,7 @@ Event OnTimer(Int aiTimerID)
 
         ; Ensure valid list is assigned
         If ActiveLootList != None
-            ObjectReference[] lootTargets = LootScanner.FindLootTargets(PlayerRef, LPSetting_Radius.GetValue(), LPSystemUtil_LoopCap.GetValueInt())
+            ObjectReference[] lootTargets = LootScanner.FindLootTargets(PlayerRef, LZP_Setting_Radius.GetValue(), LZP_System_LoopCap.GetValueInt())
 
             If lootTargets != None && lootTargets.Length > 0
                 If Logger && Logger.IsEnabled()

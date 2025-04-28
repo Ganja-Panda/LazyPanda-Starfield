@@ -25,9 +25,9 @@ Group LootTypeToggles
 EndGroup
 
 Group Globals
-    GlobalVariable Property LPSystemUtil_LoopCap Auto Const             ; Added LPSystemUtil_LoopCap property
-    Keyword Property LPKeyword_LootedCorpse Auto Const                  ; Added LPKeyword_LootedCorpse property
-    Armor Property LP_Skin_Naked_NOTPLAYABLE Auto Const                 ; Added LP_Skin_Naked_NOTPLAYABLE property
+    GlobalVariable Property LZP_System_LoopCap Auto Const             ; Added LPSystemUtil_LoopCap property
+    Keyword Property LZP_KYWD_LootedCorpse Auto Const                  ; Added LPKeyword_LootedCorpse property
+    Armor Property LZP_Armor_Naked_NOTPLAYABLE Auto Const                 ; Added LP_Skin_Naked_NOTPLAYABLE property
     Race Property HumanRace Auto Const                                  ; Added HumanRace property
 EndGroup
 
@@ -43,7 +43,7 @@ Function ProcessTargets(ObjectReference[] lootTargets, ObjectReference looterRef
     EndIf
 
     Int i = 0
-    Int cap = LPSystemUtil_LoopCap.GetValueInt()
+    Int cap = LZP_System_LoopCap.GetValueInt()
 
     While i < lootTargets.Length && i < cap
         ObjectReference target = lootTargets[i]
@@ -78,7 +78,7 @@ Function HandleCorpse(ObjectReference corpseRef, ObjectReference looterRef, Form
         Return
     EndIf
 
-    If corpse.HasKeyword(LPKeyword_LootedCorpse)
+    If corpse.HasKeyword(LZP_KYWD_LootedCorpse)
         Logger.LogAdv("LootProcessor: Corpse already looted -> " + corpseRef, 2, "LootProcessorScript")
         Return
     EndIf
@@ -86,13 +86,13 @@ Function HandleCorpse(ObjectReference corpseRef, ObjectReference looterRef, Form
     If corpse.GetRace() == HumanRace
         Logger.LogAdv("LootProcessor: Stripping humanoid corpse -> " + corpseRef, 1, "LootProcessorScript")
         corpse.UnequipAll()
-        corpse.EquipItem(LP_Skin_Naked_NOTPLAYABLE, False, False)
+        corpse.EquipItem(LZP_Armor_Naked_NOTPLAYABLE, False, False)
     Else
         Logger.LogAdv("LootProcessor: Non-human corpse -> " + corpseRef, 1, "LootProcessorScript")
     EndIf
 
     ProcessFormListLoot(corpseRef, activeList)
-    corpseRef.AddKeyword(LPKeyword_LootedCorpse)
+    corpseRef.AddKeyword(LZP_KYWD_LootedCorpse)
     Logger.LogAdv("LootProcessor: Corpse marked and looted -> " + corpseRef, 1, "LootProcessorScript")
 EndFunction
 

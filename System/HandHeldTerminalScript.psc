@@ -18,8 +18,8 @@ ScriptName LZP:System:HandHeldTerminalScript Extends ReferenceAlias
 ;-- TerminalActivation
 ; Core components for detecting and simulating terminal use
 Group TerminalActivation
-    Weapon Property LP_TerminalControlWeapon Auto Const mandatory         ; Weapon used to trigger the terminal
-    ObjectReference Property LP_TerminalDummyRef Auto Const mandatory     ; In-world terminal reference to activate
+    Weapon Property LZP_Weap_Terminal Auto Const mandatory         ; Weapon used to trigger the terminal
+    ObjectReference Property LZP_Terminal_DummyRef Auto Const mandatory     ; In-world terminal reference to activate
 EndGroup
 
 ;-- Logger
@@ -48,7 +48,7 @@ EndEvent
 ; @param akReference  - The actor or object equipping it
 ;======================================================================
 Event OnItemEquipped(Form akBaseObject, ObjectReference akReference)
-    if akBaseObject != LP_TerminalControlWeapon
+    if akBaseObject != LZP_Weap_Terminal
         return
     endif
 
@@ -58,8 +58,8 @@ Event OnItemEquipped(Form akBaseObject, ObjectReference akReference)
         Logger.LogAdv("HandHeldTerminalScript: Hand Terminal equipped. Activating terminal UI.", 1, "HandHeldTerminalScript")
     endif
 
-    LP_TerminalDummyRef.Activate(player)
-    player.UnequipItem(LP_TerminalControlWeapon, false, true)
+    LZP_Terminal_DummyRef.Activate(player)
+    player.UnequipItem(LZP_Weap_Terminal, false, true)
 EndEvent
 
 ;======================================================================
@@ -67,13 +67,13 @@ EndEvent
 ; Verifies essential object references are set
 ;======================================================================
 Function ValidateProperties()
-    if LP_TerminalDummyRef == None
+    if LZP_Terminal_DummyRef == None
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("HandHeldTerminalScript: Missing LP_TerminalDummyRef reference.", 3, "HandHeldTerminalScript")
         endif
     endif
 
-    if LP_TerminalControlWeapon == None
+    if LZP_Weap_Terminal == None
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("HandHeldTerminalScript: Missing LP_TerminalControlWeapon reference.", 3, "HandHeldTerminalScript")
         endif

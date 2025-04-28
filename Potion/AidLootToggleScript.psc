@@ -19,20 +19,20 @@ ScriptName LZP:Potion:AidLootToggleScript Extends ActiveMagicEffect Hidden
 ;-- ToggleControl
 ; Controls global state of looting system (1 = ON, 0 = OFF)
 Group ToggleControl
-    GlobalVariable Property LPSystemUtil_ToggleLooting Auto ; 1 = ON, 0 = OFF
+    GlobalVariable Property LZP_System_ToggleLooting Auto ; 1 = ON, 0 = OFF
 EndGroup
 
 ;-- MessageFeedback
 ; UI messages shown to the player when looting is toggled
 Group MessageFeedback
-    Message Property LPLootingEnabledMsg Auto   ; Message shown when looting is enabled
-    Message Property LPLootingDisabledMsg Auto  ; Message shown when looting is disabled
+    Message Property LZP_MSG_Looting_Enabled Auto   ; Message shown when looting is enabled
+    Message Property LZP_MSG_Looting_Disabled Auto  ; Message shown when looting is disabled
 EndGroup
 
 ;-- PotionReference
 ; The toggle potion used by the player (added back after use)
 Group PotionReference
-    Potion Property LP_Aid_ToggleLooting Auto   ; Reference to the toggle potion
+    Potion Property LZP_Chem_LootToggle Auto   ; Reference to the toggle potion
 EndGroup
 
 ;-- Logger
@@ -56,42 +56,42 @@ Event OnEffectStart(ObjectReference akTarget, Actor akCaster, MagicEffect akBase
         return
     endif
 
-    if LPSystemUtil_ToggleLooting == None
+    if LZP_System_ToggleLooting == None
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("LPSystemUtil_ToggleLooting is not set.", 3, "AidLootToggleScript")
         endif
         return
     endif
 
-    if LPLootingEnabledMsg == None || LPLootingDisabledMsg == None
+    if LZP_MSG_Looting_Enabled == None || LZP_MSG_Looting_Disabled == None
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("Feedback messages not assigned.", 3, "AidLootToggleScript")
         endif
         return
     endif
 
-    if LP_Aid_ToggleLooting == None
+    if LZP_Chem_LootToggle == None
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("LP_Aid_ToggleLooting property is not set.", 3, "AidLootToggleScript")
         endif
         return
     endif
 
-    int toggleValue = LPSystemUtil_ToggleLooting.GetValueInt()
+    int toggleValue = LZP_System_ToggleLooting.GetValueInt()
 
     if toggleValue == 1
-        LPSystemUtil_ToggleLooting.SetValue(0.0)
-        LPLootingDisabledMsg.Show()
+        LZP_System_ToggleLooting.SetValue(0.0)
+        LZP_MSG_Looting_Disabled.Show()
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("Looting disabled by toggle item.", 1, "AidLootToggleScript")
         endif
     else
-        LPSystemUtil_ToggleLooting.SetValue(1.0)
-        LPLootingEnabledMsg.Show()
+        LZP_System_ToggleLooting.SetValue(1.0)
+        LZP_MSG_Looting_Enabled.Show()
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("Looting enabled by toggle item.", 1, "AidLootToggleScript")
         endif
     endif
 
-    akTarget.AddItem(LP_Aid_ToggleLooting as Form, 1, true)
+    akTarget.AddItem(LZP_Chem_LootToggle as Form, 1, true)
 EndEvent

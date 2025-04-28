@@ -22,8 +22,8 @@ EndGroup
 Group ScannerFilters
     Keyword Property SQ_ShipDebrisKeyword Auto Const                ; Keyword for ship debris
     Keyword Property SpaceshipInventoryContainer Auto Const         ; Keyword for spaceship inventory
-    Keyword Property LPKeyword_Asteroid Auto Const                  ; Keyword for asteroid
-    FormList Property LPFilter_NoLootLocations Auto Const           ; List of locations to exclude
+    Keyword Property LZP_KYWD_Asteroid Auto Const                  ; Keyword for asteroid
+    FormList Property LZP_Filter_NoLootLocations Auto Const           ; List of locations to exclude
     LocationAlias Property playerShipInterior Auto Const Mandatory  ; Player's ship interior location
 EndGroup
 
@@ -134,7 +134,7 @@ Bool Function IsLootable(ObjectReference ref, Location playerLoc)
     EndIf
 
     Location loc = ref.GetCurrentLocation()
-    If loc == playerShipInterior.GetLocation() || LPFilter_NoLootLocations.HasForm(loc)
+    If loc == playerShipInterior.GetLocation() || LZP_Filter_NoLootLocations.HasForm(loc)
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("LootScanner: Excluded due to ship interior or restricted location.", 2, "LootScannerScript")
         EndIf
@@ -149,7 +149,7 @@ Bool Function IsLootable(ObjectReference ref, Location playerLoc)
         Return False
     EndIf
 
-    If ref.HasKeyword(SQ_ShipDebrisKeyword) || ref.HasKeyword(SpaceshipInventoryContainer) || ref.HasKeyword(LPKeyword_Asteroid)
+    If ref.HasKeyword(SQ_ShipDebrisKeyword) || ref.HasKeyword(SpaceshipInventoryContainer) || ref.HasKeyword(LZP_KYWD_Asteroid)
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("LootScanner: Reference accepted via special keyword.", 1, "LootScannerScript")
         EndIf
