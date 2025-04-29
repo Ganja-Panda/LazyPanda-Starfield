@@ -23,8 +23,8 @@ ScriptName LZP:Term:Menu_FilterScript Extends TerminalMenu hidden
 ; Messages displayed to the player when toggling settings
 ;------------------------------
 Group Autofill
-    Message Property LPOffMsg Auto Const mandatory
-    Message Property LPOnMsg  Auto Const mandatory
+    Message Property LZP_MESG_Status_Disable Auto Const mandatory
+    Message Property LZP_MESG_Status_Enable Auto Const mandatory
 EndGroup
 
 ;------------------------------
@@ -117,11 +117,11 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
             String stateStr = ""
 
             If value == 1.0
-                replacementMsg = LPOnMsg
-                stateStr = "LPOnMsg"
+                replacementMsg =  LZP_MESG_Status_Enable
+                stateStr = "LZP_MESG_Status_Enable"
             Else
-                replacementMsg = LPOffMsg
-                stateStr = "LPOffMsg"
+                replacementMsg = LZP_MESG_Status_Disable
+                stateStr = "LZP_MESG_Status_Disable"
             EndIf
 
             akTerminalRef.AddTextReplacementData(Token_StatePrefix + index as String, replacementMsg as Form)
@@ -167,9 +167,9 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
 
         Message newMsg
         If newValue == 1.0
-            newMsg = LPOnMsg
+            newMsg = LZP_MESG_Status_Enable
         Else
-            newMsg = LPOffMsg
+            newMsg = LZP_MESG_Status_Disable
         EndIf
 
         Int count = SettingsGlobals.GetSize()
@@ -194,9 +194,9 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
 
             Message newMsg
             If newValue == 1.0
-                newMsg = LPOnMsg
+                newMsg = LZP_MESG_Status_Enable
             Else
-                newMsg = LPOffMsg
+                newMsg = LZP_MESG_Status_Disable
             EndIf
 
             UpdateSetting(auiMenuItemID, newValue, newMsg, akTerminalRef)

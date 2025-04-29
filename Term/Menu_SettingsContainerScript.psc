@@ -22,10 +22,10 @@ ScriptName LZP:Term:Menu_SettingsContainerScript Extends TerminalMenu hidden
 ; Container-related setting toggles (autofilled)
 ;------------------------------
 Group GlobalVariable_Autofill
-    GlobalVariable Property LPSetting_RemoveCorpses Auto mandatory
-    GlobalVariable Property LPSetting_ContTakeAll Auto mandatory
-    GlobalVariable Property LPSetting_AutoUnlock Auto mandatory
-    GlobalVariable Property LPSetting_AutoUnlockSkillCheck Auto mandatory
+    GlobalVariable Property LZP_Setting_RemoveCorpses Auto mandatory
+    GlobalVariable Property LZP_Setting_TakeAll_Containers Auto mandatory
+    GlobalVariable Property LZP_Setting_Unlock_Auto Auto mandatory
+    GlobalVariable Property LZP_Setting_Unlock_SkillCheck Auto mandatory
 EndGroup
 
 ;------------------------------
@@ -135,20 +135,20 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
     ; Log current settings for debugging purposes.
     If Logger && Logger.IsEnabled()
         Logger.LogAdv("Current settings - RemoveCorpses:", 1, "Menu_SettingsContainerScript")
-        Logger.LogAdv(LPSetting_RemoveCorpses.GetValue() as String, 1, "Menu_SettingsContainerScript")
+        Logger.LogAdv(LZP_Setting_RemoveCorpses.GetValue() as String, 1, "Menu_SettingsContainerScript")
         Logger.LogAdv("TakeAll:", 1, "Menu_SettingsContainerScript")
-        Logger.LogAdv(LPSetting_ContTakeAll.GetValue() as String, 1, "Menu_SettingsContainerScript")
+        Logger.LogAdv(LZP_Setting_TakeAll_Containers.GetValue() as String, 1, "Menu_SettingsContainerScript")
         Logger.LogAdv("AutoUnlock:", 1, "Menu_SettingsContainerScript")
-        Logger.LogAdv(LPSetting_AutoUnlock.GetValue() as String, 1, "Menu_SettingsContainerScript")
+        Logger.LogAdv(LZP_Setting_Unlock_Auto.GetValue() as String, 1, "Menu_SettingsContainerScript")
         Logger.LogAdv("AutoUnlockSkillCheck:", 1, "Menu_SettingsContainerScript")
-        Logger.LogAdv(LPSetting_AutoUnlockSkillCheck.GetValue() as String, 1, "Menu_SettingsContainerScript")
+        Logger.LogAdv(LZP_Setting_Unlock_SkillCheck.GetValue() as String, 1, "Menu_SettingsContainerScript")
     EndIf
 
     ; Update display for each setting.
-    UpdateSettingDisplay(LPSetting_AutoUnlock, Token_AutoUnlock, akTerminalRef)
-    UpdateSettingDisplay(LPSetting_AutoUnlockSkillCheck, Token_AutoUnlockSkillCheck, akTerminalRef)
-    UpdateSettingDisplay(LPSetting_RemoveCorpses, Token_Corpses, akTerminalRef)
-    UpdateSettingDisplay(LPSetting_ContTakeAll, Token_TakeAll, akTerminalRef)
+    UpdateSettingDisplay(LZP_Setting_Unlock_Auto, Token_AutoUnlock, akTerminalRef)
+    UpdateSettingDisplay(LZP_Setting_Unlock_SkillCheck, Token_AutoUnlockSkillCheck, akTerminalRef)
+    UpdateSettingDisplay(LZP_Setting_RemoveCorpses, Token_Corpses, akTerminalRef)
+    UpdateSettingDisplay(LZP_Setting_TakeAll_Containers, Token_TakeAll, akTerminalRef)
 EndEvent
 
 ;----------------------------------------------------------------------
@@ -171,22 +171,22 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             If Logger && Logger.IsEnabled()
                 Logger.LogAdv("Toggling AutoUnlock", 1, "Menu_SettingsContainerScript")
             EndIf
-            ToggleSetting(LPSetting_AutoUnlock, Token_AutoUnlock, akTerminalRef)
+            ToggleSetting(LZP_Setting_Unlock_Auto, Token_AutoUnlock, akTerminalRef)
         ElseIf auiMenuItemID == 1
             If Logger && Logger.IsEnabled()
                 Logger.LogAdv("Toggling AutoUnlockSkillCheck", 1, "Menu_SettingsContainerScript")
             EndIf
-            ToggleSetting(LPSetting_AutoUnlockSkillCheck, Token_AutoUnlockSkillCheck, akTerminalRef)
+            ToggleSetting(LZP_Setting_Unlock_SkillCheck, Token_AutoUnlockSkillCheck, akTerminalRef)
         ElseIf auiMenuItemID == 2
             If Logger && Logger.IsEnabled()
                 Logger.LogAdv("Toggling Corpses", 1, "Menu_SettingsContainerScript")
             EndIf
-            ToggleSetting(LPSetting_RemoveCorpses, Token_Corpses, akTerminalRef)
+            ToggleSetting(LZP_Setting_RemoveCorpses, Token_Corpses, akTerminalRef)
         ElseIf auiMenuItemID == 3
             If Logger && Logger.IsEnabled()
                 Logger.LogAdv("Toggling TakeAll", 1, "Menu_SettingsContainerScript")
             EndIf
-            ToggleSetting(LPSetting_ContTakeAll, Token_TakeAll, akTerminalRef)
+            ToggleSetting(LZP_Setting_TakeAll_Containers, Token_TakeAll, akTerminalRef)
         EndIf
     EndIf
 EndEvent

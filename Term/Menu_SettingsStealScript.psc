@@ -22,8 +22,8 @@ ScriptName LZP:Term:Menu_SettingsStealScript Extends TerminalMenu Hidden
 ; Controls stealing behavior toggles
 ;------------------------------
 Group GlobalVariable_Autofill
-    GlobalVariable Property LPSetting_AllowStealing Auto Mandatory
-    GlobalVariable Property LPSetting_StealingIsHostile Auto Mandatory
+    GlobalVariable Property LZP_Setting_AllowStealing Auto Mandatory
+    GlobalVariable Property LZP_Setting_StealingIsHostile Auto Mandatory
 EndGroup
 
 ;------------------------------
@@ -31,8 +31,8 @@ EndGroup
 ; Replacement messages for On/Off feedback
 ;------------------------------
 Group Message_Autofill
-    Message Property LPOffMsg Auto Const Mandatory
-    Message Property LPOnMsg Auto Const Mandatory
+    Message Property LZP_MESG_Status_Disable Auto Const Mandatory
+    Message Property LZP_MESG_Status_Enable Auto Const Mandatory
 EndGroup
 
 ;------------------------------
@@ -72,9 +72,9 @@ EndGroup
 ;    isEnabled     - Boolean indicating whether stealing is allowed.
 ;----------------------------------------------------------------------
 Function UpdateStealingSetting(ObjectReference akTerminalRef, Bool isEnabled)
-    Message msgToUse = LPOffMsg
+    Message msgToUse = LZP_MESG_Status_Disable
     If isEnabled
-        msgToUse = LPOnMsg
+        msgToUse = LZP_MESG_Status_Enable
     EndIf
     akTerminalRef.AddTextReplacementData(Token_Stealing, msgToUse as Form)
     
@@ -95,9 +95,9 @@ EndFunction
 ;    isEnabled     - Boolean indicating if stealing triggers hostility.
 ;----------------------------------------------------------------------
 Function UpdateHostileSetting(ObjectReference akTerminalRef, Bool isEnabled)
-    Message msgToUse = LPOffMsg
+    Message msgToUse = LZP_MESG_Status_Disable
     If isEnabled
-        msgToUse = LPOnMsg
+        msgToUse = LZP_MESG_Status_Enable
     EndIf
     akTerminalRef.AddTextReplacementData(Token_Hostile, msgToUse as Form)
     
@@ -126,8 +126,8 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
         Logger.LogAdv("OnTerminalMenuEnter: Triggered", 1, "Menu_SettingsStealScript")
     EndIf
 
-    Bool allowStealing = LPSetting_AllowStealing.GetValue() as Bool
-    Bool stealingIsHostile = LPSetting_StealingIsHostile.GetValue() as Bool
+    Bool allowStealing = LZP_Setting_AllowStealing.GetValue() as Bool
+    Bool stealingIsHostile = LZP_Setting_StealingIsHostile.GetValue() as Bool
 
     UpdateStealingSetting(akTerminalRef, allowStealing)
     UpdateHostileSetting(akTerminalRef, stealingIsHostile)
@@ -155,12 +155,12 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
     EndIf
 
     If auiMenuItemID == 0
-        Bool newStealState = !(LPSetting_AllowStealing.GetValue() as Bool)
-        LPSetting_AllowStealing.SetValue(newStealState as Float)
+        Bool newStealState = !(LZP_Setting_AllowStealing.GetValue() as Bool)
+        LZP_Setting_AllowStealing.SetValue(newStealState as Float)
         UpdateStealingSetting(akTerminalRef, newStealState)
         
         If !newStealState
-            LPSetting_StealingIsHostile.SetValue(0.0)
+            LZP_Setting_StealingIsHostile.SetValue(0.0)
             UpdateHostileSetting(akTerminalRef, False)
         EndIf
 
@@ -170,8 +170,8 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
         EndIf
 
     ElseIf auiMenuItemID == 1
-        Bool newHostileState = !(LPSetting_StealingIsHostile.GetValue() as Bool)
-        LPSetting_StealingIsHostile.SetValue(newHostileState as Float)
+        Bool newHostileState = !(LZP_Setting_StealingIsHostile.GetValue() as Bool)
+        LZP_Setting_StealingIsHostile.SetValue(newHostileState as Float)
         UpdateHostileSetting(akTerminalRef, newHostileState)
 
         If Logger && Logger.IsEnabled()

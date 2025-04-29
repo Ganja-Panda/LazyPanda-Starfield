@@ -20,19 +20,19 @@ ScriptName LZP:Term:Menu_SettingsGeneralScript Extends TerminalMenu hidden
 ; GlobalVariable Autofill
 ;------------------------------
 Group GlobalVariable_Autofill
-  GlobalVariable Property LPSetting_Radius Auto mandatory
-  GlobalVariable Property LPSetting_SendTo Auto mandatory
+  GlobalVariable Property LZP_Setting_Radius Auto mandatory
+  GlobalVariable Property LZP_Setting_SendTo Auto mandatory
 EndGroup
 
 ;------------------------------
 ; Message Autofill
 ;------------------------------
 Group Message_Autofill
-  Message Property LPDestLodgeSafeMsg Auto Const mandatory
-  Message Property LPDestPlayerMsg Auto Const mandatory
-  Message Property LPDestDummyMsg Auto Const mandatory
-  Message Property LPOffMsg Auto Const mandatory
-  Message Property LPOnMsg Auto Const mandatory
+  Message Property LZP_MESG_Dest_LodgeSafe Auto Const mandatory
+  Message Property LZP_MESG_Dest_Player Auto Const mandatory
+  Message Property LZP_MESG_Dest_Dummy Auto Const mandatory
+  Message Property LZP_MESG_Status_Disable Auto Const mandatory
+  Message Property LZP_MESG_Status_Enable Auto Const mandatory
 EndGroup
 
 ;------------------------------
@@ -70,19 +70,19 @@ EndGroup
 ;----------------------------------------------------------------------
 Function UpdateDestinationDisplay(ObjectReference akTerminalRef, Int dest)
     If dest == 1
-        akTerminalRef.AddTextReplacementData(Token_Destination, LPDestPlayerMsg as Form)
+        akTerminalRef.AddTextReplacementData(Token_Destination, LZP_MESG_Dest_Player as Form)
         If Logger && Logger.IsEnabled()
-            Logger.LogAdv("UpdateDestinationDisplay: Setting Destination to LPDestPlayerMsg", 1, "Menu_SettingsGeneralScript")
+            Logger.LogAdv("UpdateDestinationDisplay: Setting Destination to LZP_MESG_Dest_Player", 1, "Menu_SettingsGeneralScript")
         EndIf
     ElseIf dest == 2
-        akTerminalRef.AddTextReplacementData(Token_Destination, LPDestLodgeSafeMsg as Form)
+        akTerminalRef.AddTextReplacementData(Token_Destination, LZP_MESG_Dest_LodgeSafe as Form)
         If Logger && Logger.IsEnabled()
-            Logger.LogAdv("UpdateDestinationDisplay: Setting Destination to LPDestLodgeSafeMsg", 1, "Menu_SettingsGeneralScript")
+            Logger.LogAdv("UpdateDestinationDisplay: Setting Destination to LZP_MESG_Dest_LodgeSafe", 1, "Menu_SettingsGeneralScript")
         EndIf
     ElseIf dest == 3
-        akTerminalRef.AddTextReplacementData(Token_Destination, LPDestDummyMsg as Form)
+        akTerminalRef.AddTextReplacementData(Token_Destination, LZP_MESG_Dest_Dummy as Form)
         If Logger && Logger.IsEnabled()
-            Logger.LogAdv("UpdateDestinationDisplay: Setting Destination to LPDestDummyMsg", 1, "Menu_SettingsGeneralScript")
+            Logger.LogAdv("UpdateDestinationDisplay: Setting Destination to LZP_MESG_Dest_Dummy", 1, "Menu_SettingsGeneralScript")
         EndIf
     EndIf
 EndFunction
@@ -92,7 +92,7 @@ EndFunction
 ; Purpose  : Cycles the current radius setting through the RadiusChoices array.
 ;----------------------------------------------------------------------
 Function CycleRadius(ObjectReference akTerminalRef)
-    Float currentRadius = LPSetting_Radius.GetValue()
+    Float currentRadius = LZP_Setting_Radius.GetValue()
     Int currentRadiusIndex = RadiusChoices.find(currentRadius, 0)
     Int newRadiusIndex = currentRadiusIndex + 1
 
@@ -101,7 +101,7 @@ Function CycleRadius(ObjectReference akTerminalRef)
         newRadiusIndex = 0
     EndIf
 
-    LPSetting_Radius.SetValue(RadiusChoices[newRadiusIndex])
+    LZP_Setting_Radius.SetValue(RadiusChoices[newRadiusIndex])
     akTerminalRef.AddTextReplacementValue(Token_CurrentRadius, RadiusChoices[newRadiusIndex])
     If Logger && Logger.IsEnabled()
         Logger.LogAdv("CycleRadius: Cycled radius to new value", 1, "Menu_SettingsGeneralScript")
@@ -123,14 +123,14 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
         Logger.LogAdv("OnTerminalMenuEnter: Triggered", 1, "Menu_SettingsGeneralScript")
     EndIf
 
-    Float currentRadius = LPSetting_Radius.GetValue()
+    Float currentRadius = LZP_Setting_Radius.GetValue()
     akTerminalRef.AddTextReplacementValue(Token_CurrentRadius, currentRadius)
     If Logger && Logger.IsEnabled()
         Logger.LogAdv("OnTerminalMenuEnter: Current radius value", 1, "Menu_SettingsGeneralScript")
         Logger.LogAdv(currentRadius as String, 1, "Menu_SettingsGeneralScript")
     EndIf
   
-    Int currentDest = LPSetting_SendTo.GetValue() as Int
+    Int currentDest = LZP_Setting_SendTo.GetValue() as Int
     UpdateDestinationDisplay(akTerminalRef, currentDest)
     If Logger && Logger.IsEnabled()
         Logger.LogAdv("OnTerminalMenuEnter: Current destination value", 1, "Menu_SettingsGeneralScript")
@@ -166,13 +166,13 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             If Logger && Logger.IsEnabled()
                 Logger.LogAdv("OnTerminalMenuItemRun: Cycling destination", 1, "Menu_SettingsGeneralScript")
             EndIf
-            Int currentDest = LPSetting_SendTo.GetValue() as Int
+            Int currentDest = LZP_Setting_SendTo.GetValue() as Int
             ; Cycle destination by incrementing, wrapping after 3.
             Int newDest = currentDest + 1
             If newDest > 3
                 newDest = 1
             EndIf
-            LPSetting_SendTo.SetValue(newDest as Float)
+            LZP_Setting_SendTo.SetValue(newDest as Float)
             UpdateDestinationDisplay(akTerminalRef, newDest)
             If Logger && Logger.IsEnabled()
                 Logger.LogAdv("OnTerminalMenuItemRun: New destination value", 1, "Menu_SettingsGeneralScript")
