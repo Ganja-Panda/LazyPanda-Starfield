@@ -28,7 +28,7 @@ EndGroup
 ;------------------------------
 Group ObjectReferences
     ObjectReference Property LodgeSafeRef Auto Const Mandatory
-    ObjectReference Property LPDummyHoldingRef Auto Const Mandatory
+    ObjectReference Property LZP_Cont_StorageRef Auto Const Mandatory
     ObjectReference Property PlayerRef Auto Const Mandatory
 EndGroup
 
@@ -45,8 +45,8 @@ EndGroup
 ; Used to filter what should be moved.
 ;------------------------------
 Group ItemLists
-    FormList Property LPSystem_Script_Resources Auto Const Mandatory
-    FormList Property LPSystem_Script_Valuables Auto Const Mandatory
+    FormList Property LZP_System_Script_Resources Auto Const Mandatory
+    FormList Property LZP_System_Script_Valuables Auto Const Mandatory
 EndGroup
 
 ;------------------------------
@@ -54,11 +54,11 @@ EndGroup
 ; Player-facing messages displayed after an action completes.
 ;------------------------------
 Group TransferMessages
-    Message Property LPAllItemsToLodgeMsg Auto Const Mandatory
-    Message Property LPAllItemsToShipMsg Auto Const Mandatory
-    Message Property LPResourcesToShipMsg Auto Const Mandatory
-    Message Property LPValuablesToPlayerMsg Auto Const Mandatory
-    Message Property LPNoItemsMsg Auto Const Mandatory
+    Message Property LZP_MESG_AllItems_Lodge Auto Const Mandatory
+    Message Property LZP_MESG_AllItems_Ship Auto Const Mandatory
+    Message Property LZP_MESG_ResourcesToShip Auto Const Mandatory
+    Message Property LZP_MESG_ValuablesToPlayer Auto Const Mandatory
+    Message Property LZP_MESG_NoItems Auto Const Mandatory
 EndGroup
 
 ;------------------------------
@@ -167,8 +167,8 @@ Function MoveAllToShip()
     If Logger && Logger.IsEnabled()
         Logger.LogAdv("MoveAllToShip: Called", 1, "Menu_UtilTransferScript")
     EndIf
-    LPDummyHoldingRef.RemoveAllItems(PlayerHomeShip.GetRef(), False, False)
-    ShowMsg(LPAllItemsToShipMsg)
+    LZP_Cont_StorageRef.RemoveAllItems(PlayerHomeShip.GetRef(), False, False)
+    ShowMsg(LZP_MESG_AllItems_Ship)
 EndFunction
 
 ;----------------------------------------------------------------------
@@ -189,16 +189,16 @@ Function MoveResourcesToShip()
     EndIf
 
     ; Transfer from player
-    If Game.GetPlayer().GetItemCount(LPSystem_Script_Resources as Form) > 0
-        Game.GetPlayer().RemoveItem(LPSystem_Script_Resources as Form, -1, True, PlayerShip)
+    If Game.GetPlayer().GetItemCount(LZP_System_Script_Resources as Form) > 0
+        Game.GetPlayer().RemoveItem(LZP_System_Script_Resources as Form, -1, True, PlayerShip)
     EndIf
 
     ; Transfer from dummy container
-    If LPDummyHoldingRef.GetItemCount(LPSystem_Script_Resources as Form) > 0
-        LPDummyHoldingRef.RemoveItem(LPSystem_Script_Resources as Form, -1, True, PlayerShip)
+    If LZP_Cont_StorageRef.GetItemCount(LZP_System_Script_Resources as Form) > 0
+        LZP_Cont_StorageRef.RemoveItem(LZP_System_Script_Resources as Form, -1, True, PlayerShip)
     EndIf
 
-    ShowMsg(LPResourcesToShipMsg)
+    ShowMsg(LZP_MESG_ResourcesToShip)
 EndFunction
 
 ;----------------------------------------------------------------------
@@ -219,12 +219,12 @@ Function MoveValuablesToPlayer()
     EndIf
 
     ; Move from ship
-    PlayerShip.RemoveItem(LPSystem_Script_Valuables as Form, -1, True, Game.GetPlayer())
+    PlayerShip.RemoveItem(LZP_System_Script_Valuables as Form, -1, True, Game.GetPlayer())
 
     ; Move from dummy container
-    LPDummyHoldingRef.RemoveItem(LPSystem_Script_Valuables as Form, -1, True, Game.GetPlayer())
+    LZP_Cont_StorageRef.RemoveItem(LZP_System_Script_Valuables as Form, -1, True, Game.GetPlayer())
 
-    ShowMsg(LPValuablesToPlayerMsg)
+    ShowMsg(LZP_MESG_ValuablesToPlayer)
 EndFunction
 
 ;----------------------------------------------------------------------
@@ -236,16 +236,16 @@ Function MoveInventoryToLodgeSafe()
         Logger.LogAdv("MoveInventoryToLodgeSafe: Called", 1, "Menu_UtilTransferScript")
     EndIf
 
-    If LPDummyHoldingRef.GetItemCount(None) > 0
+    If LZP_Cont_StorageRef.GetItemCount(None) > 0
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("MoveInventoryToLodgeSafe: LPDummyHoldingRef has items", 1, "Menu_UtilTransferScript")
         EndIf
-        LPDummyHoldingRef.RemoveAllItems(LodgeSafeRef, False, False)
-        ShowMsg(LPAllItemsToLodgeMsg)
+        LZP_Cont_StorageRef.RemoveAllItems(LodgeSafeRef, False, False)
+        ShowMsg(LZP_MESG_AllItems_Lodge)
     Else
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("MoveInventoryToLodgeSafe: LPDummyHoldingRef has no items", 1, "Menu_UtilTransferScript")
         EndIf
-        ShowMsg(LPNoItemsMsg)
+        ShowMsg(LZP_MESG_NoItems)
     EndIf
 EndFunction
