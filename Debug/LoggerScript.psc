@@ -19,14 +19,14 @@ ScriptName LZP:Debug:LoggerScript Extends Quest
 ;-- Debug Controls
 ; Controls whether debug logging is enabled at runtime.
 Group DebugControls
-	GlobalVariable Property LPSystemUtil_Debug Auto Const Mandatory ; 1 = ON, 0 = OFF
+	GlobalVariable Property LZP_System_Logging Auto Const Mandatory ; 1 = ON, 0 = OFF
 EndGroup
 
 ;-- Debug Messages
 ; Messages displayed when toggling debug on or off.
 Group DebugMessages
-	Message Property LPDebugOnMsg  Auto Const Mandatory ; Message shown when debug is enabled
-	Message Property LPDebugOffMsg Auto Const Mandatory ; Message shown when debug is disabled
+	Message Property LZP_MESG_Logging_Enabled  Auto Const Mandatory ; Message shown when debug is enabled
+	Message Property LZP_MESG_Logging_Disabled Auto Const Mandatory ; Message shown when debug is disabled
 EndGroup
 
 ;======================================================================
@@ -61,7 +61,7 @@ EndFunction
 ;-- IsEnabled Function --
 ; Checks the current debug toggle state
 Bool Function IsEnabled()
-	Return LPSystemUtil_Debug.GetValue() == 1.0
+	Return LZP_System_Logging.GetValue() == 1.0
 EndFunction
 
 ;-- Async Polling Function (non-blocking)
@@ -70,10 +70,10 @@ Function PollDebugStateAsync()
 	If currentState != bLastKnownState
 		InitializeLog()
 		If currentState
-			LPDebugOnMsg.Show()
+			LZP_MESG_Logging_Enabled.Show()
 			Debug.TraceUser("Lazy Panda", "[INFO] Debug mode enabled")
 		Else
-			LPDebugOffMsg.Show()
+			LZP_MESG_Logging_Disabled.Show()
 			Debug.TraceUser("Lazy Panda", "[INFO] Debug mode disabled")
 		EndIf
 		bLastKnownState = currentState

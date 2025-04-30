@@ -19,15 +19,15 @@ ScriptName LZP:SystemScript Extends ScriptObject
 ;======================================================================
 
 GlobalVariable Function GetGlobalVersionMajor() Global
-    return Game.GetFormFromFile(0x0000086B, "LazyPanda.esm") as GlobalVariable
+    return Game.GetFormFromFile(0x00000856, "LazyPanda_210.esm") as GlobalVariable
 EndFunction
 
 GlobalVariable Function GetGlobalVersionMinor() Global
-    return Game.GetFormFromFile(0x0000086C, "LazyPanda.esm") as GlobalVariable
+    return Game.GetFormFromFile(0x00000857, "LazyPanda_210.esm") as GlobalVariable
 EndFunction
 
 GlobalVariable Function GetGlobalVersionPatch() Global
-    return Game.GetFormFromFile(0x0000081A, "LazyPanda.esm") as GlobalVariable
+    return Game.GetFormFromFile(0x00000858, "LazyPanda_210.esm") as GlobalVariable
 EndFunction
 
 ;======================================================================
