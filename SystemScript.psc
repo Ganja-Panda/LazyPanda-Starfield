@@ -66,11 +66,11 @@ Function OpenHoldingInventory() Global
     If LoggerScript && LoggerScript.IsEnabled()
         LoggerScript.LogAdv("LZP:SystemScript: Entering OpenHoldingInventory", 0, "SystemScript")
     EndIf
-    ObjectReference LPDummyHoldingRef = Game.GetFormFromFile(0x09C1, "LazyPanda.esm") as ObjectReference
-    If LPDummyHoldingRef
-        (LPDummyHoldingRef as Actor).OpenInventory(True, None, False)
+    ObjectReference LZP_Cont_StorageRef = Game.GetFormFromFile(0x09AD, "LazyPanda.esm") as ObjectReference
+    If LZP_Cont_StorageRef
+        (LZP_Cont_StorageRef as Actor).OpenInventory(True, None, False)
     ElseIf LoggerScript && LoggerScript.IsEnabled()
-        LoggerScript.LogAdv("LZP:SystemScript: ERROR - LPDummyHoldingRef not found", 3, "SystemScript")
+        LoggerScript.LogAdv("LZP:SystemScript: ERROR - LZP_Cont_StorageRef not found", 3, "SystemScript")
     EndIf
     If LoggerScript && LoggerScript.IsEnabled()
         LoggerScript.LogAdv("LZP:SystemScript: Exiting OpenHoldingInventory", 0, "SystemScript")
