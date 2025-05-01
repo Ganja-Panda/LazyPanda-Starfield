@@ -19,28 +19,28 @@ ScriptName LZP:Looting:SpaceLootEffectScript Extends ObjectReference
 ;-- EffectSpecific_Mandatory
 ; Controls whether looting is active and gated by player perk
 Group EffectSpecific_Mandatory
-    Perk Property ActivePerk Auto Const mandatory           ; Required perk to allow looting
+    Perk Property ActivePerk Auto Const mandatory                            ; Required perk to allow looting
     GlobalVariable Property LZP_Toggle_Container_Space Auto Const mandatory  ; Global toggle for continuous space looting
-    GlobalVariable Property LZP_System_ToggleLooting Auto Const mandatory ; Master toggle for all looting systems
+    GlobalVariable Property LZP_System_ToggleLooting Auto Const mandatory    ; Master toggle for all looting systems
 EndGroup
 
 ;-- DestinationLocations
 ; Reference alias for player home ship to receive looted items
 Group DestinationLocations
-    ReferenceAlias Property PlayerHomeShip Auto Const           ; Ship that receives transferred items
+    ReferenceAlias Property PlayerHomeShip Auto Const                       ; Ship that receives transferred items
 EndGroup
 
 ;-- NoFill
 ; Timer configuration used to repeat the looting cycle
 Group NoFill
-    Int Property lootTimerID = 1 Auto                           ; Unique ID for timer-based scanning
-    Float Property lootTimerDelay = 0.5 Auto                    ; Time in seconds between looting cycles
+    Int Property lootTimerID = 1 Auto                                       ; Unique ID for timer-based scanning
+    Float Property lootTimerDelay = 0.5 Auto                                ; Time in seconds between looting cycles
 EndGroup
 
 ;-- Logger
 ; LoggerScript reference for centralized debug tracing
 Group Logger
-    LZP:Debug:LoggerScript Property Logger Auto Const           ; Lazy Panda logging system instance
+    LZP:Debug:LoggerScript Property Logger Auto Const                       ; Lazy Panda logging system instance
 EndGroup
 
 ;======================================================================

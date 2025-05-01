@@ -39,7 +39,7 @@ Group Settings_Autofill
     GlobalVariable Property LZP_Setting_Radius Auto Const             ; Loot radius (future expansion)
     GlobalVariable Property LZP_Setting_RemoveCorpses Auto Const      ; Toggle corpse disabling
     GlobalVariable Property LZP_Setting_SendTo Auto Const             ; Target ref to send loot to
-    GlobalVariable Property LZP_Setting_TakeAll_Containers Auto Const        ; Global flag to take all from containers
+    GlobalVariable Property LZP_Setting_TakeAll_Containers Auto Const ; Global flag to take all from containers
     GlobalVariable Property LZP_Setting_AllowLootingShip Auto Const   ; Ship loot toggle (not used here)
 EndGroup
 
@@ -52,14 +52,14 @@ EndGroup
 ;-- Misc Corpse Data
 Group Misc
     Armor Property LZP_Armor_Naked_NOTPLAYABLE Auto Const mandatory   ; Naked armor filter for unequip logic
-    Race Property HumanRace Auto Const mandatory                    ; Fallback race validation for humanoid actors
+    Race Property HumanRace Auto Const mandatory                      ; Fallback race validation for humanoid actors
 EndGroup
 
 ;-- Destination References
 Group DestinationLocations
     ObjectReference Property PlayerRef Auto Const                   ; Player inventory
     ObjectReference Property LodgeSafeRef Auto Const                ; Lodge safe (default stash)
-    ObjectReference Property LZP_Cont_StorageRef Auto Const           ; Dummy holding container (blackhole)
+    ObjectReference Property LZP_Cont_StorageRef Auto Const         ; Dummy holding container (blackhole)
     ReferenceAlias Property PlayerHomeShip Auto Const mandatory     ; Player's current home ship alias
 EndGroup
 
@@ -69,7 +69,7 @@ Group NoFill
 EndGroup
 
 ;-- Keyword Dependencies
-Keyword Property LZP_KYWD_LootedCorpse Auto Const                  ; Keyword to prevent double-processing
+Keyword Property LZP_KYWD_LootedCorpse Auto Const                   ; Keyword to prevent double-processing
 LZP:Debug:LoggerScript Property Logger Auto Const                   ; Debug logging utility
 
 ;======================================================================

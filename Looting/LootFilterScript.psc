@@ -12,8 +12,8 @@ ScriptName LZP:Looting:LootFilterScript Extends Quest Hidden
 ;======================================================================
 FormList Property LZP_System_Looting_Lists Auto Const Mandatory       ; Each list contains lootable items
 FormList Property LZP_System_Looting_Globals Auto Const Mandatory     ; Each Global (1.0 = enabled) matches list index
-GlobalVariable Property LZP_System_LoopCap Auto Const Mandatory   ; Maximum number of lists to check
-LZP:Debug:LoggerScript Property Logger Auto Const                   ; Debug logger
+GlobalVariable Property LZP_System_LoopCap Auto Const Mandatory       ; Maximum number of lists to check
+LZP:Debug:LoggerScript Property Logger Auto Const                     ; Debug logger
 
 ;======================================================================
 ; FUNCTION: ShouldLoot

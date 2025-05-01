@@ -26,7 +26,7 @@ EndGroup
 
 ;-- Effect-Specific Mandatory Properties --
 Group EffectSpecific_Mandatory
-	Perk Property ActivePerk Auto Const Mandatory                                     ; Required perk to enable loot effect
+	Perk Property ActivePerk Auto Const Mandatory                                    ; Required perk to enable loot effect
 	FormList Property ActiveLootList Auto Const Mandatory                            ; FormList of lootable entries configured via terminal
 EndGroup
 
@@ -52,71 +52,71 @@ EndGroup
 
 ;-- Settings Autofill --
 Group Settings_Autofill
-	GlobalVariable Property LZP_Setting_Radius Auto Const                              ; Search radius for lootable objects
-	GlobalVariable Property LZP_System_LoopCap Auto Const                          ; Loop limiter for safe iteration
-	GlobalVariable Property LZP_Setting_AllowStealing Auto Const                         ; Global toggle to allow looting of owned items
-	GlobalVariable Property LZP_Setting_StealingIsHostile Auto Const                     ; Determines if stealing triggers hostility
-	GlobalVariable Property LZP_Setting_RemoveCorpses Auto Const                         ; Toggle corpse cleanup after looting
-	GlobalVariable Property LZP_Setting_SendTo Auto Const                                ; Global destination mode for looted items
-	GlobalVariable Property LZP_Setting_TakeAll_Containers Auto Const                           ; Loot all container items regardless of filter
-	GlobalVariable Property LZP_Setting_AllowLootingShip Auto Const                      ; Allow looting from ship-related containers
+	GlobalVariable Property LZP_Setting_Radius Auto Const                            ; Search radius for lootable objects
+	GlobalVariable Property LZP_System_LoopCap Auto Const                            ; Loop limiter for safe iteration
+	GlobalVariable Property LZP_Setting_AllowStealing Auto Const                     ; Global toggle to allow looting of owned items
+	GlobalVariable Property LZP_Setting_StealingIsHostile Auto Const                 ; Determines if stealing triggers hostility
+	GlobalVariable Property LZP_Setting_RemoveCorpses Auto Const                     ; Toggle corpse cleanup after looting
+	GlobalVariable Property LZP_Setting_SendTo Auto Const                            ; Global destination mode for looted items
+	GlobalVariable Property LZP_Setting_TakeAll_Containers Auto Const                ; Loot all container items regardless of filter
+	GlobalVariable Property LZP_Setting_AllowLootingShip Auto Const                  ; Allow looting from ship-related containers
 EndGroup
 
 ;-- Auto Unlock Autofill --
 Group AutoUnlock_Autofill
-	GlobalVariable Property LZP_Setting_Unlock_Auto Auto Const                            ; Toggle automatic unlocking of locked containers
-	GlobalVariable Property LZP_Setting_Unlock_SkillCheck Auto Const                  ; Requires perk checks for unlock to proceed
-	GlobalVariable Property LockLevel_Advanced Auto Const                              ; Lock level threshold: Advanced
-	GlobalVariable Property LockLevel_Expert Auto Const                                ; Lock level threshold: Expert
-	GlobalVariable Property LockLevel_Inaccessible Auto Const                          ; Lock level: Inaccessible (never unlock)
-	GlobalVariable Property LockLevel_Master Auto Const                                ; Lock level threshold: Master
-	GlobalVariable Property LockLevel_Novice Auto Const                                ; Lock level threshold: Novice
-	GlobalVariable Property LockLevel_RequiresKey Auto Const                           ; Lock cannot be picked, key required
-	Faction Property PlayerFaction Auto Const                                          ; Used to evaluate ownership and faction rules
-	ConditionForm Property LZP_Perk_CND_LockCheck_Advanced Auto Const                      ; Condition: Advanced lockpicking perk
-	ConditionForm Property LZP_Perk_CND_LockCheck_Expert Auto Const                        ; Condition: Expert lockpicking perk
-	ConditionForm Property LZP_Perk_CND_LockCheck_Master Auto Const                        ; Condition: Master lockpicking perk
-	MiscObject Property Digipick Auto Const                                            ; Digipick item used in unlocking logic
+	GlobalVariable Property LZP_Setting_Unlock_Auto Auto Const                       ; Toggle automatic unlocking of locked containers
+	GlobalVariable Property LZP_Setting_Unlock_SkillCheck Auto Const                 ; Requires perk checks for unlock to proceed
+	GlobalVariable Property LockLevel_Advanced Auto Const                            ; Lock level threshold: Advanced
+	GlobalVariable Property LockLevel_Expert Auto Const                              ; Lock level threshold: Expert
+	GlobalVariable Property LockLevel_Inaccessible Auto Const                        ; Lock level: Inaccessible (never unlock)
+	GlobalVariable Property LockLevel_Master Auto Const                              ; Lock level threshold: Master
+	GlobalVariable Property LockLevel_Novice Auto Const                              ; Lock level threshold: Novice
+	GlobalVariable Property LockLevel_RequiresKey Auto Const                         ; Lock cannot be picked, key required
+	Faction Property PlayerFaction Auto Const                                        ; Used to evaluate ownership and faction rules
+	ConditionForm Property LZP_Perk_CND_LockCheck_Advanced Auto Const                ; Condition: Advanced lockpicking perk
+	ConditionForm Property LZP_Perk_CND_LockCheck_Expert Auto Const                  ; Condition: Expert lockpicking perk
+	ConditionForm Property LZP_Perk_CND_LockCheck_Master Auto Const                  ; Condition: Master lockpicking perk
+	MiscObject Property Digipick Auto Const                                          ; Digipick item used in unlocking logic
 EndGroup
 
 ;-- List Autofill --
 Group List_Autofill
-	FormList Property LZP_System_Looting_Globals Auto Const                              ; Central config list for looting rules
-	FormList Property LZP_System_Looting_Lists Auto Const                                ; List of filterable loot categories
+	FormList Property LZP_System_Looting_Globals Auto Const                          ; Central config list for looting rules
+	FormList Property LZP_System_Looting_Lists Auto Const                            ; List of filterable loot categories
 EndGroup
 
 ;-- Miscellaneous Properties --
 Group Misc
-	Keyword Property SpaceshipInventoryContainer Auto Const                            ; Keyword identifying ship inventory containers
-	Keyword Property SQ_ShipDebrisKeyword Auto Const                                   ; Keyword for identifying debris-based loot targets
-	Keyword Property LZP_KYWD_Asteroid Auto Const
-	Keyword Property LZP_KYWD_LootedCorpse Auto Const                                     ; Keyword for asteroid-related loot references
-	Armor Property LZP_Armor_Naked_NOTPLAYABLE Auto Const Mandatory
-	Race Property HumanRace Auto Const Mandatory
+	Keyword Property SpaceshipInventoryContainer Auto Const                          ; Keyword identifying ship inventory containers
+	Keyword Property SQ_ShipDebrisKeyword Auto Const                                 ; Keyword for identifying debris-based loot targets
+	Keyword Property LZP_KYWD_Asteroid Auto Const									 ; Keyword for asteroid-related loot references	
+	Keyword Property LZP_KYWD_LootedCorpse Auto Const                                ; Keyword for asteroid-related loot references
+	Armor Property LZP_Armor_Naked_NOTPLAYABLE Auto Const Mandatory					 ; Armor used to replace naked player model
+	Race Property HumanRace Auto Const Mandatory									 ; Race used for human actors
 EndGroup
 
 ;-- Destination Locations --
 Group DestinationLocations
-	ObjectReference Property PlayerRef Auto Const                                      ; Reference to the player actor
-	ObjectReference Property LodgeSafeRef Auto Const                                   ; Optional storage safe (e.g., Lodge)
-	ObjectReference Property LZP_Cont_StorageRef Auto Const                              ; Dummy holding container used for staging transfers
-	ReferenceAlias Property PlayerHomeShip Auto Const Mandatory                        ; Reference to the player's home ship alias
+	ObjectReference Property PlayerRef Auto Const                                    ; Reference to the player actor
+	ObjectReference Property LodgeSafeRef Auto Const                                 ; Optional storage safe (e.g., Lodge)
+	ObjectReference Property LZP_Cont_StorageRef Auto Const                          ; Dummy holding container used for staging transfers
+	ReferenceAlias Property PlayerHomeShip Auto Const Mandatory                      ; Reference to the player's home ship alias
 EndGroup
 
 ;-- No Loot Locations --
 Group NoLootLocations
-	FormList Property LZP_Filter_NoLootLocations Auto Const                              ; Locations where looting is explicitly disallowed
-	LocationAlias Property playerShipInterior Auto Const Mandatory                     ; Alias for the player ship interior space
+	FormList Property LZP_Filter_NoLootLocations Auto Const                          ; Locations where looting is explicitly disallowed
+	LocationAlias Property playerShipInterior Auto Const Mandatory                   ; Alias for the player ship interior space
 EndGroup
 
 ;-- No Fill Settings --
 Group NoFill
-	Int Property lootTimerID = 1 Auto                                                  ; Timer index for loop execution
-	Float Property lootTimerDelay = 1.0 Auto                                           ; Interval delay between loot scans
-	Bool Property bAllowStealing = False Auto                                          ; Local override to allow stealing
-	Bool Property bStealingIsHostile = False Auto                                      ; Local override for hostile response to theft
-	Bool Property bTakeAll = False Auto                                                ; Overrides filter and loots everything
-	ObjectReference Property theLooterRef Auto                                         ; Reference to the active looter (e.g., player or activator)
+	Int Property lootTimerID = 1 Auto                                                ; Timer index for loop execution
+	Float Property lootTimerDelay = 1.0 Auto                                         ; Interval delay between loot scans
+	Bool Property bAllowStealing = False Auto                                        ; Local override to allow stealing
+	Bool Property bStealingIsHostile = False Auto                                    ; Local override for hostile response to theft
+	Bool Property bTakeAll = False Auto                                              ; Overrides filter and loots everything
+	ObjectReference Property theLooterRef Auto                                       ; Reference to the active looter (e.g., player or activator)
 EndGroup
 
 ;======================================================================

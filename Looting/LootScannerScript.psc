@@ -22,8 +22,8 @@ EndGroup
 Group ScannerFilters
     Keyword Property SQ_ShipDebrisKeyword Auto Const                ; Keyword for ship debris
     Keyword Property SpaceshipInventoryContainer Auto Const         ; Keyword for spaceship inventory
-    Keyword Property LZP_KYWD_Asteroid Auto Const                  ; Keyword for asteroid
-    FormList Property LZP_Filter_NoLootLocations Auto Const           ; List of locations to exclude
+    Keyword Property LZP_KYWD_Asteroid Auto Const                   ; Keyword for asteroid
+    FormList Property LZP_Filter_NoLootLocations Auto Const         ; List of locations to exclude
     LocationAlias Property playerShipInterior Auto Const Mandatory  ; Player's ship interior location
 EndGroup
 

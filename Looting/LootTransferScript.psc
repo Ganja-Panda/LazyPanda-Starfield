@@ -11,10 +11,10 @@ ScriptName LZP:Looting:LootTransferScript Extends Quest Hidden
 ; PROPERTIES
 ;======================================================================
 
-GlobalVariable Property LZP_Setting_SendTo Auto Const Mandatory       ; 1 = Player, 2 = Lodge Safe, 3 = Dummy, 4 = Ship
+GlobalVariable Property LZP_Setting_SendTo Auto Const Mandatory     ; 1 = Player, 2 = Lodge Safe, 3 = Dummy, 4 = Ship
 ObjectReference Property PlayerRef Auto Const Mandatory             ; Player reference
 ObjectReference Property LodgeSafeRef Auto Const                    ; Lodge safe reference
-ObjectReference Property LZP_Cont_StorageRef Auto Const               ; Dummy holding reference
+ObjectReference Property LZP_Cont_StorageRef Auto Const             ; Dummy holding reference
 ReferenceAlias Property PlayerHomeShip Auto Const                   ; Player home ship reference
 LZP:Debug:LoggerScript Property Logger Auto Const                   ; Debug logger
 

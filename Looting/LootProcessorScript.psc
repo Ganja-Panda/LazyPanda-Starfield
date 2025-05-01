@@ -25,9 +25,9 @@ Group LootTypeToggles
 EndGroup
 
 Group Globals
-    GlobalVariable Property LZP_System_LoopCap Auto Const             ; Added LPSystemUtil_LoopCap property
-    Keyword Property LZP_KYWD_LootedCorpse Auto Const                  ; Added LPKeyword_LootedCorpse property
-    Armor Property LZP_Armor_Naked_NOTPLAYABLE Auto Const                 ; Added LP_Skin_Naked_NOTPLAYABLE property
+    GlobalVariable Property LZP_System_LoopCap Auto Const               ; Added LPSystemUtil_LoopCap property
+    Keyword Property LZP_KYWD_LootedCorpse Auto Const                   ; Added LPKeyword_LootedCorpse property
+    Armor Property LZP_Armor_Naked_NOTPLAYABLE Auto Const               ; Added LP_Skin_Naked_NOTPLAYABLE property
     Race Property HumanRace Auto Const                                  ; Added HumanRace property
 EndGroup
 
