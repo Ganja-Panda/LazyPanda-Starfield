@@ -112,7 +112,7 @@ EndGroup
 ;-- No Fill Settings --
 Group NoFill
 	Int Property lootTimerID = 1 Auto                                                  ; Timer index for loop execution
-	Float Property lootTimerDelay = 0.1 Auto                                           ; Interval delay between loot scans
+	Float Property lootTimerDelay = 1.0 Auto                                           ; Interval delay between loot scans
 	Bool Property bAllowStealing = False Auto                                          ; Local override to allow stealing
 	Bool Property bStealingIsHostile = False Auto                                      ; Local override for hostile response to theft
 	Bool Property bTakeAll = False Auto                                                ; Overrides filter and loots everything
