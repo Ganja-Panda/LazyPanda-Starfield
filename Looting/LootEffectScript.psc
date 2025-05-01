@@ -64,8 +64,8 @@ EndGroup
 
 ;-- Auto Unlock Autofill --
 Group AutoUnlock_Autofill
-	GlobalVariable Property LPSetting_Unlock_Auto Auto Const                            ; Toggle automatic unlocking of locked containers
-	GlobalVariable Property LPSetting_Unlock_SkillCheck Auto Const                  ; Requires perk checks for unlock to proceed
+	GlobalVariable Property LZP_Setting_Unlock_Auto Auto Const                            ; Toggle automatic unlocking of locked containers
+	GlobalVariable Property LZP_Setting_Unlock_SkillCheck Auto Const                  ; Requires perk checks for unlock to proceed
 	GlobalVariable Property LockLevel_Advanced Auto Const                              ; Lock level threshold: Advanced
 	GlobalVariable Property LockLevel_Expert Auto Const                                ; Lock level threshold: Expert
 	GlobalVariable Property LockLevel_Inaccessible Auto Const                          ; Lock level: Inaccessible (never unlock)
@@ -73,9 +73,9 @@ Group AutoUnlock_Autofill
 	GlobalVariable Property LockLevel_Novice Auto Const                                ; Lock level threshold: Novice
 	GlobalVariable Property LockLevel_RequiresKey Auto Const                           ; Lock cannot be picked, key required
 	Faction Property PlayerFaction Auto Const                                          ; Used to evaluate ownership and faction rules
-	ConditionForm Property Perk_CND_AdvancedLocksCheck Auto Const                      ; Condition: Advanced lockpicking perk
-	ConditionForm Property Perk_CND_ExpertLocksCheck Auto Const                        ; Condition: Expert lockpicking perk
-	ConditionForm Property Perk_CND_MasterLocksCheck Auto Const                        ; Condition: Master lockpicking perk
+	ConditionForm Property LZP_Perk_CND_LockCheck_Advanced Auto Const                      ; Condition: Advanced lockpicking perk
+	ConditionForm Property LZP_Perk_CND_LockCheck_Expert Auto Const                        ; Condition: Expert lockpicking perk
+	ConditionForm Property LZP_Perk_CND_LockCheck_Master Auto Const                        ; Condition: Master lockpicking perk
 	MiscObject Property Digipick Auto Const                                            ; Digipick item used in unlocking logic
 EndGroup
 
