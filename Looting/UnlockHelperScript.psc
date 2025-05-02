@@ -21,9 +21,9 @@ Key Property DefaultKey Auto Const                                  ; Default ke
 MiscObject Property Digipick Auto Const                             ; Digipick item  
 
 ;-- Perk check conditions
-ConditionForm Property Perk_CND_LockCheck_Advanced Auto Const       ; Perk check condition for Advanced Locks
-ConditionForm Property Perk_CND_LockCheck_Expert Auto Const         ; Perk check condition for Expert Locks
-ConditionForm Property Perk_CND_LockCheck_Master Auto Const         ; Perk check condition for Master Locks
+ConditionForm Property LZP_Perk_CND_LockCheck_Advanced Auto Const       ; Perk check condition for Advanced Locks
+ConditionForm Property LZP_Perk_CND_LockCheck_Expert Auto Const         ; Perk check condition for Expert Locks
+ConditionForm Property LZP_Perk_CND_LockCheck_Master Auto Const         ; Perk check condition for Master Locks
 
 ;-- Core references
 Actor Property PlayerRef Auto Const                                 ; Player reference
@@ -99,15 +99,15 @@ Bool Function CanUnlockByPerk(Int lockLevel)
     If lockLevel <= 0
         Return True
     ElseIf lockLevel <= 25
-        Bool hasPerk = Perk_CND_LockCheck_Advanced.IsTrue(PlayerRef, None)
+        Bool hasPerk = LZP_Perk_CND_LockCheck_Advanced.IsTrue(PlayerRef, None)
         Logger.LogAdv("Checking AdvancedLocksCheck | Has Perk: " + hasPerk, 1, "UnlockHelperScript")
         Return hasPerk
     ElseIf lockLevel <= 50
-        Bool hasPerk = Perk_CND_LockCheck_Expert.IsTrue(PlayerRef, None)
+        Bool hasPerk = LZP_Perk_CND_LockCheck_Expert.IsTrue(PlayerRef, None)
         Logger.LogAdv("Checking ExpertLocksCheck | Has Perk: " + hasPerk, 1, "UnlockHelperScript")
         Return hasPerk
     ElseIf lockLevel <= 75
-        Bool hasPerk = Perk_CND_LockCheck_Master.IsTrue(PlayerRef, None)
+        Bool hasPerk = LZP_Perk_CND_LockCheck_Master.IsTrue(PlayerRef, None)
         Logger.LogAdv("Checking MasterLocksCheck | Has Perk: " + hasPerk, 1, "UnlockHelperScript")
         Return hasPerk
     EndIf
