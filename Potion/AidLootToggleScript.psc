@@ -25,8 +25,8 @@ EndGroup
 ;-- MessageFeedback
 ; UI messages shown to the player when looting is toggled
 Group MessageFeedback
-    Message Property LZP_MSG_Looting_Enabled Auto   ; Message shown when looting is enabled
-    Message Property LZP_MSG_Looting_Disabled Auto  ; Message shown when looting is disabled
+    Message Property LZP_MESG_Looting_Enabled Auto   ; Message shown when looting is enabled
+    Message Property LZP_MESG_Looting_Disabled Auto  ; Message shown when looting is disabled
 EndGroup
 
 ;-- PotionReference
@@ -63,7 +63,7 @@ Event OnEffectStart(ObjectReference akTarget, Actor akCaster, MagicEffect akBase
         return
     endif
 
-    if LZP_MSG_Looting_Enabled == None || LZP_MSG_Looting_Disabled == None
+    if LZP_MESG_Looting_Enabled == None || LZP_MESG_Looting_Disabled == None
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("Feedback messages not assigned.", 3, "AidLootToggleScript")
         endif
@@ -81,13 +81,13 @@ Event OnEffectStart(ObjectReference akTarget, Actor akCaster, MagicEffect akBase
 
     if toggleValue == 1
         LZP_System_ToggleLooting.SetValue(0.0)
-        LZP_MSG_Looting_Disabled.Show()
+        LZP_MESG_Looting_Disabled.Show()
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("Looting disabled by toggle item.", 1, "AidLootToggleScript")
         endif
     else
         LZP_System_ToggleLooting.SetValue(1.0)
-        LZP_MSG_Looting_Enabled.Show()
+        LZP_MESG_Looting_Enabled.Show()
         if Logger && Logger.IsEnabled()
             Logger.LogAdv("Looting enabled by toggle item.", 1, "AidLootToggleScript")
         endif
