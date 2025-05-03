@@ -134,14 +134,14 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
         MoveAllToShip()
     ElseIf auiMenuItemID == 1
         If Logger && Logger.IsEnabled()
-            Logger.LogAdv("OnTerminalMenuItemRun: Menu item 1 selected: MoveResourcesToShip", 1, "Menu_UtilTransferScript")
-        EndIf
-        MoveResourcesToShip()
-    ElseIf auiMenuItemID == 2
-        If Logger && Logger.IsEnabled()
-            Logger.LogAdv("OnTerminalMenuItemRun: Menu item 2 selected: MoveInventoryToLodgeSafe", 1, "Menu_UtilTransferScript")
+            Logger.LogAdv("OnTerminalMenuItemRun: Menu item 1 selected: MoveInventoryToLodgeSafe", 1, "Menu_UtilTransferScript")
         EndIf
         MoveInventoryToLodgeSafe()
+    ElseIf auiMenuItemID == 2
+        If Logger && Logger.IsEnabled()
+            Logger.LogAdv("OnTerminalMenuItemRun: Menu item 2 selected: MoveResourcesToShip", 1, "Menu_UtilTransferScript")
+        EndIf
+        MoveResourcesToShip()
     ElseIf auiMenuItemID == 3
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("OnTerminalMenuItemRun: Menu item 3 selected: MoveValuablesToPlayer", 1, "Menu_UtilTransferScript")
