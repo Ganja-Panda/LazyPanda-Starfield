@@ -50,10 +50,8 @@ EndGroup
 ; Terminal message output (On/Off/Debug)
 ;------------------------------
 Group Message_Autofill
-    Message Property LZP_MESG_Looting_Disabled Auto Const mandatory
-    Message Property LZP_MESG_Looting_Enabled Auto Const mandatory
-    Message Property LZP_MESG_Logging_Enabled Auto Const mandatory
-    Message Property LZP_MESG_Logging_Disabled Auto Const mandatory
+    Message Property LZP_MESG_Status_Enabled Auto Const mandatory
+    Message Property LZP_MESG_Status_Disabled Auto Const mandatory
 EndGroup
 
 ;------------------------------
@@ -86,12 +84,12 @@ EndGroup
 ;----------------------------------------------------------------------
 Function UpdateLootingDisplay(ObjectReference akTerminalRef, Bool currentLootSetting)
     If !currentLootSetting
-        akTerminalRef.AddTextReplacementData(Token_Looting, LZP_MESG_Looting_Disabled as Form)
+        akTerminalRef.AddTextReplacementData(Token_Looting, LZP_MESG_Status_Disabled as Form)
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("UpdateLootingDisplay: Looting is off", 1, "Menu_UtilInventoryScript")
         EndIf
     Else
-        akTerminalRef.AddTextReplacementData(Token_Looting, LZP_MESG_Looting_Enabled as Form)
+        akTerminalRef.AddTextReplacementData(Token_Looting, LZP_MESG_Status_Enabled as Form)
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("UpdateLootingDisplay: Looting is on", 1, "Menu_UtilInventoryScript")
         EndIf
@@ -107,12 +105,12 @@ EndFunction
 ;----------------------------------------------------------------------
 Function UpdateDebugDisplay(ObjectReference akTerminalRef, Bool currentDebugStatus)
     If currentDebugStatus
-        akTerminalRef.AddTextReplacementData(Token_Logging, LZP_MESG_Logging_Enabled as Form)
+        akTerminalRef.AddTextReplacementData(Token_Logging, LZP_MESG_Status_Enabled as Form)
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("UpdateDebugDisplay: Debugging is on", 1, "Menu_UtilInventoryScript")
         EndIf
     Else
-        akTerminalRef.AddTextReplacementData(Token_Logging, LZP_MESG_Logging_Disabled as Form)
+        akTerminalRef.AddTextReplacementData(Token_Logging, LZP_MESG_Status_Disabled as Form)
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("UpdateDebugDisplay: Debugging is off", 1, "Menu_UtilInventoryScript")
         EndIf
@@ -194,7 +192,7 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
         ; Open inventory for LPDummyHoldingRef when menu item 3 is selected.
         ElseIf auiMenuItemID == 3
             If Logger && Logger.IsEnabled()
-                Logger.LogAdv("OnTerminalMenuItemRun: Opening inventory for LPDummyHoldingRef", 1, "Menu_UtilInventoryScript")
+                Logger.LogAdv("OnTerminalMenuItemRun: Opening inventory for LZP_Cont_StorageRef", 1, "Menu_UtilInventoryScript")
             EndIf
             (LZP_Cont_StorageRef as Actor).OpenInventory(True, None, False)
 
