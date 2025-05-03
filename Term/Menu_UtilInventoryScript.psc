@@ -34,7 +34,7 @@ EndGroup
 ; GlobalVariable controlling debug toggle
 ;------------------------------
 Group DebugProperties
-    GlobalVariable Property LZP_System_Debug Auto Const mandatory
+    GlobalVariable Property LZP_System_Logging Auto Const mandatory
 EndGroup
 
 ;------------------------------
@@ -134,7 +134,7 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
 
     ; Get current settings.
     Bool currentLootSetting = LZP_System_ToggleLooting.GetValue() as Bool
-    Bool currentDebugStatus = LZP_System_Debug.GetValue() as Bool
+    Bool currentDebugStatus = LZP_System_Logging.GetValue() as Bool
 
     ; Log current settings.
     If Logger && Logger.IsEnabled()
@@ -208,23 +208,23 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
 
         ; Toggle debug status when menu item 5 is selected.
         ElseIf auiMenuItemID == 5
-            Bool currentDebugStatus = LZP_System_Debug.GetValue() as Bool
+            Bool currentDebugStatus = LZP_System_Logging.GetValue() as Bool
             If Logger && Logger.IsEnabled()
                 Logger.LogAdv("OnTerminalMenuItemRun: Current debug status", 1, "Menu_UtilInventoryScript")
                 Logger.LogAdv(currentDebugStatus as String, 1, "Menu_UtilInventoryScript")
             EndIf
             If !currentDebugStatus
-                LZP_System_Debug.SetValue(1.0)
+                LZP_System_Logging.SetValue(1.0)
                 If Logger && Logger.IsEnabled()
                     Logger.LogAdv("OnTerminalMenuItemRun: Turning debugging on", 1, "Menu_UtilInventoryScript")
                 EndIf
             Else
-                LZP_System_Debug.SetValue(0.0)
+                LZP_System_Logging.SetValue(0.0)
                 If Logger && Logger.IsEnabled()
                     Logger.LogAdv("OnTerminalMenuItemRun: Turning debugging off", 1, "Menu_UtilInventoryScript")
                 EndIf
             EndIf
-            UpdateDebugDisplay(akTerminalRef, LZP_System_Debug.GetValue() as Bool)
+            UpdateDebugDisplay(akTerminalRef, LZP_System_Logging.GetValue() as Bool)
         EndIf
     EndIf
 EndEvent
