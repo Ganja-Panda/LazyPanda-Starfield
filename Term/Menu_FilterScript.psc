@@ -23,8 +23,8 @@ ScriptName LZP:Term:Menu_FilterScript Extends TerminalMenu hidden
 ; Messages displayed to the player when toggling settings
 ;------------------------------
 Group Autofill
-    Message Property LZP_MESG_Status_Disable Auto Const mandatory
-    Message Property LZP_MESG_Status_Enable Auto Const mandatory
+    Message Property LZP_MESG_Status_Disabled Auto Const mandatory
+    Message Property LZP_MESG_Status_Enabled Auto Const mandatory
 EndGroup
 
 ;------------------------------
@@ -79,9 +79,9 @@ Function UpdateSetting(Int index, Float newValue, Message newMsg, ObjectReferenc
 
         String stateStr = ""
         If newValue == 1.0
-            stateStr = "LPOnMsg"
+            stateStr = "LZP_MESG_Status_Enabled"
         Else
-            stateStr = "LPOffMsg"
+            stateStr = "LZP_MESG_Status_Enabled"
         EndIf
 
         If Logger && Logger.IsEnabled()
@@ -117,10 +117,10 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
             String stateStr = ""
 
             If value == 1.0
-                replacementMsg =  LZP_MESG_Status_Enable
+                replacementMsg =  LZP_MESG_Status_Enabled
                 stateStr = "LZP_MESG_Status_Enable"
             Else
-                replacementMsg = LZP_MESG_Status_Disable
+                replacementMsg = LZP_MESG_Status_Disabled
                 stateStr = "LZP_MESG_Status_Disable"
             EndIf
 
@@ -167,9 +167,9 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
 
         Message newMsg
         If newValue == 1.0
-            newMsg = LZP_MESG_Status_Enable
+            newMsg = LZP_MESG_Status_Enabled
         Else
-            newMsg = LZP_MESG_Status_Disable
+            newMsg = LZP_MESG_Status_Disabled
         EndIf
 
         Int count = SettingsGlobals.GetSize()
@@ -194,9 +194,9 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
 
             Message newMsg
             If newValue == 1.0
-                newMsg = LZP_MESG_Status_Enable
+                newMsg = LZP_MESG_Status_Enabled
             Else
-                newMsg = LZP_MESG_Status_Disable
+                newMsg = LZP_MESG_Status_Disabled
             EndIf
 
             UpdateSetting(auiMenuItemID, newValue, newMsg, akTerminalRef)

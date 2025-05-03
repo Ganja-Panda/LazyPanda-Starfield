@@ -31,8 +31,8 @@ EndGroup
 ; Replacement messages for On/Off feedback
 ;------------------------------
 Group Message_Autofill
-    Message Property LZP_MESG_Status_Disable Auto Const Mandatory
-    Message Property LZP_MESG_Status_Enable Auto Const Mandatory
+    Message Property LZP_MESG_Status_Disabled Auto Const Mandatory
+    Message Property LZP_MESG_Status_Enabled Auto Const Mandatory
 EndGroup
 
 ;------------------------------
@@ -72,9 +72,9 @@ EndGroup
 ;    isEnabled     - Boolean indicating whether stealing is allowed.
 ;----------------------------------------------------------------------
 Function UpdateStealingSetting(ObjectReference akTerminalRef, Bool isEnabled)
-    Message msgToUse = LZP_MESG_Status_Disable
+    Message msgToUse = LZP_MESG_Status_Disabled
     If isEnabled
-        msgToUse = LZP_MESG_Status_Enable
+        msgToUse = LZP_MESG_Status_Enabled
     EndIf
     akTerminalRef.AddTextReplacementData(Token_Stealing, msgToUse as Form)
     
@@ -95,9 +95,9 @@ EndFunction
 ;    isEnabled     - Boolean indicating if stealing triggers hostility.
 ;----------------------------------------------------------------------
 Function UpdateHostileSetting(ObjectReference akTerminalRef, Bool isEnabled)
-    Message msgToUse = LZP_MESG_Status_Disable
+    Message msgToUse = LZP_MESG_Status_Disabled
     If isEnabled
-        msgToUse = LZP_MESG_Status_Enable
+        msgToUse = LZP_MESG_Status_Enabled
     EndIf
     akTerminalRef.AddTextReplacementData(Token_Hostile, msgToUse as Form)
     

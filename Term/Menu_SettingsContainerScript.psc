@@ -33,8 +33,8 @@ EndGroup
 ; On/Off message forms for terminal replacement
 ;------------------------------
 Group Message_Autofill
-    Message Property LPOffMsg Auto Const mandatory
-    Message Property LPOnMsg Auto Const mandatory
+    Message Property LZP_MESG_Status_Disabled Auto Const mandatory
+    Message Property LZP_MESG_Status_Enabled Auto Const mandatory
 EndGroup
 
 ;------------------------------
@@ -77,18 +77,18 @@ EndGroup
 ;----------------------------------------------------------------------
 Function UpdateSettingDisplay(GlobalVariable setting, String label, ObjectReference akTerminalRef)
     If setting.GetValue() == 1.0
-        akTerminalRef.AddTextReplacementData(label, LPOnMsg as Form)
+        akTerminalRef.AddTextReplacementData(label, LZP_MESG_Status_Enabled as Form)
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("UpdateSettingDisplay: Setting", 1, "Menu_SettingsContainerScript")
             Logger.LogAdv(label, 1, "Menu_SettingsContainerScript")
-            Logger.LogAdv("set to LPOnMsg", 1, "Menu_SettingsContainerScript")
+            Logger.LogAdv("set to LZP_MESG_Status_Enabled", 1, "Menu_SettingsContainerScript")
         EndIf
     Else
-        akTerminalRef.AddTextReplacementData(label, LPOffMsg as Form)
+        akTerminalRef.AddTextReplacementData(label, LZP_MESG_Status_Disabled as Form)
         If Logger && Logger.IsEnabled()
             Logger.LogAdv("UpdateSettingDisplay: Setting", 1, "Menu_SettingsContainerScript")
             Logger.LogAdv(label, 1, "Menu_SettingsContainerScript")
-            Logger.LogAdv("set to LPOffMsg", 1, "Menu_SettingsContainerScript")
+            Logger.LogAdv("set to LZP_MESG_Status_Disabled", 1, "Menu_SettingsContainerScript")
         EndIf
     EndIf
 EndFunction

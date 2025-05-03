@@ -31,8 +31,8 @@ Group Message_Autofill
   Message Property LZP_MESG_Dest_LodgeSafe Auto Const mandatory
   Message Property LZP_MESG_Dest_Player Auto Const mandatory
   Message Property LZP_MESG_Dest_Dummy Auto Const mandatory
-  Message Property LZP_MESG_Status_Disable Auto Const mandatory
-  Message Property LZP_MESG_Status_Enable Auto Const mandatory
+  Message Property LZP_MESG_Status_Disabled Auto Const mandatory
+  Message Property LZP_MESG_Status_Enabled Auto Const mandatory
 EndGroup
 
 ;------------------------------

@@ -23,8 +23,8 @@ ScriptName LZP:Term:Menu_SettingsAlwaysLootScript Extends TerminalMenu hidden
 Group TerminalMenuConfig
     TerminalMenu Property CurrentTerminalMenu Auto Const mandatory
     Form[] Property SettingsGlobals Auto Const mandatory
-    Message Property LZP_MESG_Status_Disable Auto Const mandatory
-    Message Property LZP_MESG_Status_Enable Auto Const mandatory
+    Message Property LZP_MESG_Status_Disabled Auto Const mandatory
+    Message Property LZP_MESG_Status_Enabled Auto Const mandatory
 EndGroup
 
 ;------------------------------
@@ -60,18 +60,18 @@ Function UpdateSettingDisplay(Int index, ObjectReference akTerminalRef)
         Message replacementMsg
 
         If value == 1.0
-            replacementMsg = LZP_MESG_Status_Enable
+            replacementMsg = LZP_MESG_Status_Enabled
             If Logger && Logger.IsEnabled()
                 Logger.LogAdv("LZP:Term:Menu_SettingsAlwaysLootScript: UpdateSettingDisplay: Setting at index", 1, "Menu_SettingsAlwaysLootScript")
                 Logger.LogAdv(index as String, 1, "Menu_SettingsAlwaysLootScript")
-                Logger.LogAdv("set to LPOnMsg", 1, "Menu_SettingsAlwaysLootScript")
+                Logger.LogAdv("set to LZP_MESG_Status_Enabled", 1, "Menu_SettingsAlwaysLootScript")
             EndIf
         Else
-            replacementMsg = LZP_MESG_Status_Disable
+            replacementMsg = LZP_MESG_Status_Disabled
             If Logger && Logger.IsEnabled()
                 Logger.LogAdv("LZP:Term:Menu_SettingsAlwaysLootScript: UpdateSettingDisplay: Setting at index", 1, "Menu_SettingsAlwaysLootScript")
                 Logger.LogAdv(index as String, 1, "Menu_SettingsAlwaysLootScript")
-                Logger.LogAdv("set to LPOffMsg", 1, "Menu_SettingsAlwaysLootScript")
+                Logger.LogAdv("set to LZP_MESG_Status_Disabled", 1, "Menu_SettingsAlwaysLootScript")
             EndIf
         EndIf
 
