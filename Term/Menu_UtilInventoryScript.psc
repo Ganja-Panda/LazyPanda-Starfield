@@ -162,11 +162,31 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             Logger.LogAdv("OnTerminalMenuItemRun: Terminal menu matches CurrentTerminalMenu", 1, "Menu_UtilInventoryScript")
         EndIf
 
+        ; Toggle logging when menu item 0 is selected.
+        If auiMenuItemID == 0
+            Bool currentLoggingSetting = LZP_System_Logging.GetValue() as Bool
+            If Logger && Logger.IsEnabled()
+                Logger.LogAdv("OnTerminalMenuItemRun: Current logging setting", 1, "Menu_UtilInventoryScript")
+                Logger.LogAdv(currentLoggingSetting as String, 1, "Menu_UtilInventoryScript")
+            EndIf
+            If !currentLoggingSetting
+                LZP_System_Logging.SetValue(1.0)
+                If Logger && Logger.IsEnabled()
+                    Logger.LogAdv("OnTerminalMenuItemRun: Turning logging on", 1, "Menu_UtilInventoryScript")
+                EndIf
+            Else
+                LZP_System_Logging.SetValue(0.0)
+                If Logger && Logger.IsEnabled()
+                    Logger.LogAdv("OnTerminalMenuItemRun: Turning logging off", 1, "Menu_UtilInventoryScript")
+                EndIf
+            EndIf
+            UpdateLootingDisplay(akTerminalRef, LZP_System_Logging.GetValue() as Bool)
+
         ; Toggle looting when menu item 1 is selected.
-        If auiMenuItemID == 1
+        ElseIf auiMenuItemID == 1
             Bool currentLootSetting = LZP_System_ToggleLooting.GetValue() as Bool
             If Logger && Logger.IsEnabled()
-                Logger.LogAdv("OnTerminalMenuItemRun: Current loot setting", 1, "Menu_UtilInventoryScript")
+                Logger.LogAdv("OnTerminalMenuItemRun: Current looting setting", 1, "Menu_UtilInventoryScript")
                 Logger.LogAdv(currentLootSetting as String, 1, "Menu_UtilInventoryScript")
             EndIf
             If !currentLootSetting
@@ -182,19 +202,19 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             EndIf
             UpdateLootingDisplay(akTerminalRef, LZP_System_ToggleLooting.GetValue() as Bool)
 
-        ; Activate LodgeSafeRef when menu item 2 is selected.
+        ; Open inventory for LPDummyHoldingRef when menu item 2 is selected.
         ElseIf auiMenuItemID == 2
-            If Logger && Logger.IsEnabled()
-                Logger.LogAdv("OnTerminalMenuItemRun: Activating LodgeSafeRef", 1, "Menu_UtilInventoryScript")
-            EndIf
-            LodgeSafeRef.Activate(PlayerRef, False)
-
-        ; Open inventory for LPDummyHoldingRef when menu item 3 is selected.
-        ElseIf auiMenuItemID == 3
             If Logger && Logger.IsEnabled()
                 Logger.LogAdv("OnTerminalMenuItemRun: Opening inventory for LZP_Cont_StorageRef", 1, "Menu_UtilInventoryScript")
             EndIf
             (LZP_Cont_StorageRef as Actor).OpenInventory(True, None, False)
+
+        ; Activate LodgeSafeRef when menu item 3 is selected.
+        ElseIf auiMenuItemID == 3
+            If Logger && Logger.IsEnabled()
+                Logger.LogAdv("OnTerminalMenuItemRun: Activating LodgeSafeRef", 1, "Menu_UtilInventoryScript")
+            EndIf
+            LodgeSafeRef.Activate(PlayerRef, False)
 
         ; Open inventory for PlayerHomeShip when menu item 4 is selected.
         ElseIf auiMenuItemID == 4
@@ -203,26 +223,6 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
             EndIf
             spaceshipreference PlayerShip = PlayerHomeShip.GetRef() as spaceshipreference
             PlayerShip.OpenInventory()
-
-        ; Toggle debug status when menu item 5 is selected.
-        ElseIf auiMenuItemID == 5
-            Bool currentDebugStatus = LZP_System_Logging.GetValue() as Bool
-            If Logger && Logger.IsEnabled()
-                Logger.LogAdv("OnTerminalMenuItemRun: Current debug status", 1, "Menu_UtilInventoryScript")
-                Logger.LogAdv(currentDebugStatus as String, 1, "Menu_UtilInventoryScript")
-            EndIf
-            If !currentDebugStatus
-                LZP_System_Logging.SetValue(1.0)
-                If Logger && Logger.IsEnabled()
-                    Logger.LogAdv("OnTerminalMenuItemRun: Turning debugging on", 1, "Menu_UtilInventoryScript")
-                EndIf
-            Else
-                LZP_System_Logging.SetValue(0.0)
-                If Logger && Logger.IsEnabled()
-                    Logger.LogAdv("OnTerminalMenuItemRun: Turning debugging off", 1, "Menu_UtilInventoryScript")
-                EndIf
-            EndIf
-            UpdateDebugDisplay(akTerminalRef, LZP_System_Logging.GetValue() as Bool)
         EndIf
     EndIf
 EndEvent
