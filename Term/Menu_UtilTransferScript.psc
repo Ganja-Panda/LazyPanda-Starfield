@@ -238,13 +238,13 @@ Function MoveInventoryToLodgeSafe()
 
     If LZP_Cont_StorageRef.GetItemCount(None) > 0
         If Logger && Logger.IsEnabled()
-            Logger.LogAdv("MoveInventoryToLodgeSafe: LPDummyHoldingRef has items", 1, "Menu_UtilTransferScript")
+            Logger.LogAdv("MoveInventoryToLodgeSafe: LZP_Cont_StorageRef has items", 1, "Menu_UtilTransferScript")
         EndIf
         LZP_Cont_StorageRef.RemoveAllItems(LodgeSafeRef, False, False)
         ShowMsg(LZP_MESG_AllItems_Lodge)
     Else
         If Logger && Logger.IsEnabled()
-            Logger.LogAdv("MoveInventoryToLodgeSafe: LPDummyHoldingRef has no items", 1, "Menu_UtilTransferScript")
+            Logger.LogAdv("MoveInventoryToLodgeSafe: LZP_Cont_StorageRef has no items", 1, "Menu_UtilTransferScript")
         EndIf
         ShowMsg(LZP_MESG_NoItems)
     EndIf
