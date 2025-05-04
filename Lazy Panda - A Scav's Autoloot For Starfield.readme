@@ -1,29 +1,114 @@
-Lazy Panda - A Scav's Autoloot For Starfield
+# Lazy Panda - A Scav's Autoloot for Starfield
 
-:: REQUIREMENTS::
-Starfield up to date
+## Overview
+![Lazy Panda Preview](https://staticdelivery.nexusmods.com/mods/4187/images/13225/13225-1740234355-2088683167.png)
+Lazy Panda is a modular, script-driven autoloot system for Starfield. It automates post-combat and environmental looting, offering extensive customization through in-game terminals and toggle items. Designed for performance, extensibility, and immersion, the mod supports persistent settings, version tracking, and dynamic content filtering.
+
+---
+
+## Architecture Summary
+
+### Script Categories
+| Folder     | Purpose                                      |
+|------------|----------------------------------------------|
+| `System/`  | Core quest logic, version control, event triggers |
+| `Term/`    | Terminal interface handlers                   |
+| `Looting/` | Full autoloot pipeline (scan → filter → loot) |
+| `Potion/`  | Toggle item (potion) logic                    |
+| Root       | `SystemScript.psc`: Utility/global-call script not CK-attached |
+
+---
+
+## Features
+
+### 🔹 Highlights
+- ✅ **Auto Loot Everything**: Automatically picks up weapons, ammo, spacesuits, backpacks, corpses, containers, junk, food, resources (including asteroids), books, dataslates, and chems
+- ✅ **Fully Customizable**: Use in-game terminals to toggle looting per category with instant feedback
+- ✅ **Hotkey Support**: Console commands (via `cgf`) allow you to toggle looting, access inventory, safe, or ship from anywhere
+- ✅ **Multiple Loot Destinations**: Route loot to the player, Lodge Safe, ship cargo, or dummy container
+- ✅ **Light Master Plugin**: Does not consume a full ESM slot, supporting up to 4000+ mods
 
 
-:: FEATURES::
-Autoloots all items/containers/corpses in the specified radius
-Can be toggled on and off
-Can be set to only loot specific items
-Loots Weapons, Armor, Junk, Ingestibles, Ammo, Books, Dataslates.
+### 🔹 Terminal Menus
+- Toggle Looting System On/Off
+- Enable Logging (debug messages to LazyPanda.log)
+- Set Loot Destination (Player, Safe, Ship, Dummy)
+- Control Radius, Auto Unlock, Corpse Removal
+- Configure Always Loot and Stealing Behavior
+- Access Storage and Ship Inventory
 
+### 🔹 Toggle Item
+- `LZP_Chem_LootToggle` (Aid item)
+- Applies `AidLootToggleScript` (ActiveMagicEffect)
+- Toggles `LZP_System_ToggleLooting` on use
+- Re-adds itself to inventory after use
 
-:: GENERAL OTHER STUFF::
-BA2 Packed
-ESL Flagged
+### 🔹 Quest-Driven Core
+- `DeathMonitorQuestScript`: Triggers corpse processing
+- `UpdateHandlerPlayerAliasScript`: Handles version upgrades
+- `VersionManagerScript`: Tracks and syncs version states
+- `HandHeldTerminalScript`: Equips a weapon to auto-open a dummy terminal
 
-:: RECOMMENDED MODS ::
-- Almost Weightless Starfield - https://www.nexusmods.com/starfield/mods/8135
-- Shades Glowy Stuff (Glowing Highlight without Scanner - Accessibility Enhancements) - https://www.nexusmods.com/starfield/mods/11818
+### 🔹 Looting Pipeline
+| Stage    | Script                      | Role                                |
+|----------|-----------------------------|-------------------------------------|
+| Trigger  | `LootEffectScript`          | Launch scan, entry point            |
+| Scan     | `LootScannerScript`         | Finds nearby loot targets           |
+| Filter   | `LootFilterScript`          | Applies whitelist + toggle control |
+| Unlock   | `UnlockHelperScript`        | Handles digipick/skill unlock       |
+| Process  | `LootProcessorScript`       | Delegates corpse/container routing  |
+| Transfer | `LootTransferScript`        | Sends items to the correct target   |
 
+### 🔹 Message Feedback
+- Uses `AddTextReplacementData()` for terminal UI labels
+- Custom messages defined in `LZP_MESG_*`
+- Enabled/Disabled messages universally shared
 
-::  KNOWN ISSUES::
-- Not Looting Space Stuff. (I'm working on it)
+---
 
+![Lazy Panda Setup](https://staticdelivery.nexusmods.com/mods/4187/images/13225/13225-1740237755-1776602738.png)
 
-::  CREDITS ::
-Aurelianis - For allowing me to repurpose her origonal code from Lazy Scav - An Autoloot for Starfield - https://www.nexusmods.com/starfield/mods/8291
-Ahplla - For Header and Thumb images and initial translations.
+## Installation Instructions
+
+### Recommended
+- Use **Mod Organizer 2 (MO2)** or **Vortex** for simple installation and mod management.
+
+### Manual Installation
+1. Place the language folder (e.g., `Lazy Panda - EN`) into `Documents\My Games\Starfield\Data`
+2. If using the **Shattered Space DLC**, also copy `LazyPanda_DLC.esm` from the DLC folder into your mod directory
+3. Ensure `StarfieldCustom.ini` exists at `Documents\My Games\Starfield` with the following lines:
+   ```
+   [Archive]
+   bInvalidateOlderFiles=1
+   sResourceDataDirsFinal=
+   ```
+4. Activate the mod from the Creations menu and restart the game
+
+### Usage
+- Open your inventory, navigate to **Weapons**, and activate the **Lazy Panda - Loot Terminal** to access all options
+
+---
+
+## Development Notes
+- All scripts use grouped properties for CK clarity
+- Logging is managed via `LoggerScript`
+- Version checking built on modular GlobalVariable access
+- Terminal menus support full in-game control
+- All ESP-referenced IDs validated and connected
+
+---
+
+## Future Expansion
+- Further integrate corpse processing with kill-based triggers
+- Expand space looting where possible (currently limited to asteroids; ship debris unrecognized)
+- Investigate more dynamic object recognition in space environments
+
+---
+
+## Author
+**Ganja Panda**
+
+Bethesda Verified Content Creator | Ganja Panda Creations
+
+Mod Version: 2.10
+Plugin: `LazyPanda_AF.esm` (Achievement Friendly - Creation Club) or `LazyPanda.esm` (Free Creation Club & Nexus Mods)
