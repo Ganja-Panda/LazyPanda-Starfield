@@ -107,12 +107,12 @@ Function UpdateDebugDisplay(ObjectReference akTerminalRef, Bool currentDebugStat
     If currentDebugStatus
         akTerminalRef.AddTextReplacementData(Token_Logging, LZP_MESG_Status_Enabled as Form)
         If Logger && Logger.IsEnabled()
-            Logger.LogAdv("UpdateDebugDisplay: Debugging is on", 1, "Menu_UtilInventoryScript")
+            Logger.LogAdv("UpdateDebugDisplay: Logging is on", 1, "Menu_UtilInventoryScript")
         EndIf
     Else
         akTerminalRef.AddTextReplacementData(Token_Logging, LZP_MESG_Status_Disabled as Form)
         If Logger && Logger.IsEnabled()
-            Logger.LogAdv("UpdateDebugDisplay: Debugging is off", 1, "Menu_UtilInventoryScript")
+            Logger.LogAdv("UpdateDebugDisplay: Logging is off", 1, "Menu_UtilInventoryScript")
         EndIf
     EndIf
 EndFunction
@@ -138,7 +138,7 @@ Event OnTerminalMenuEnter(TerminalMenu akTerminalBase, ObjectReference akTermina
     If Logger && Logger.IsEnabled()
         Logger.LogAdv("OnTerminalMenuEnter: Current loot setting", 1, "Menu_UtilInventoryScript")
         Logger.LogAdv(currentLootSetting as String, 1, "Menu_UtilInventoryScript")
-        Logger.LogAdv("OnTerminalMenuEnter: Current debug status", 1, "Menu_UtilInventoryScript")
+        Logger.LogAdv("OnTerminalMenuEnter: Current logging status", 1, "Menu_UtilInventoryScript")
         Logger.LogAdv(currentDebugStatus as String, 1, "Menu_UtilInventoryScript")
     EndIf
 
