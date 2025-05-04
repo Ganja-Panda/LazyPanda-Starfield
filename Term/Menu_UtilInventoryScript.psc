@@ -180,7 +180,7 @@ Event OnTerminalMenuItemRun(Int auiMenuItemID, TerminalMenu akTerminalBase, Obje
                     Logger.LogAdv("OnTerminalMenuItemRun: Turning logging off", 1, "Menu_UtilInventoryScript")
                 EndIf
             EndIf
-            UpdateLootingDisplay(akTerminalRef, LZP_System_Logging.GetValue() as Bool)
+            UpdateDebugDisplay(akTerminalRef, LZP_System_Logging.GetValue() as Bool)
 
         ; Toggle looting when menu item 1 is selected.
         ElseIf auiMenuItemID == 1
