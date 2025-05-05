@@ -1,24 +1,47 @@
-Lazy Panda - A Scav's Auto Loot for Starfield Restricted Use License (Version 1.0)
+Lazy Panda - A Scav's Auto Loot for Starfield
+Restricted Educational Use License (Version 1.1)
 Copyright 2025 Ganja Panda Creations
 
+---
+
 Overview:
-This license governs the use of the software and its accompanying documentation (the "Software"). The Software is protected under copyright law. Except as expressly provided herein, no permissions for reuse, reproduction, modification, distribution, or public display are granted.
+This license governs the use of the mod "Lazy Panda - A Scav's Auto Loot for Starfield" and any accompanying documentation, scripts, or data (the "Software"). The Software is protected under copyright law.
 
-Restrictions:
+This is a **Restricted Educational License**. The Software may be studied and referenced for learning purposes, but it is not intended to serve as a template, base, or boilerplate for other mods. **This is not a copy & paste repository.**
 
-No Use Permitted:
-The Software may not be used, reproduced, modified, distributed, or publicly displayed in any form without explicit, prior written permission from the copyright holder.
+---
 
-No Derivative Works:
-The creation of any derivative works or modifications is strictly prohibited unless expressly authorized in writing by the copyright holder.
+🔒 Restrictions:
 
-All Rights Reserved:
-All rights not expressly granted in this license are reserved by the copyright holder.
+1. ❌ **No Use in Published Mods**  
+   You may not reuse or integrate any part of this Software in a public or private mod unless granted written permission.
+
+2. ❌ **No Derivative Works**  
+   The creation of derivative mods or versions based on this Software is strictly prohibited.
+
+3. ❌ **No Redistribution**  
+   You may not share, redistribute, or host the Software, in whole or in part, through any platform, server, or file repository.
+
+4. ✅ **Permitted Use — Educational Only**  
+   You may inspect, study, and analyze the Software’s architecture and implementation to learn about modding Starfield using Papyrus scripting, xEdit, and Creation Kit workflows.
+
+5. 📚 **No Copy & Paste Usage**  
+   Code, logic, or structure from this Software may not be copied verbatim into other mod projects — even if modified — without explicit permission.
+
+---
+
+All rights not expressly granted in this license are reserved by Ganja Panda Creations.
+
+---
 
 Disclaimer:
-THE SOFTWARE IS PROVIDED "AS IS," WITHOUT ANY WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR ITS USE.
+THE SOFTWARE IS PROVIDED "AS IS," WITHOUT ANY WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE OR INABILITY TO USE THE SOFTWARE.
+
+---
 
 Contact Information:
-For inquiries regarding this license or for permission requests, please contact:
-Email: ganjapanda@ganjapanda.net
-Website: https://ganjapanda.net
+Ganja Panda Creations  
+📧 Email: ganjapanda@ganjapanda.net  
+🌐 Website: [https://ganjapanda.net](https://ganjapanda.net)
