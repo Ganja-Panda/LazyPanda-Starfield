@@ -1,0 +1,18 @@
+{
+    // See https://go.microsoft.com/fwlink/?Link...
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Papyrus Compile",
+            "type": "process",
+            "command": "D:\\Steam\\steamapps\\common\\Starfield\\Tools\\Papyrus Compiler\\PapyrusCompiler.exe",
+            "args": ["${file}", "-i=D:\\Steam\\steamapps\\common\\Starfield\\Data\\Scripts", "-f=D:\\Steam\\steamapps\\common\\Starfield\\Data\\Scripts\\Source\\Starfield_Papyrus_Flags.flg", "-o=${command:extension.commandvariable.file.fileDirname1Up}"],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
