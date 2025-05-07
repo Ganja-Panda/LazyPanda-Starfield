@@ -71,10 +71,10 @@ Function PollDebugStateAsync()
 		InitializeLog()
 		If currentState
 			LZP_MESG_Logging_Enabled.Show()
-			Debug.TraceUser("Lazy Panda", "[INFO] Debug mode enabled")
+			LogAdv("Debug mode enabled", 1, "LazyPanda")
 		Else
 			LZP_MESG_Logging_Disabled.Show()
-			Debug.TraceUser("Lazy Panda", "[INFO] Debug mode disabled")
+			LogAdv("Debug mode disabled", 1, "LazyPanda")
 		EndIf
 		bLastKnownState = currentState
 	EndIf
@@ -98,7 +98,7 @@ EndFunction
 Function Log(String msg)
 	If IsEnabled()
 		InitializeLog()
-		Debug.TraceUser("Lazy Panda", "[LOG] " + msg)
+		LogAdv(msg, 1, "LazyPanda")
 	EndIf
 EndFunction
 
@@ -113,15 +113,27 @@ Function LogAdv(String msg, Int severity = 1, String source = "LazyPanda")
 	If IsEnabled()
 		InitializeLog()
 
-		String prefix = "[INFO] "
-		If severity == 2
-			prefix = "[WARN] "
+		; Set log level labels
+		String levelLabel = "INFO"
+		If severity == 0
+			levelLabel = "VERBOSE"
+		ElseIf severity == 2
+			levelLabel = "WARN"
 		ElseIf severity == 3
-			prefix = "[ERROR] "
-		ElseIf severity == 0
-			prefix = "[VERBOSE] "
+			levelLabel = "ERROR"
 		EndIf
 
-		Debug.TraceUser(source, prefix + msg)
+		; Get timestamp (in-game time as fallback)
+		Float gameTime = Utility.GetCurrentGameTime()
+		Int hours = (gameTime * 24) % 24
+		Int minutes = (gameTime * 1440) % 60
+		Int seconds = (gameTime * 86400) % 60
+		String timestamp = hours + ":" + minutes + ":" + seconds
+
+		; Format the log message
+		String formattedMessage = "[" + timestamp + "][" + levelLabel + "][" + source + "] " + msg
+
+		; Write to log
+		Debug.TraceUser("Lazy Panda", formattedMessage)
 	EndIf
 EndFunction

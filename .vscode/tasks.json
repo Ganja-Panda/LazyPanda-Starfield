@@ -1,22 +1,37 @@
 {
-    "version": "2.0.0",
-    "tasks": [
+  "version": "2.0.0",
+  "tasks": [
       {
-        "label": "Compile Mod (Full Folder)",
-        "type": "shell",
-        "command": "D:\\Steam\\steamapps\\common\\Starfield\\Tools\\Papyrus Compiler\\PapyrusCompiler.exe",
-        "args": [
-          ".",  // compiles all files in this folder
-          "-i=D:\\Steam\\steamapps\\common\\Starfield\\Data\\Scripts\\Source",
-          "-f=D:\\Steam\\steamapps\\common\\Starfield\\Data\\Scripts\\Source\\Starfield_Papyrus_Flags.flg",
-          "-o=D:\\Steam\\steamapps\\common\\Starfield\\Data\\Scripts"
-        ],
-        "group": {
-          "kind": "build",
-          "isDefault": true
-        },
-        "problemMatcher": []
+          "label": "Papyrus Linter",
+          "type": "shell",
+          "command": "powershell.exe",
+          "args": [
+              "-ExecutionPolicy",
+              "ByPass",
+              "-File",
+              "${workspaceFolder}/PapyrusLinter.ps1"
+          ],
+          "group": {
+              "kind": "build",
+              "isDefault": false
+          },
+          "detail": "Runs the custom Papyrus linter before compilation."
+      },
+      {
+          "label": "Compile Mod (Full Folder)",
+          "type": "shell",
+          "command": "D:\\Steam\\steamapps\\common\\Starfield\\Tools\\Papyrus Compiler\\PapyrusCompiler.exe",
+          "args": [
+              ".",
+              "-i=D:\\Steam\\steamapps\\common\\Starfield\\Data\\Scripts\\Source;.",
+              "-f=D:\\Steam\\steamapps\\common\\Starfield\\Data\\Scripts\\Source\\Starfield_Papyrus_Flags.flg",
+              "-o=D:\\Steam\\steamapps\\common\\Starfield\\Data\\Scripts"
+          ],
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "detail": "Compiles all Papyrus scripts in the current folder."
       }
-    ]
-  }
-  
+  ]
+}
